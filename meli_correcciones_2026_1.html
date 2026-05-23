@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MELI — Análisis de Correcciones Históricas 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2236;
+    --border: #1e2d47;
+    --gold: #f0b429;
+    --gold-dim: #c8922a;
+    --red: #ef4444;
+    --red-dim: #7f1d1d;
+    --green: #22c55e;
+    --blue: #3b82f6;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --highlight: #fef08a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 32px 16px;
+  }
+
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 36px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .header-left {}
+  .badge {
+    display: inline-block;
+    background: var(--gold);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+  }
+  .header h1 span { color: var(--gold); }
+  .header-sub {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+  .brand {
+    text-align: right;
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+  .brand strong { color: var(--gold); font-size: 13px; display: block; }
+
+  /* KPI STRIP */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .kpi {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    text-align: center;
+  }
+  .kpi-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .kpi-value { font-size: 22px; font-weight: 800; }
+  .kpi-value.red { color: var(--red); }
+  .kpi-value.gold { color: var(--gold); }
+  .kpi-value.blue { color: var(--blue); }
+  .kpi-value.green { color: var(--green); }
+  .kpi-note { font-size: 10px; color: var(--muted); margin-top: 4px; }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* RANKING TABLE */
+  .ranking-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 28px;
+    font-size: 13px;
+  }
+  .ranking-table th {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .ranking-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+  }
+  .ranking-table tr:hover td { background: var(--surface2); }
+  .rank-num { font-weight: 700; color: var(--muted); }
+  .caida-val { font-weight: 700; color: var(--red); }
+  .caida-bar-wrap { width: 160px; }
+  .caida-bar-bg { background: var(--border); border-radius: 4px; height: 6px; overflow: hidden; }
+  .caida-bar-fill { background: var(--red); height: 100%; border-radius: 4px; transition: width 0.5s; }
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+  .tag-crisis { background: #7f1d1d; color: #fca5a5; }
+  .tag-bear { background: #422006; color: #fde68a; }
+  .tag-current { background: #fef08a; color: #000; }
+  .row-current td { background: #1a1a0a !important; border-left: 3px solid var(--highlight); }
+
+  /* STATS GRID */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 28px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+  .stat-card h3 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .stat-row:last-child { border-bottom: none; }
+  .stat-row-label { color: var(--muted); }
+  .stat-row-val { font-weight: 700; }
+
+  /* DS VISUAL */
+  .ds-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+  .ds-section h3 { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+  .ds-scale {
+    position: relative;
+    height: 56px;
+    margin-bottom: 10px;
+  }
+  .ds-bar-outer {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 12px;
+    background: linear-gradient(to right, #7f1d1d, #ef4444, #f0b429, #22c55e, #3b82f6);
+    border-radius: 6px;
+    opacity: 0.25;
+  }
+  .ds-bar-3 { position: absolute; top: 50%; transform: translateY(-50%); left: 0%; width: 100%; height: 12px; background: #7f1d1d; border-radius: 6px; opacity: 0.3; }
+  .ds-bar-2 { position: absolute; top: 50%; transform: translateY(-50%); left: 10%; width: 80%; height: 12px; background: #ef4444; border-radius: 6px; opacity: 0.3; }
+  .ds-bar-1 { position: absolute; top: 50%; transform: translateY(-50%); left: 22%; width: 56%; height: 12px; background: var(--gold); border-radius: 6px; opacity: 0.5; }
+
+  /* Marker for current correction */
+  .ds-marker {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .ds-marker-line { width: 2px; height: 56px; background: var(--highlight); }
+  .ds-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .ds-ranges {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .ds-range-card {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 12px;
+    text-align: center;
+  }
+  .ds-range-card .ds-range-label { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+  .ds-range-card .ds-range-val { font-size: 12px; font-weight: 700; }
+  .ds-range-card .ds-range-pct { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .ds-range-card.active { border: 1px solid var(--highlight); }
+  .ds-range-card.active .ds-range-label { color: var(--highlight); }
+
+  /* FREQUENCY */
+  .freq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .freq-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+  }
+  .freq-card .freq-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .freq-card .freq-big { font-size: 32px; font-weight: 800; color: var(--gold); }
+  .freq-card .freq-unit { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+  .freq-card .freq-sub { font-size: 12px; color: var(--text); }
+
+  /* CONCLUSION BOX */
+  .conclusion {
+    background: linear-gradient(135deg, #111827, #1a2236);
+    border: 1px solid var(--gold-dim);
+    border-radius: 14px;
+    padding: 24px;
+    margin-bottom: 28px;
+  }
+  .conclusion h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 14px;
+  }
+  .conclusion p {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+    font-style: italic;
+  }
+  .conclusion p strong { color: var(--gold); font-style: normal; }
+
+  /* FOOTER */
+  .footer {
+    text-align: center;
+    font-size: 11px;
+    color: var(--muted);
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    line-height: 1.8;
+  }
+  .footer strong { color: var(--gold); }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    background: var(--surface2);
+    border-left: 3px solid var(--muted);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+
+  @media (max-width: 600px) {
+    .kpi-strip { grid-template-columns: repeat(2, 1fr); }
+    .stats-grid { grid-template-columns: 1fr; }
+    .freq-grid { grid-template-columns: 1fr; }
+    .ds-ranges { grid-template-columns: 1fr; }
+    .header { flex-direction: column; gap: 12px; }
+    .brand { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="badge">Análisis Histórico</div>
+      <h1>MELI — <span>Correcciones &gt; -20%</span></h1>
+      <div class="header-sub">Visión Semanal · Agosto 2007 – Mayo 2026 · 18,80 años de historia</div>
+    </div>
+    <div class="brand">
+      <strong>MDA Investing</strong>
+      Hugo Tanos<br>Asesor de Inversiones
+    </div>
+  </div>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip">
+    <div class="kpi">
+      <div class="kpi-label">Total correcciones</div>
+      <div class="kpi-value gold">25</div>
+      <div class="kpi-note">en 18,80 años</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Promedio caída</div>
+      <div class="kpi-value red">-36,38%</div>
+      <div class="kpi-note">con Bear Markets</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Mediana caída</div>
+      <div class="kpi-value red">-32,74%</div>
+      <div class="kpi-note">con Bear Markets</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Corrección actual</div>
+      <div class="kpi-value" style="color:#fef08a;">-43,48%</div>
+      <div class="kpi-note">7° histórica · 2026</div>
+    </div>
+  </div>
+
+  <!-- RANKING -->
+  <div class="section-title">Ranking de mayores correcciones</div>
+  <table class="ranking-table">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Caída</th>
+        <th>Magnitud relativa</th>
+        <th>Evento</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="rank-num">1°</td>
+        <td class="caida-val">-90,26%</td>
+        <td class="caida-bar-wrap"><div class="caida-bar-bg"><div class="caida-bar-fill" style="width:100%"></div></div></td>
+        <td><span class="tag tag-crisis">Crisis Subprime 2007–2008</span></td>
+      </tr>
+      <tr>
+        <td class="rank-num">2°</td>
+        <td class="caida-val">-70,26%</td>
+        <td class="caida-bar-wrap"><div class="caida-bar-bg"><div class="caida-bar-fill" style="width:77%"></div></div></td>
+        <td><span class="tag tag-bear">Bear Market USA 2022</span></td>
+      </tr>
+      <tr>
+        <td class="rank-num">3°</td>
+        <td class="caida-val">-47,91%</td>
+        <td class="caida-bar-wrap"><div class="caida-bar-bg"><div class="caida-bar-fill" style="width:53%"></div></div></td>
+        <td><span class="tag tag-bear">S&P 500 Neutro 2011</span></td>
+      </tr>
+      <tr>
+        <td class="rank-num">4°</td>
+        <td class="caida-val">-45,53%</td>
+        <td class="caida-bar-wrap"><div class="caida-bar-bg"><div class="caida-bar-fill" style="width:50%"></div></div></td>
+        <td style="color:var(--muted);font-size:12px;">Sin etiqueta</td>
+      </tr>
+      <tr>
+        <td class="rank-num">5°</td>
+        <td class="caida-val">-45,12%</td>
+        <td class="caida-bar-wrap"><div class="caida-bar-bg"><div class="caida-bar-fill" style="width:50%"></div></div></td>
+        <td style="color:var(--muted);font-size:12px;">Sin etiqueta</td>
+      </tr>
+      <tr>
+        <td class="rank-num">6°</td>
+        <td class="caida-val">-44,19%</td>
+        <td class="caida-bar-wrap"><div class="caida-bar-bg"><div class="caida-bar-fill" style="width:49%"></div></div></td>
+        <td style="color:var(--muted);font-size:12px;">Sin etiqueta</td>
+      </tr>
+      <tr class="row-current">
+        <td class="rank-num" style="color:var(--highlight);">7°</td>
+        <td class="caida-val" style="color:var(--highlight);">-43,48%</td>
+        <td class="caida-bar-wrap"><div class="caida-bar-bg"><div class="caida-bar-fill" style="width:48%;background:var(--highlight);"></div></div></td>
+        <td><span class="tag tag-current">⚡ Corrección actual 2026</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- STATS -->
+  <div class="section-title">Estadísticas históricas</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <h3>Con Bear Markets incluidos</h3>
+      <div class="stat-row">
+        <span class="stat-row-label">Promedio</span>
+        <span class="stat-row-val" style="color:var(--red);">-36,38%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Mediana</span>
+        <span class="stat-row-val" style="color:var(--red);">-32,74%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Desvío estándar</span>
+        <span class="stat-row-val" style="color:var(--gold);">16,00%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Frecuencia anual</span>
+        <span class="stat-row-val" style="color:var(--blue);">1,33 × año</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Cada cuánto</span>
+        <span class="stat-row-val" style="color:var(--blue);">~0,75 años</span>
+      </div>
+    </div>
+    <div class="stat-card">
+      <h3>Sin Bear Markets</h3>
+      <div class="stat-row">
+        <span class="stat-row-label">Promedio</span>
+        <span class="stat-row-val" style="color:var(--red);">-32,56%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Mediana</span>
+        <span class="stat-row-val" style="color:var(--red);">-31,09%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Desvío estándar</span>
+        <span class="stat-row-val" style="color:var(--gold);">8,94%</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Frecuencia anual</span>
+        <span class="stat-row-val" style="color:var(--blue);">1,22 × año</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-row-label">Cada cuánto</span>
+        <span class="stat-row-val" style="color:var(--blue);">~0,82 años</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- DS SECTION -->
+  <div class="section-title">Desvío estándar — ¿Qué tan extrema es la caída actual?</div>
+  <div class="ds-section">
+    <h3>Rangos históricos · Promedio: -36,38% · DS: 16,00%</h3>
+
+    <!-- Visual bar -->
+    <div style="position:relative; height:40px; margin-bottom:8px;">
+      <div style="position:absolute;top:50%;transform:translateY(-50%);left:0;width:100%;height:10px;background:#7f1d1d;border-radius:6px;opacity:0.3;"></div>
+      <div style="position:absolute;top:50%;transform:translateY(-50%);left:10%;width:80%;height:10px;background:#ef4444;border-radius:6px;opacity:0.35;"></div>
+      <div style="position:absolute;top:50%;transform:translateY(-50%);left:23%;width:54%;height:10px;background:var(--gold);border-radius:6px;opacity:0.55;"></div>
+      <!-- Promedio marker -->
+      <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;">
+        <div style="width:2px;height:40px;background:var(--muted);opacity:0.5;"></div>
+      </div>
+      <!-- Current correction marker -->
+      <div style="position:absolute;top:0;left:36%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;">
+        <div style="width:2px;height:40px;background:var(--highlight);"></div>
+      </div>
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:16px;">
+      <span>-68% (−2DS)</span>
+      <span>-52% (−1DS)</span>
+      <span style="color:var(--highlight);">▲ -43,48% actual</span>
+      <span>-36% (promedio)</span>
+      <span>-20% (+1DS)</span>
+    </div>
+
+    <div class="ds-ranges">
+      <div class="ds-range-card active">
+        <div class="ds-range-label">± 1 Desvío estándar</div>
+        <div class="ds-range-val" style="color:var(--gold);">−52,38% a −20,38%</div>
+        <div class="ds-range-pct">92% de los casos históricos (23/25)</div>
+      </div>
+      <div class="ds-range-card">
+        <div class="ds-range-label">± 2 Desvíos estándar</div>
+        <div class="ds-range-val" style="color:var(--red);">−68,38% a −4,38%</div>
+        <div class="ds-range-pct">92% de los casos históricos (23/25)</div>
+      </div>
+      <div class="ds-range-card">
+        <div class="ds-range-label">± 3 Desvíos estándar</div>
+        <div class="ds-range-val" style="color:var(--muted);">−84,38% a +11,62%</div>
+        <div class="ds-range-pct">96% de los casos históricos (24/25)</div>
+      </div>
+    </div>
+
+    <div style="margin-top:16px;padding:12px;background:var(--surface2);border-radius:8px;font-size:12px;color:var(--text);line-height:1.6;">
+      ✅ La corrección actual de <strong style="color:var(--highlight);">-43,48%</strong> se encuentra <strong>dentro del rango de ±1 DS</strong> (promedio -36,38% ± 16,00% = rango -52,38% a -20,38%). Es severa en términos absolutos, pero estadísticamente esperable dentro del historial de MELI. El Subprime (-90,26%) y el Bear Market 2022 (-70,26%) quedan fuera de ±1 DS y también de ±2 DS, y únicamente el Subprime rompe el límite inferior de ±3 DS (-84,38%).
+    </div>
+  </div>
+
+  <!-- CONCLUSION -->
+  <div class="section-title">Mensaje para el inversor</div>
+  <div class="conclusion">
+    <h3>📌 Conclusión</h3>
+    <p>
+      La caída actual de MELI del <strong>-43,48%</strong> es la <strong>7ª más grande de su historia</strong> en 18 años de cotización. Seis veces antes cayó más — incluyendo el Subprime (-90%) y el Bear Market 2022 (-70%) — y en todos los casos el negocio siguió creciendo. Estadísticamente, esta corrección se encuentra <strong>dentro del rango normal de 1 desvío estándar</strong>, lo que indica que es severa pero no excepcional para el perfil de este activo. La volatilidad extrema en MELI no es una anomalía: <strong>es el precio de participar en uno de los mejores negocios de América Latina</strong>. La historia no garantiza el futuro, pero sí enseña a no confundir precio con valor.
+    </p>
+  </div>
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    ⚠️ Este análisis es de carácter educativo e informativo. No constituye una recomendación de compra, venta o mantenimiento de ningún activo financiero. Toda decisión de inversión debe considerar el perfil de riesgo individual y ser consultada con un asesor habilitado.
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <strong>Hugo Tanos · Asesor de Inversiones · MDA Investing</strong><br>
+    Datos: visión semanal · Período: agosto 2007 – mayo 2026 · Fuente: elaboración propia
+  </div>
+
+</div>
+</body>
+</html>

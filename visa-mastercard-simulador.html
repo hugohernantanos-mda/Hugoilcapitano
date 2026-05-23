@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Visa vs Mastercard – Simulador de Inversión</title>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: #070B14; }
+input:focus { outline: none; border-color: #A78BFA !important; }
+button:active { transform: scale(0.97); }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #070B14; }
+::-webkit-scrollbar-thumb { background: #1A2540; border-radius: 2px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+const { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } = Recharts;
+
+const PRICES = {
+  V: {
+    2008:11, 2009:15.5, 2010:20.5, 2011:23.5, 2012:38, 2013:53.75,
+    2014:65.25, 2015:78, 2016:79, 2017:114, 2018:134, 2019:189,
+    2020:218, 2021:218, 2022:209, 2023:261, 2024:320, 2025:355,
+  },
+  MA: {
+    2006:4.5, 2007:18, 2008:14, 2009:21.5, 2010:31, 2011:35,
+    2012:52, 2013:83, 2014:88, 2015:93, 2016:103, 2017:152,
+    2018:184, 2019:295, 2020:350, 2021:365, 2022:348, 2023:430,
+    2024:540, 2025:570,
+  },
+};
+
+const CLR = {
+  V:'#4F8EF7', MA:'#F56565', gold:'#F6AD55', purple:'#A78BFA',
+  bg:'#070B14', card:'#0C1322', border:'#1A2540', text:'#E2E8F0',
+  muted:'#4A5568', green:'#68D391',
+};
+
+const HORIZONS = [
+  { v:5,  label:'5 años',  start:2021 },
+  { v:10, label:'10 años', start:2016 },
+  { v:15, label:'15 años', start:2011 },
+  { v:20, label:'20 años', start:2006 },
+];
+const PRESETS = [500, 1000, 5000, 10000];
+
+function quarterly(prices, startYear) {
+  const yrs = Object.keys(prices).map(Number).sort().filter(y => y >= startYear && y <= 2025);
+  if (yrs.length < 2) return [];
+  const pts = [];
+  for (let i = 0; i < yrs.length - 1; i++) {
+    const [y1, y2, p1, p2] = [yrs[i], yrs[i+1], prices[yrs[i]], prices[yrs[i+1]]];
+    for (let q = 0; q < 4; q++)
+      pts.push({ t: +(y1 + q*0.25).toFixed(2), p: p1 + (p2-p1)*(q/4) });
+  }
+  pts.push({ t: yrs[yrs.length-1], p: prices[yrs[yrs.length-1]] });
+  return pts;
+}
+
+const fmt = n =>
+  n >= 1e6 ? `$${(n/1e6).toFixed(2)}M` :
+  n >= 1000 ? `$${(n/1000).toFixed(1)}K` :
+  `$${Math.round(n)}`;
+
+const fmtTick = t => {
+  const q = Math.round((t % 1) * 4);
+  return q === 0 ? String(Math.floor(t)) : '';
+};
+
+function ChartTooltip({ active, payload }) {
+  if (!active || !payload?.length) return null;
+  const t = payload[0]?.payload?.t ?? 0;
+  const yr = Math.floor(t);
+  const q  = Math.round((t % 1) * 4);
+  const label = q === 0 ? `${yr}` : `${yr} Q${q}`;
+  return (
+    <div style={{ background: CLR.card, border:`1px solid ${CLR.border}`, borderRadius:8, padding:'8px 12px', fontSize:11, fontFamily:'inherit' }}>
+      <div style={{ color: CLR.muted, marginBottom:4 }}>{label}</div>
+      {payload.map(p => p.value !== undefined && (
+        <div key={p.dataKey} style={{ color: CLR[p.dataKey], fontWeight:700 }}>
+          {p.dataKey === 'V' ? 'Visa' : 'Mastercard'}: {fmt(p.value)}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function Label({ children }) {
+  return (
+    <div style={{ color:'#4A5568', fontSize:9, letterSpacing:'0.15em', textTransform:'uppercase', marginBottom:8 }}>
+      {children}
+    </div>
+  );
+}
+
+function Stat({ label, val }) {
+  return (
+    <div style={{ display:'flex', justifyContent:'space-between', fontSize:10, marginTop:4 }}>
+      <span style={{ color:'#4A5568' }}>{label}</span>
+      <span style={{ color:'#E2E8F0' }}>{val}</span>
+    </div>
+  );
+}
+
+function App() {
+  const [sel,      setSel]      = useState(['V','MA']);
+  const [amt,      setAmt]      = useState(1000);
+  const [inputAmt, setInputAmt] = useState('1000');
+  const [hz,       setHz]       = useState(10);
+  const [step,     setStep]     = useState(Infinity);
+  const [playing,  setPlaying]  = useState(false);
+  const [cursorT,  setCursorT]  = useState(null);
+  const timer = useRef(null);
+
+  const startYear = HORIZONS.find(h => h.v === hz).start;
+
+  const allData = (() => {
+    if (!sel.length) return [];
+    const hasMA = sel.includes('MA');
+    const hasV  = sel.includes('V');
+    const maS   = startYear;
+    const vS    = Math.max(startYear, 2008);
+    const primary = hasMA ? quarterly(PRICES.MA, maS) : quarterly(PRICES.V, vS);
+    const vPts    = hasV  ? quarterly(PRICES.V,  vS)  : null;
+    return primary.map(mp => {
+      const row = { t: mp.t };
+      if (hasMA) row.MA = Math.round(amt * mp.p / PRICES.MA[maS]);
+      if (hasV && vPts) {
+        const vp = vPts.find(v => Math.abs(v.t - mp.t) < 0.01);
+        if (vp && mp.t >= vS) row.V = Math.round(amt * vp.p / PRICES.V[vS]);
+      }
+      return row;
+    });
+  })();
+
+  const visible = allData.slice(0, step === Infinity ? allData.length : step + 1);
+
+  const play = () => {
+    clearInterval(timer.current);
+    setStep(0); setPlaying(true); setCursorT(allData[0]?.t ?? null);
+    let s = 0;
+    timer.current = setInterval(() => {
+      s++;
+      if (s >= allData.length - 1) {
+        setStep(allData.length - 1);
+        setCursorT(allData[allData.length - 1]?.t ?? null);
+        setTimeout(() => { setStep(Infinity); setPlaying(false); setCursorT(null); }, 600);
+        clearInterval(timer.current);
+      } else {
+        setStep(s);
+        setCursorT(allData[s]?.t ?? null);
+      }
+    }, 200);
+  };
+
+  useEffect(() => () => clearInterval(timer.current), []);
+  useEffect(() => {
+    clearInterval(timer.current); setPlaying(false); setStep(Infinity); setCursorT(null);
+  }, [sel, amt, hz]);
+
+  const stats = (company) => {
+    const cs = company === 'V' ? Math.max(startYear, 2008) : startYear;
+    const sp = PRICES[company][cs], ep = PRICES[company][2025];
+    if (!sp || !ep) return null;
+    const yrs = 2025 - cs;
+    const fv  = amt * ep / sp;
+    return { final: fv, ret: (fv/amt - 1)*100, cagr: (Math.pow(ep/sp, 1/yrs)-1)*100, yrs, cs };
+  };
+
+  const toggle = (c) => {
+    if (sel.includes(c)) { if (sel.length > 1) setSel(sel.filter(x => x !== c)); }
+    else setSel([...sel, c]);
+  };
+
+  const allVals = allData.flatMap(d => sel.map(c => d[c]).filter(Boolean));
+  const yMax = allVals.length ? Math.ceil(Math.max(...allVals) * 1.08 / 1000) * 1000 : amt * 2;
+  const allTs = allData.map(d => d.t);
+  const xMin = allTs[0] ?? startYear;
+  const xMax = allTs[allTs.length - 1] ?? 2025;
+
+  return (
+    <div style={{ minHeight:'100vh', background:CLR.bg, fontFamily:'"Space Mono",monospace', color:CLR.text, padding:'20px 16px 28px' }}>
+
+      {/* Encabezado */}
+      <div style={{ textAlign:'center', marginBottom:22 }}>
+        <div style={{ fontSize:9, letterSpacing:'0.2em', color:CLR.muted, marginBottom:6, textTransform:'uppercase' }}>
+          Simulador de inversión
+        </div>
+        <h1 style={{ fontFamily:'"Syne",sans-serif', fontSize:24, fontWeight:800, letterSpacing:'-0.5px', lineHeight:1.1 }}>
+          <span style={{ color:CLR.V }}>VISA</span>
+          <span style={{ color:CLR.muted, fontWeight:400, fontSize:18 }}> vs </span>
+          <span style={{ color:CLR.MA }}>MASTERCARD</span>
+        </h1>
+        <p style={{ color:CLR.muted, fontSize:10, marginTop:5 }}>¿Cuánto valdrían tus dólares invertidos hoy?</p>
+      </div>
+
+      {/* Controles */}
+      <div style={{ background:CLR.card, border:`1px solid ${CLR.border}`, borderRadius:14, padding:'16px', marginBottom:14 }}>
+        <div style={{ marginBottom:14 }}>
+          <Label>Empresa</Label>
+          <div style={{ display:'flex', gap:8 }}>
+            {['V','MA'].map(c => (
+              <button key={c} onClick={() => toggle(c)} style={{
+                flex:1, padding:'9px 0', borderRadius:8,
+                border:`1.5px solid ${sel.includes(c) ? CLR[c] : CLR.border}`,
+                background: sel.includes(c) ? `${CLR[c]}1a` : 'transparent',
+                color: sel.includes(c) ? CLR[c] : CLR.muted,
+                cursor:'pointer', fontSize:12, fontFamily:'inherit', fontWeight:700,
+                transition:'all .15s', letterSpacing:'0.03em',
+              }}>
+                {c === 'V' ? '🔵 Visa (V)' : '🔴 Mastercard (MA)'}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginBottom:14 }}>
+          <Label>Inversión inicial (USD)</Label>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:6, marginBottom:8 }}>
+            {PRESETS.map(p => (
+              <button key={p} onClick={() => { setAmt(p); setInputAmt(String(p)); }} style={{
+                padding:'7px 0', borderRadius:6,
+                border:`1px solid ${amt===p ? CLR.gold : CLR.border}`,
+                background: amt===p ? `${CLR.gold}15` : 'transparent',
+                color: amt===p ? CLR.gold : CLR.muted,
+                cursor:'pointer', fontSize:11, fontFamily:'inherit', transition:'all .15s',
+              }}>
+                {p >= 1000 ? `$${p/1000}K` : `$${p}`}
+              </button>
+            ))}
+          </div>
+          <div style={{ display:'flex', alignItems:'center', gap:8 }}>
+            <span style={{ color:CLR.muted, fontSize:12 }}>$</span>
+            <input
+              value={inputAmt}
+              onChange={e => { setInputAmt(e.target.value); const n=parseFloat(e.target.value); if(!isNaN(n) && n>0) setAmt(n); }}
+              style={{
+                flex:1, background:'#0a1120', border:`1px solid ${CLR.border}`, borderRadius:6,
+                padding:'7px 10px', color:CLR.text, fontSize:12, fontFamily:'inherit',
+              }}
+            />
+          </div>
+        </div>
+
+        <div>
+          <Label>Horizonte temporal</Label>
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr 1fr', gap:6 }}>
+            {HORIZONS.map(h => {
+              const disabled = h.v === 20 && sel.length === 1 && sel[0] === 'V';
+              return (
+                <button key={h.v} disabled={disabled} onClick={() => setHz(h.v)} style={{
+                  padding:'8px 0', borderRadius:6,
+                  border:`1px solid ${hz===h.v ? CLR.purple : CLR.border}`,
+                  background: hz===h.v ? `${CLR.purple}18` : 'transparent',
+                  color: disabled ? '#1e2d45' : hz===h.v ? CLR.purple : CLR.muted,
+                  cursor: disabled ? 'not-allowed' : 'pointer',
+                  fontSize:11, fontFamily:'inherit', transition:'all .15s',
+                }}>
+                  {h.label}
+                </button>
+              );
+            })}
+          </div>
+          {hz === 20 && sel.includes('V') && (
+            <div style={{ fontSize:9, color:CLR.muted, marginTop:6, lineHeight:1.5 }}>
+              * Visa hizo su IPO en marzo 2008. Su línea comienza ese año.
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Stats */}
+      <div style={{ display:'grid', gridTemplateColumns: sel.length===2 ? '1fr 1fr' : '1fr', gap:10, marginBottom:14 }}>
+        {sel.map(c => {
+          const s = stats(c);
+          if (!s) return null;
+          const lastPt = visible[visible.length-1];
+          const currentVal = lastPt?.[c] ?? null;
+          const displayVal = currentVal ?? s.final;
+          const displayRet = ((displayVal/amt)-1)*100;
+          return (
+            <div key={c} style={{
+              background: CLR.card,
+              border:`1px solid ${CLR[c]}35`,
+              borderTop:`2px solid ${CLR[c]}`,
+              borderRadius:12, padding:'14px',
+            }}>
+              <div style={{ color:CLR[c], fontSize:10, fontWeight:700, marginBottom:10, letterSpacing:'0.05em' }}>
+                {c === 'V' ? '— VISA' : '— MASTERCARD'}
+              </div>
+              <div style={{ fontSize:22, fontWeight:700, letterSpacing:'-0.5px', marginBottom:2 }}>
+                {fmt(displayVal)}
+              </div>
+              <div style={{ color: displayRet >= 0 ? CLR.green : '#FC8181', fontSize:11, marginBottom:10 }}>
+                {displayRet >= 0 ? '+' : ''}{displayRet.toFixed(0)}%
+              </div>
+              <Stat label="CAGR" val={`${s.cagr.toFixed(1)}%`} />
+              <Stat label="AÑOS" val={`${s.yrs}`} />
+              <Stat label="INICIO" val={`${s.cs}`} />
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Gráfico */}
+      <div style={{ background:CLR.card, border:`1px solid ${CLR.border}`, borderRadius:14, padding:'16px 8px 10px 0', marginBottom:14, position:'relative' }}>
+        <ResponsiveContainer width="100%" height={280}>
+          <AreaChart data={visible} margin={{ top:8, right:12, left:0, bottom:0 }}>
+            <defs>
+              {sel.map(c => (
+                <linearGradient key={c} id={`g_${c}`} x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%"  stopColor={CLR[c]} stopOpacity={0.35} />
+                  <stop offset="90%" stopColor={CLR[c]} stopOpacity={0.02} />
+                </linearGradient>
+              ))}
+            </defs>
+            <CartesianGrid strokeDasharray="3 3" stroke="#111b2e" vertical={false} />
+            <XAxis
+              dataKey="t" tickFormatter={fmtTick} interval="preserveStartEnd"
+              domain={[xMin, xMax]}
+              tick={{ fill:CLR.muted, fontSize:9, fontFamily:'Space Mono' }}
+              axisLine={false} tickLine={false} type="number"
+            />
+            <YAxis
+              domain={[0, yMax]}
+              tickFormatter={v => v >= 1000 ? `${(v/1000).toFixed(0)}K` : `${v}`}
+              tick={{ fill:CLR.muted, fontSize:9, fontFamily:'Space Mono' }}
+              axisLine={false} tickLine={false} width={42}
+            />
+            <Tooltip content={cursorT === null ? <ChartTooltip /> : <span/>} />
+            <ReferenceLine y={amt} stroke={CLR.gold} strokeDasharray="5 4" strokeOpacity={0.45}
+              label={{ value:'Inversión', fill:CLR.gold, fontSize:9, position:'insideTopRight' }} />
+            {cursorT !== null && (
+              <ReferenceLine x={cursorT} stroke="#ffffff" strokeWidth={1.5} strokeOpacity={0.5} />
+            )}
+            {sel.map(c => (
+              <Area
+                key={c} type="monotone" dataKey={c}
+                stroke={CLR[c]} strokeWidth={2.5}
+                fill={`url(#g_${c})`} dot={false}
+                isAnimationActive={false} connectNulls={false}
+              />
+            ))}
+          </AreaChart>
+        </ResponsiveContainer>
+
+        {cursorT !== null && (() => {
+          const curPt = visible[visible.length - 1];
+          const yr    = Math.floor(cursorT);
+          const q     = Math.round((cursorT % 1) * 4);
+          const label = q === 0 ? `${yr}` : `${yr} Q${q}`;
+          const pct   = (cursorT - xMin) / (xMax - xMin);
+          const LEFT_PX = 42;
+          const onRight = pct > 0.5;
+          return (
+            <div style={{
+              position:'absolute', top:22,
+              left: onRight
+                ? `calc(${LEFT_PX}px + (100% - ${LEFT_PX}px) * ${(pct - 0.02).toFixed(3)} - 148px)`
+                : `calc(${LEFT_PX}px + (100% - ${LEFT_PX}px) * ${(pct + 0.02).toFixed(3)})`,
+              background:'rgba(10,18,34,0.92)',
+              border:`1px solid #1A2540`,
+              borderRadius:8, padding:'8px 12px', fontSize:11,
+              fontFamily:'"Space Mono",monospace', pointerEvents:'none', zIndex:10, minWidth:140,
+            }}>
+              <div style={{ color:CLR.muted, marginBottom:6, fontSize:10 }}>{label}</div>
+              {sel.map(c => curPt?.[c] !== undefined && (
+                <div key={c} style={{ color:CLR[c], fontWeight:700, marginBottom:2 }}>
+                  {c === 'V' ? 'Visa' : 'Mastercard'}: {fmt(curPt[c])}
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+
+        <div style={{ display:'flex', justifyContent:'center', gap:16, paddingTop:8, paddingLeft:8 }}>
+          {sel.map(c => (
+            <div key={c} style={{ display:'flex', alignItems:'center', gap:6, fontSize:10, color:CLR[c] }}>
+              <div style={{ width:22, height:2.5, background:CLR[c], borderRadius:2 }} />
+              {c === 'V' ? 'Visa (V)' : 'Mastercard (MA)'}
+            </div>
+          ))}
+          <div style={{ display:'flex', alignItems:'center', gap:6, fontSize:10, color:CLR.gold }}>
+            <div style={{ width:22, height:0, borderTop:`2px dashed ${CLR.gold}`, opacity:0.6 }} />
+            Capital inicial
+          </div>
+        </div>
+      </div>
+
+      {/* Botón animación */}
+      <button onClick={play} disabled={playing} style={{
+        width:'100%', padding:'13px',
+        borderRadius:10, border:`1px solid ${playing ? CLR.border : CLR.purple}`,
+        background: playing ? 'transparent' : `${CLR.purple}18`,
+        color: playing ? CLR.muted : CLR.purple,
+        cursor: playing ? 'not-allowed' : 'pointer',
+        fontSize:12, fontFamily:'inherit', fontWeight:700,
+        letterSpacing:'0.08em', transition:'all .2s',
+      }}>
+        {playing ? '⏳  ANIMANDO...' : step === Infinity ? '▶  REPRODUCIR EVOLUCIÓN' : '↺  REPRODUCIR DE NUEVO'}
+      </button>
+
+      <div style={{ marginTop:16, fontSize:9, color:'#1e2d45', textAlign:'center', lineHeight:1.7 }}>
+        Precios históricos ajustados por splits. Datos aproximados con fines educativos.
+        No constituye asesoramiento de inversión.
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>

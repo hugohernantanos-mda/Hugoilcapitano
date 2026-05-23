@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVIDIA — Estado de Resultados Q1 FY2027</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --nv: #76b900;
+    --nv-dim: #4a7500;
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #efefec;
+    --text: #1a1a18;
+    --text2: #5f5e5a;
+    --text3: #9c9a92;
+    --border: rgba(0,0,0,.1);
+    --border2: rgba(0,0,0,.06);
+    --nv-bg: rgba(118,185,0,.08);
+    --nv-bg2: rgba(118,185,0,.14);
+    --nv-border: rgba(118,185,0,.35);
+    --red-bg: rgba(226,75,74,.10);
+    --radius: 8px;
+    --shadow: 0 2px 16px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252523;
+      --bg3: #2e2e2b;
+      --text: #e8e6dc;
+      --text2: #9c9a92;
+      --text3: #6b6964;
+      --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.05);
+      --nv-bg: rgba(118,185,0,.10);
+      --nv-bg2: rgba(118,185,0,.18);
+      --nv-border: rgba(118,185,0,.40);
+      --red-bg: rgba(226,75,74,.12);
+      --nv-dim: #8fd400;
+      --shadow: 0 2px 20px rgba(0,0,0,.3);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg3);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .page-header {
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .nv-logo {
+    width: 44px;
+    height: 44px;
+    background: var(--nv);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .nv-logo svg { width: 26px; height: 26px; }
+
+  .page-title h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .page-title p {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 680px;
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+  }
+
+  .card-header {
+    display: grid;
+    grid-template-columns: 1fr 116px 116px;
+    gap: 4px;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .card-header span {
+    font-size: 11px;
+    color: var(--text2);
+    text-align: right;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .card-header span:first-child { text-align: left; }
+
+  .rows-wrap { padding: 6px 0 10px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 116px 116px;
+    gap: 4px;
+    padding: 6px 18px;
+    border-radius: 6px;
+    margin: 0 6px;
+    transition: background .15s;
+    position: relative;
+  }
+
+  .row.indent { padding-left: 32px; }
+
+  .row .label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .row .val {
+    text-align: right;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+
+  .row .val.neg { color: var(--text2); }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--nv);
+    opacity: 0;
+    flex-shrink: 0;
+    transition: opacity .2s;
+  }
+
+  .row.subtotal {
+    border-top: 0.5px solid var(--border);
+    margin-top: 4px;
+    padding-top: 8px;
+  }
+
+  .row.total {
+    font-weight: 500;
+  }
+
+  .row.grand-total {
+    border-top: 1.5px solid var(--border);
+    margin-top: 6px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .row.grand-total .val { color: var(--nv); font-weight: 600; }
+
+  .row.clickable { cursor: pointer; }
+  .row.clickable:hover { background: var(--bg2); }
+
+  .row.active {
+    background: var(--nv-bg2) !important;
+  }
+
+  .row.active .dot { opacity: 1; }
+
+  .row.highlighted {
+    background: var(--nv-bg);
+  }
+
+  .row.highlighted .label,
+  .row.highlighted .val { color: var(--nv-dim) !important; }
+
+  .section-label {
+    padding: 10px 18px 3px;
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    font-weight: 600;
+  }
+
+  .separator { height: 1px; background: var(--border2); margin: 4px 12px 4px; }
+
+  .formula-box {
+    margin: 2px 8px 8px;
+    border: 1px solid var(--nv-border);
+    border-radius: var(--radius);
+    background: var(--nv-bg);
+    padding: 12px 16px;
+    display: none;
+    animation: fadeIn .2s ease;
+  }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+  .formula-box.show { display: block; }
+
+  .formula-title {
+    font-size: 11px;
+    color: var(--text2);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .formula-eq {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .term {
+    background: rgba(118,185,0,.15);
+    color: var(--text);
+    border-radius: 5px;
+    padding: 4px 9px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .term.neg {
+    background: var(--red-bg);
+    color: var(--text);
+  }
+
+  .op {
+    color: var(--text2);
+    font-size: 15px;
+    font-weight: 400;
+  }
+
+  .result {
+    background: var(--nv);
+    color: #fff;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .hint-bar {
+    width: 100%;
+    max-width: 680px;
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .hint-bar svg { width: 14px; height: 14px; }
+
+  .footer {
+    width: 100%;
+    max-width: 680px;
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .footer strong { color: var(--nv); }
+
+  @media (max-width: 480px) {
+    body { padding: 12px 8px 32px; }
+    .card-header, .row {
+      grid-template-columns: 1fr 90px 90px;
+    }
+    .row.indent { padding-left: 22px; }
+    .row .label, .row .val, .card-header span { font-size: 12px; }
+    .page-title h1 { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="nv-logo">
+    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M13.5 9v18L27 18 13.5 9Z" fill="white"/>
+      <path d="M9 12v12l4.5-3V15L9 12Z" fill="white" opacity=".6"/>
+    </svg>
+  </div>
+  <div class="page-title">
+    <h1>NVIDIA Corporation</h1>
+    <p>Estados Consolidados de Resultados · Tres meses finalizados · En millones USD (no auditado)</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span>Línea</span>
+    <span>Q1 FY2027<br>26 abr 2026</span>
+    <span>Q1 FY2026<br>27 abr 2025</span>
+  </div>
+
+  <div class="rows-wrap">
+
+    <div class="row" data-id="rev">
+      <div class="label"><div class="dot"></div>Ingresos</div>
+      <div class="val">$ 81,615</div>
+      <div class="val">$ 44,062</div>
+    </div>
+
+    <div class="row indent" data-id="cogs">
+      <div class="label"><div class="dot"></div>Costo de ingresos</div>
+      <div class="val neg">(20,458)</div>
+      <div class="val neg">(17,394)</div>
+    </div>
+
+    <div class="row subtotal total clickable" data-id="gp" data-formula="gp">
+      <div class="label"><div class="dot"></div><strong>Utilidad bruta</strong></div>
+      <div class="val"><strong>61,157</strong></div>
+      <div class="val"><strong>26,668</strong></div>
+    </div>
+    <div id="formula-gp" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula la utilidad bruta?</div>
+      <div class="formula-eq">
+        <span class="term">Ingresos $81,615</span>
+        <span class="op">−</span>
+        <span class="term neg">Costo $20,458</span>
+        <span class="op">=</span>
+        <span class="result">Utilidad bruta $61,157</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+    <div class="section-label">Gastos operativos</div>
+
+    <div class="row indent" data-id="rd">
+      <div class="label"><div class="dot"></div>Investigación y desarrollo (I+D)</div>
+      <div class="val neg">(6,321)</div>
+      <div class="val neg">(3,989)</div>
+    </div>
+
+    <div class="row indent" data-id="sga">
+      <div class="label"><div class="dot"></div>Ventas, generales y administrativos (SG&A)</div>
+      <div class="val neg">(1,300)</div>
+      <div class="val neg">(1,041)</div>
+    </div>
+
+    <div class="row subtotal total clickable" data-id="opex" data-formula="opex">
+      <div class="label"><div class="dot"></div><strong>Total gastos operativos</strong></div>
+      <div class="val neg"><strong>(7,621)</strong></div>
+      <div class="val neg"><strong>(5,030)</strong></div>
+    </div>
+    <div id="formula-opex" class="formula-box">
+      <div class="formula-title">¿Cómo se calculan los gastos operativos totales?</div>
+      <div class="formula-eq">
+        <span class="term neg">I+D $6,321</span>
+        <span class="op">+</span>
+        <span class="term neg">SG&A $1,300</span>
+        <span class="op">=</span>
+        <span class="result">Total gastos op. $7,621</span>
+      </div>
+    </div>
+
+    <div class="row total clickable" data-id="ebit" data-formula="ebit" style="margin-top:4px;">
+      <div class="label"><div class="dot"></div><strong>Utilidad operativa</strong></div>
+      <div class="val"><strong>53,536</strong></div>
+      <div class="val"><strong>21,638</strong></div>
+    </div>
+    <div id="formula-ebit" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula la utilidad operativa?</div>
+      <div class="formula-eq">
+        <span class="term">Util. bruta $61,157</span>
+        <span class="op">−</span>
+        <span class="term neg">Gastos op. $7,621</span>
+        <span class="op">=</span>
+        <span class="result">Utilidad operativa $53,536</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+    <div class="section-label">Otros ingresos (gastos)</div>
+
+    <div class="row indent" data-id="int-in">
+      <div class="label"><div class="dot"></div>Ingresos por intereses</div>
+      <div class="val">540</div>
+      <div class="val">515</div>
+    </div>
+
+    <div class="row indent" data-id="int-out">
+      <div class="label"><div class="dot"></div>Gastos por intereses</div>
+      <div class="val neg">(102)</div>
+      <div class="val neg">(63)</div>
+    </div>
+
+    <div class="row indent" data-id="other">
+      <div class="label"><div class="dot"></div>Otros ingresos (gastos), neto</div>
+      <div class="val">15,990</div>
+      <div class="val neg">(180)</div>
+    </div>
+
+    <div class="row subtotal total clickable" data-id="other-total" data-formula="othertotal">
+      <div class="label"><div class="dot"></div><strong>Total otros ingresos, neto</strong></div>
+      <div class="val"><strong>16,367</strong></div>
+      <div class="val"><strong>272</strong></div>
+    </div>
+    <div id="formula-othertotal" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula el total de otros ingresos?</div>
+      <div class="formula-eq">
+        <span class="term">Int. cobrados $540</span>
+        <span class="op">−</span>
+        <span class="term neg">Int. pagados $102</span>
+        <span class="op">+</span>
+        <span class="term">Otros $15,990</span>
+        <span class="op">=</span>
+        <span class="result">Total otros $16,367</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+
+    <div class="row total clickable" data-id="ebt" data-formula="ebt" style="margin-top:4px;">
+      <div class="label"><div class="dot"></div><strong>Utilidad antes de impuestos</strong></div>
+      <div class="val"><strong>69,903</strong></div>
+      <div class="val"><strong>21,910</strong></div>
+    </div>
+    <div id="formula-ebt" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula la utilidad antes de impuestos?</div>
+      <div class="formula-eq">
+        <span class="term">Util. operativa $53,536</span>
+        <span class="op">+</span>
+        <span class="term">Otros ing. $16,367</span>
+        <span class="op">=</span>
+        <span class="result">Util. antes imp. $69,903</span>
+      </div>
+    </div>
+
+    <div class="row indent" data-id="tax">
+      <div class="label"><div class="dot"></div>Gasto por impuesto sobre la renta</div>
+      <div class="val neg">(11,582)</div>
+      <div class="val neg">(3,135)</div>
+    </div>
+
+    <div class="row grand-total total clickable" data-id="ni" data-formula="ni">
+      <div class="label"><div class="dot"></div><strong>UTILIDAD NETA</strong></div>
+      <div class="val"><strong>$ 58,321</strong></div>
+      <div class="val"><strong>$ 18,775</strong></div>
+    </div>
+    <div id="formula-ni" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula la utilidad neta?</div>
+      <div class="formula-eq">
+        <span class="term">Util. antes imp. $69,903</span>
+        <span class="op">−</span>
+        <span class="term neg">Impuesto $11,582</span>
+        <span class="op">=</span>
+        <span class="result">Utilidad neta $58,321 (+210% vs año ant.)</span>
+      </div>
+    </div>
+
+    <div class="separator" style="margin-top:10px;"></div>
+
+    <div class="section-label">Utilidad neta por acción</div>
+
+    <div class="row indent">
+      <div class="label">Básica</div>
+      <div class="val">$ 2.40</div>
+      <div class="val">$ 0.77</div>
+    </div>
+
+    <div class="row indent">
+      <div class="label">Diluida</div>
+      <div class="val">$ 2.39</div>
+      <div class="val">$ 0.76</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="hint-bar">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+  </svg>
+  Tocá las filas en negrita para ver cómo se calcula cada resultado
+</div>
+
+<div class="footer">
+  Fuente: Reporte trimestral NVIDIA Corporation, Q1 FY2027 (26 de abril de 2026). No auditado.<br>
+  Elaborado por <strong>MDA Investing</strong> · Hugo Tanos Investment Advisor · Con fines educativos.
+</div>
+
+<script>
+const formulas = {
+  gp:         { rows: ['rev', 'cogs'] },
+  opex:       { rows: ['rd', 'sga'] },
+  ebit:       { rows: ['rev', 'cogs', 'rd', 'sga', 'opex'] },
+  othertotal: { rows: ['int-in', 'int-out', 'other'] },
+  ebt:        { rows: ['ebit', 'int-in', 'int-out', 'other', 'other-total'] },
+  ni:         { rows: ['ebit', 'int-in', 'int-out', 'other', 'other-total', 'ebt', 'tax'] }
+};
+
+let active = null;
+
+function clearAll() {
+  document.querySelectorAll('.row').forEach(r => r.classList.remove('active', 'highlighted'));
+  document.querySelectorAll('.formula-box').forEach(b => b.classList.remove('show'));
+}
+
+document.querySelectorAll('.row.clickable').forEach(row => {
+  row.addEventListener('click', function() {
+    const fid = this.dataset.formula;
+    if (!fid) return;
+    if (active === fid) { clearAll(); active = null; return; }
+    clearAll();
+    active = fid;
+    this.classList.add('active');
+    formulas[fid].rows.forEach(rid => {
+      const r = document.querySelector(`[data-id="${rid}"]`);
+      if (r) r.classList.add('highlighted');
+    });
+    const box = document.getElementById('formula-' + fid);
+    if (box) box.classList.add('show');
+  });
+});
+</script>
+
+</body>
+</html>

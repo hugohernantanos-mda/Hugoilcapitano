@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cashflow Strategy — MDA Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0f0f;
+  --bg2:#161616;
+  --bg3:#1e1e1e;
+  --border:rgba(255,255,255,.08);
+  --border2:rgba(255,255,255,.13);
+  --t1:#f0f0f0;
+  --t2:#999;
+  --t3:#555;
+  --mono:'IBM Plex Mono',monospace;
+  --sans:'IBM Plex Sans',sans-serif;
+  --green-bg:#0d2e1a;
+  --green-fg:#4ade80;
+  --green-bar:#1D9E75;
+  --blue-bg:#0d1e38;
+  --blue-fg:#60a5fa;
+  --blue-bar:#378ADD;
+  --amber-bg:#2a1800;
+  --amber-fg:#fbbf24;
+  --amber-bar:#BA7517;
+}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.5;min-height:100vh;padding:0}
+.page{max-width:860px;margin:0 auto;padding:32px 24px 48px}
+
+/* Header */
+.site-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;padding-bottom:18px;border-bottom:1px solid var(--border)}
+.site-title{font-family:var(--mono);font-size:13px;font-weight:500;letter-spacing:.12em;color:var(--t2);text-transform:uppercase}
+.site-date{font-family:var(--mono);font-size:11px;color:var(--t3)}
+
+/* Profile section */
+.profile{margin-bottom:44px}
+.profile-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;flex-wrap:wrap}
+.profile-badge{font-family:var(--mono);font-size:11px;font-weight:500;padding:4px 14px;border-radius:20px;letter-spacing:.08em}
+.profile-desc{font-size:12px;color:var(--t2)}
+.profile-bar{height:2px;border:none;margin-bottom:0}
+
+/* Table */
+table{width:100%;border-collapse:collapse;margin-top:0}
+thead tr{border-bottom:1px solid var(--border2)}
+th{font-family:var(--mono);font-size:10px;font-weight:500;color:var(--t3);letter-spacing:.07em;text-transform:uppercase;padding:10px 10px 10px;text-align:left}
+th.r{text-align:right}
+th.c{text-align:center}
+tbody tr{border-bottom:1px solid var(--border)}
+tbody tr:last-child{border-bottom:none}
+td{padding:13px 10px;vertical-align:top}
+
+.td-ticker .tk{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--t1)}
+.td-ticker .pr{font-family:var(--mono);font-size:11px;color:var(--t3);margin-top:2px}
+.td-empresa .nm{font-size:13px;font-weight:500;color:var(--t1)}
+.td-empresa .sc{font-size:11px;color:var(--t2);margin-top:2px}
+.td-yield{font-family:var(--mono);font-size:13px;font-weight:500;color:var(--t1);text-align:center}
+.td-why{font-size:12px;color:var(--t2);line-height:1.6}
+.td-val{text-align:right;vertical-align:middle;padding-top:15px}
+
+/* Badges */
+.badge{display:inline-block;font-family:var(--mono);font-size:10px;font-weight:500;padding:3px 10px;border-radius:20px;letter-spacing:.05em;white-space:nowrap}
+.badge-green{background:var(--green-bg);color:var(--green-fg)}
+.badge-blue{background:var(--blue-bg);color:var(--blue-fg)}
+.badge-plain{font-family:var(--mono);font-size:11px;color:var(--t3)}
+
+/* Tip box */
+.tip{display:flex;align-items:flex-start;gap:10px;margin-top:14px;background:var(--bg3);border-radius:8px;padding:12px 16px}
+.tip-icon{font-size:14px;color:var(--amber-fg);flex-shrink:0;margin-top:1px}
+.tip-text{font-size:12px;color:var(--t2);line-height:1.65}
+.tip-text strong{color:var(--t1);font-weight:500}
+
+/* Footer */
+.footer{margin-top:12px;padding-top:20px;border-top:1px solid var(--border);font-family:var(--mono);font-size:10px;color:var(--t3);display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.footer-brand{color:var(--t2);font-weight:500;letter-spacing:.08em}
+
+/* Divider between col groups */
+.sep{width:1px;background:var(--border)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="site-header">
+    <span class="site-title">MDA Investing — Cashflow Strategy</span>
+    <span class="site-date">22 / 05 / 2026</span>
+  </div>
+
+  <!-- ───────────────── CONSERVADOR ───────────────── -->
+  <div class="profile">
+    <div class="profile-head">
+      <span class="profile-badge badge badge-green">CONSERVADOR</span>
+      <span class="profile-desc">Dividendos &gt;2.5% · Dividend Kings / Aristocrats · Flujo predecible · Baja volatilidad</span>
+    </div>
+    <hr class="profile-bar" style="background:var(--green-bar);margin-bottom:0">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:72px">Ticker</th>
+          <th style="width:160px">Empresa</th>
+          <th class="c" style="width:80px">Yield / PE</th>
+          <th>Por qué ahora</th>
+          <th class="r" style="width:110px">Valuación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-ticker"><div class="tk">ABBV</div><div class="pr">~$206</div></td>
+          <td class="td-empresa"><div class="nm">AbbVie</div><div class="sc">Farma</div></td>
+          <td class="td-yield">3.35%</td>
+          <td class="td-why">Skyrizi y Rinvoq compensan la expiración de Humira. Dividend King con FCF robusto.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">JNJ</div><div class="pr">~$152</div></td>
+          <td class="td-empresa"><div class="nm">Johnson &amp; Johnson</div><div class="sc">Salud</div></td>
+          <td class="td-yield">3.1%</td>
+          <td class="td-why">62 años consecutivos de aumento del dividendo. Spin-off Kenvue dejó balance más limpio.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">KMB</div><div class="pr">~$133</div></td>
+          <td class="td-empresa"><div class="nm">Kimberly-Clark</div><div class="sc">Consumo básico</div></td>
+          <td class="td-yield">3.5%</td>
+          <td class="td-why">Consumo inelástico puro. Dividend King ultra defensivo ante cualquier ciclo económico.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">UL</div><div class="pr">~$58</div></td>
+          <td class="td-empresa"><div class="nm">Unilever</div><div class="sc">Consumo global</div></td>
+          <td class="td-yield">3.5%</td>
+          <td class="td-why">CEO nuevo con plan de reestructuración. Cotizando bajo su media histórica. ADR líquido.</td>
+          <td class="td-val"><span class="badge badge-green">MUY ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">SYY</div><div class="pr">~$79</div></td>
+          <td class="td-empresa"><div class="nm">Sysco</div><div class="sc">Distribución alimentos</div></td>
+          <td class="td-yield">2.8%</td>
+          <td class="td-why">Revenue recurrente por naturaleza. Dividend Aristocrat. Pricing power demostrado.</td>
+          <td class="td-val"><span class="badge-plain">JUSTO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">NVS</div><div class="pr">~$108</div></td>
+          <td class="td-empresa"><div class="nm">Novartis</div><div class="sc">Farma suiza</div></td>
+          <td class="td-yield">3.4%</td>
+          <td class="td-why">Portafolio diversificado. Moneda fuerte (CHF). Baja correlación con el ciclo americano.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <span class="tip-text"><strong>Sugerencia fuera del listado: CVX (Chevron)</strong> — yield ~4.2%, Dividend Aristocrat, balance sólido, cobertura natural ante inflación energética. Diversifica muy bien frente al bloque salud y consumo del perfil.</span>
+    </div>
+  </div>
+
+  <!-- ───────────────── MODERADO ───────────────── -->
+  <div class="profile">
+    <div class="profile-head">
+      <span class="profile-badge badge" style="background:var(--blue-bg);color:var(--blue-fg)">MODERADO</span>
+      <span class="profile-desc">Compounders de calidad + algo de income · Yield 1–3% · Crecimiento de ganancias sostenido</span>
+    </div>
+    <hr class="profile-bar" style="background:var(--blue-bar);margin-bottom:0">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:72px">Ticker</th>
+          <th style="width:160px">Empresa</th>
+          <th class="c" style="width:80px">Yield / PE</th>
+          <th>Por qué ahora</th>
+          <th class="r" style="width:110px">Valuación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-ticker"><div class="tk">SPGI</div><div class="pr">~$403</div></td>
+          <td class="td-empresa"><div class="nm">S&amp;P Global</div><div class="sc">Datos financieros</div></td>
+          <td class="td-yield">PE 25.5x</td>
+          <td class="td-why">PE 22% bajo su media de 10 años (32.7x). Oligopolio de datos irremplazable. Raro a este precio.</td>
+          <td class="td-val"><span class="badge badge-green">MUY ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">ABT</div><div class="pr">~$84</div></td>
+          <td class="td-empresa"><div class="nm">Abbott Labs</div><div class="sc">Salud / MedTech</div></td>
+          <td class="td-yield">2.2% · PE 23x</td>
+          <td class="td-why">PE por debajo de media de 5 años (28x). Líder en monitoreo continuo de glucosa (FreeStyle Libre).</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">MCD</div><div class="pr">~$305</div></td>
+          <td class="td-empresa"><div class="nm">McDonald's</div><div class="sc">Consumo</div></td>
+          <td class="td-yield">2.5%</td>
+          <td class="td-why">Modelo franquicia = capex mínimo. Pricing power demostrado. Dividend Aristocrat de largo plazo.</td>
+          <td class="td-val"><span class="badge-plain">JUSTO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">RTX</div><div class="pr">~$128</div></td>
+          <td class="td-empresa"><div class="nm">RTX Corp (Raytheon)</div><div class="sc">Defensa aeroespacial</div></td>
+          <td class="td-yield">2.1%</td>
+          <td class="td-why">Demanda geopolítica sostenida. Backlog récord. Dividend creciente. Poco seguido por el retail.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">V</div><div class="pr">~$360</div></td>
+          <td class="td-empresa"><div class="nm">Visa</div><div class="sc">Pagos</div></td>
+          <td class="td-yield">0.8% · PE 30x</td>
+          <td class="td-why">Duopolio global de pagos. Fee sobre cada transacción. CapEx casi nulo. Margen neto >55%.</td>
+          <td class="td-val"><span class="badge-plain">JUSTO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">AMGN</div><div class="pr">~$268</div></td>
+          <td class="td-empresa"><div class="nm">Amgen</div><div class="sc">Biofarma</div></td>
+          <td class="td-yield">3.2%</td>
+          <td class="td-why">Uno de los yields más altos en biofarma. Pipeline de obesidad (MariTide) como catalizador de re-rating.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <span class="tip-text"><strong>Sugerencia fuera del listado: MSFT (Microsoft)</strong> — cerca de valor justo post-corrección 2026, crecimiento en Azure + Copilot acelerando, dividendo creciente hace 20 años. Ancla tecnológica ideal para el perfil moderado.</span>
+    </div>
+  </div>
+
+  <!-- ───────────────── AGRESIVO ───────────────── -->
+  <div class="profile">
+    <div class="profile-head">
+      <span class="profile-badge badge" style="background:var(--amber-bg);color:var(--amber-fg)">AGRESIVO</span>
+      <span class="profile-desc">Dislocaciones de precio + crecimiento · Horizonte 2–3 años · Mayor tolerancia a volatilidad</span>
+    </div>
+    <hr class="profile-bar" style="background:var(--amber-bar);margin-bottom:0">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:72px">Ticker</th>
+          <th style="width:160px">Empresa</th>
+          <th class="c" style="width:80px">Yield / PE</th>
+          <th>Por qué ahora</th>
+          <th class="r" style="width:110px">Valuación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-ticker"><div class="tk">NVO</div><div class="pr">~$47</div></td>
+          <td class="td-empresa"><div class="nm">Novo Nordisk</div><div class="sc">Farma / GLP-1</div></td>
+          <td class="td-yield">PE ~10x</td>
+          <td class="td-why">PE en mínimos históricos absolutos. El miedo a la competencia de Lilly fue exagerado. Líder global en obesidad y diabetes con moat brutal.</td>
+          <td class="td-val"><span class="badge badge-green">MUY ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">MELI</div><div class="pr">~$1.653</div></td>
+          <td class="td-empresa"><div class="nm">MercadoLibre</div><div class="sc">Fintech / eComm LATAM</div></td>
+          <td class="td-yield">PE 43x</td>
+          <td class="td-why">−38% en los últimos 12 meses. Fair value estimado ~$2.440 (+47%). Mayor plataforma de LATAM. Invirtiendo fuerte en 2026 → presión de márgenes temporal.</td>
+          <td class="td-val"><span class="badge badge-green">MUY ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">RACE</div><div class="pr">~$349</div></td>
+          <td class="td-empresa"><div class="nm">Ferrari</div><div class="sc">Lujo</div></td>
+          <td class="td-yield">PE ~33x</td>
+          <td class="td-why">−30% vs hace un año. Cerca de mínimo de 52 semanas ($312). EBITDA margin 39.1%. Recompras activas. El lujo ultra premium es anti-cíclico.</td>
+          <td class="td-val"><span class="badge badge-green">MUY ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">META</div><div class="pr">~$600</div></td>
+          <td class="td-empresa"><div class="nm">Meta Platforms</div><div class="sc">Tech / IA</div></td>
+          <td class="td-yield">PE ~25x</td>
+          <td class="td-why">Revenue Q1 2026 +30% YoY. CapEx en IA produciendo resultados concretos. Domina el duopolio de social advertising global.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">NFLX</div><div class="pr">~$90</div></td>
+          <td class="td-empresa"><div class="nm">Netflix</div><div class="sc">Streaming</div></td>
+          <td class="td-yield">PE ~28x</td>
+          <td class="td-why">−17% en 2026 YTD. Q1 2026: beat de EPS del 61%. Moat competitivo sólido. Monetización de publicidad recién empieza como driver de crecimiento.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">BRK.B</div><div class="pr">~$530</div></td>
+          <td class="td-empresa"><div class="nm">Berkshire Hathaway B</div><div class="sc">Conglomerado</div></td>
+          <td class="td-yield">PE ~23x</td>
+          <td class="td-why">Caja récord (modo espera activa de Buffett). Diversificación natural. Valuación por debajo de media histórica. El "seguro" del perfil agresivo.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="tip">
+      <span class="tip-icon">💡</span>
+      <span class="tip-text"><strong>Sugerencia fuera del listado: GOOGL (Alphabet)</strong> — PE ~29x pero con EPS creciendo +46% TTM. PEG ratio de 0.65x, un 46% bajo su media histórica de 10 años. No es barata en múltiplo absoluto, pero sí en relación a su crecimiento. Líder en búsqueda + cloud (GCP) + IA (Gemini). El ruido de antitrust ya está en el precio.</span>
+    </div>
+  </div>
+
+  <!-- ───────────────── BONUS TRACK ───────────────── -->
+  <div class="profile">
+    <div class="profile-head">
+      <span class="profile-badge badge" style="background:#1e1040;color:#a78bfa">BONUS TRACK</span>
+      <span class="profile-desc">Las que no entraron al once titular — pero tampoco se quedaron en casa</span>
+    </div>
+    <hr class="profile-bar" style="background:#6d28d9;margin-bottom:0">
+
+    <p style="font-size:13px;color:var(--t2);line-height:1.75;margin:16px 0 18px;font-style:italic;border-left:2px solid #6d28d9;padding-left:14px;">
+      En todo buen proceso de selección hay bajas que duelen. Estas empresas no quedaron afuera por falta de calidad, sino porque el filtrado principal privilegia concentración y coherencia de perfil. Son nombres que merecen estar en tu radar — y que en las próximas semanas pueden perfectamente rotar hacia el once titular.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width:72px">Ticker</th>
+          <th style="width:160px">Empresa</th>
+          <th class="c" style="width:80px">Yield / PE</th>
+          <th>Por qué igual me gusta</th>
+          <th class="r" style="width:110px">Valuación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-ticker"><div class="tk">PG</div><div class="pr">~$144</div></td>
+          <td class="td-empresa"><div class="nm">Procter &amp; Gamble</div><div class="sc">Consumo básico</div></td>
+          <td class="td-yield">2.6% · PE 21x</td>
+          <td class="td-why">PE 15% bajo su mediana de 10 años (25.2x). FCF yield del 4.4%. Cerca de mínimos de PE de 5 años. Dividend King con 68 años de aumentos consecutivos.</td>
+          <td class="td-val"><span class="badge badge-green">MUY ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">NU</div><div class="pr">~$13</div></td>
+          <td class="td-empresa"><div class="nm">Nu Holdings</div><div class="sc">Fintech LATAM</div></td>
+          <td class="td-yield">PE 22x</td>
+          <td class="td-why">PE 69% bajo su media histórica de 3 años (70.9x). La compresión no es trampa: es porque el EPS creció de $0.02 a $0.59 en 2 años. Complementa a MELI en el bloque LATAM.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr>
+          <td class="td-ticker"><div class="tk">SPOT</div><div class="pr">~$400</div></td>
+          <td class="td-empresa"><div class="nm">Spotify</div><div class="sc">Streaming audio</div></td>
+          <td class="td-yield">PE 39x</td>
+          <td class="td-why">PE 60% por debajo de su media de 12 meses (98x) — no porque bajó el precio, sino porque las ganancias finalmente llegaron. Primer año de rentabilidad real. Monopolio de facto en podcasts y audio.</td>
+          <td class="td-val"><span class="badge badge-blue">ATRACTIVO</span></td>
+        </tr>
+        <tr style="background:rgba(220,38,38,.04)">
+          <td class="td-ticker"><div class="tk" style="color:#f87171">PBR</div><div class="pr">~$20</div></td>
+          <td class="td-empresa"><div class="nm" style="color:#f87171">Petrobras</div><div class="sc">Oil &amp; Gas — Brasil</div></td>
+          <td class="td-yield" style="color:#f87171">~3.5% · PE 6.4x</td>
+          <td class="td-why">
+            <span style="display:inline-block;font-size:10px;font-weight:500;padding:2px 8px;border-radius:20px;background:#3b0f0f;color:#f87171;margin-bottom:5px;font-family:var(--mono);letter-spacing:.04em">⚠ ADVERTENCIA</span><br>
+            El PE bajo y el yield son reales — pero el mercado descuenta permanentemente riesgo político. El gobierno Lula tiene un plan de capex de $109B (2026–2030) con proyectos de bajo retorno. El dividendo ya fue recortado y puede serlo más. No cumple parámetros de predictibilidad para una estrategia cashflow. Incluirla sería apostar al petróleo y a Brasil, no al flujo de caja.
+          </td>
+          <td class="td-val"><span class="badge" style="background:#3b0f0f;color:#f87171;font-size:9px;line-height:1.4;white-space:normal;text-align:right;display:inline-block;max-width:100px">SOLO PERFIL AGRESIVO · Reina del Dividendo en Brasil</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="tip" style="border:1px solid rgba(167,139,250,.15)">
+      <span class="tip-icon">🎸</span>
+      <span class="tip-text">Las mejores canciones del bonus track suelen terminar en el álbum siguiente. <strong>PG y NU</strong> son las candidatas más firmes a rotar hacia el once titular en las próximas semanas si el mercado acompaña.</span>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <span>Precios aproximados al 22/05/2026. Verificar antes de operar. No constituye asesoramiento financiero personalizado.</span>
+    <span class="footer-brand">MDA INVESTING</span>
+  </div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SPX vs NDX — Simulador de Inversión</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#070B14;font-family:'Space Mono',monospace;color:#E2E8F0;}
+button{cursor:pointer;font-family:'Space Mono',monospace;transition:all .15s;border:none;}
+button:active{transform:scale(0.97);}
+input{font-family:'Space Mono',monospace;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#1A2540;border-radius:2px;}
+.wrap{max-width:520px;margin:0 auto;padding:20px 16px 36px;}
+.header{text-align:center;margin-bottom:22px;}
+.header-sub{font-size:9px;letter-spacing:.2em;color:#4A5568;margin-bottom:6px;text-transform:uppercase;}
+.header h1{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;line-height:1.2;}
+.header p{color:#4A5568;font-size:10px;margin-top:5px;}
+.card{background:#0C1322;border:1px solid #1A2540;border-radius:14px;padding:16px;margin-bottom:14px;}
+.lbl{color:#4A5568;font-size:9px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;}
+.preset-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px;}
+.btn-preset{padding:7px 0;border-radius:6px;font-size:11px;background:transparent;}
+.hz-grid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;}
+.btn-hz{padding:8px 0;border-radius:6px;font-size:11px;background:transparent;}
+.input-row{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.input-row span{color:#4A5568;font-size:12px;}
+.input-row input{flex:1;background:#0a1120;border:1px solid #1A2540;border-radius:6px;padding:7px 10px;color:#E2E8F0;font-size:12px;}
+.idx-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.btn-idx{padding:12px 0;border-radius:8px;border:1.5px solid;font-size:12px;font-weight:700;background:transparent;}
+.chart-wrap{position:relative;background:#0C1322;border:1px solid #1A2540;border-radius:14px;padding:16px 12px 10px 8px;margin-bottom:14px;}
+canvas{display:block;}
+.legend{display:flex;justify-content:center;gap:16px;padding-top:8px;flex-wrap:wrap;}
+.legend-item{display:flex;align-items:center;gap:6px;font-size:10px;}
+.legend-line{width:22px;height:3px;border-radius:2px;}
+.tooltip-box{position:absolute;background:rgba(8,14,26,.96);border:1px solid #1A2540;border-radius:8px;padding:8px 12px;font-size:11px;pointer-events:none;z-index:10;min-width:160px;display:none;}
+.tt-year{color:#4A5568;margin-bottom:6px;font-size:10px;}
+.tt-val{font-weight:700;margin-bottom:2px;}
+.stats-grid{display:grid;gap:10px;margin-bottom:14px;}
+.stat-card{background:#0C1322;border-radius:12px;padding:14px;}
+.stat-label{font-size:10px;font-weight:700;margin-bottom:10px;letter-spacing:.05em;}
+.stat-val{font-size:22px;font-weight:700;margin-bottom:2px;}
+.stat-ret{font-size:11px;margin-bottom:10px;}
+.stat-row{display:flex;justify-content:space-between;font-size:10px;margin-top:4px;}
+.stat-row span:first-child{color:#4A5568;}
+.btn-play{width:100%;padding:13px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.08em;}
+.disclaimer{margin-top:16px;font-size:9px;color:#1e2d45;text-align:center;line-height:1.7;}
+.note-box{background:#0C1322;border:1px solid #1A2540;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:9px;color:#4A5568;line-height:1.7;}
+.note-box span{color:#A78BFA;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-sub">Simulador de inversión · Índices</div>
+    <h1>
+      <span style="color:#34D399">S&P 500</span>
+      <span style="color:#4A5568;font-weight:400;font-size:16px"> vs </span>
+      <span style="color:#60A5FA">NASDAQ 100</span>
+    </h1>
+    <p>Evolución de $1.000 invertidos en cada índice</p>
+  </div>
+
+  <!-- Nota metodológica -->
+  <div class="note-box">
+    📊 Datos basados en <span>SPX</span> (S&P 500) y <span>NDX</span> (NASDAQ 100) — índices de precio,
+    tal como aparecen en TradingView. NDX disponible desde 1985.
+    No incluyen dividendos reinvertidos (el retorno real del S&P 500 sería ~2% anual adicional).
+  </div>
+
+  <div class="card">
+    <div class="lbl">Índices a comparar</div>
+    <div class="idx-row">
+      <button class="btn-idx" id="btn-SP" onclick="toggleIdx('SP')"
+        style="border-color:#34D399;color:#34D399;background:#34D39918">
+        📈 S&amp;P 500 (SPX)
+      </button>
+      <button class="btn-idx" id="btn-NQ" onclick="toggleIdx('NQ')"
+        style="border-color:#60A5FA;color:#60A5FA;background:#60A5FA18">
+        💻 NASDAQ 100 (NDX)
+      </button>
+    </div>
+
+    <div class="lbl">Inversión inicial (USD)</div>
+    <div class="preset-grid">
+      <button class="btn-preset" onclick="setAmt(500)"   id="p500">$500</button>
+      <button class="btn-preset" onclick="setAmt(1000)"  id="p1000">$1K</button>
+      <button class="btn-preset" onclick="setAmt(5000)"  id="p5000">$5K</button>
+      <button class="btn-preset" onclick="setAmt(10000)" id="p10000">$10K</button>
+    </div>
+    <div class="input-row">
+      <span>$</span>
+      <input type="number" id="amtInput" value="1000" min="1" oninput="onAmtInput(this.value)"/>
+    </div>
+
+    <div class="lbl">Horizonte temporal</div>
+    <div class="hz-grid">
+      <button class="btn-hz" id="hz5"  onclick="setHz(5)">5 años</button>
+      <button class="btn-hz" id="hz10" onclick="setHz(10)">10 años</button>
+      <button class="btn-hz" id="hz20" onclick="setHz(20)">20 años</button>
+      <button class="btn-hz" id="hz30" onclick="setHz(30)">30 años</button>
+    </div>
+  </div>
+
+  <div class="stats-grid" id="stats-grid"></div>
+
+  <div class="chart-wrap" id="chart-wrap">
+    <canvas id="chart" height="280"></canvas>
+    <div class="tooltip-box" id="tooltip">
+      <div class="tt-year" id="tt-year"></div>
+      <div class="tt-val" id="tt-SP" style="color:#34D399"></div>
+      <div class="tt-val" id="tt-NQ" style="color:#60A5FA"></div>
+    </div>
+    <div class="legend">
+      <div class="legend-item" id="leg-SP" style="color:#34D399">
+        <div class="legend-line" style="background:#34D399"></div>S&amp;P 500 (SPX)
+      </div>
+      <div class="legend-item" id="leg-NQ" style="color:#60A5FA">
+        <div class="legend-line" style="background:#60A5FA"></div>NASDAQ 100 (NDX)
+      </div>
+      <div class="legend-item" style="color:#F6AD55">
+        <div class="legend-line" style="background:none;border-top:2px dashed #F6AD55;height:0"></div>
+        Capital inicial
+      </div>
+    </div>
+  </div>
+
+  <button class="btn-play" id="btn-play" onclick="play()">▶  REPRODUCIR EVOLUCIÓN</button>
+  <div class="disclaimer">
+    Fuente: SPX y NDX (índices de precio). Datos anuales de cierre aproximados.<br>
+    Rentabilidad pasada no garantiza resultados futuros.<br>
+    No constituye asesoramiento de inversión. · MDA Investing
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════
+// SPX — S&P 500 Index (precio, cierre anual)
+// Fuente: TradingView / datos históricos públicos
+// ══════════════════════════════════════════════════════════════════════
+// NDX — NASDAQ 100 Index (precio, cierre anual)
+// Disponible desde 1985 (base ~250). Fuente: TradingView
+// ══════════════════════════════════════════════════════════════════════
+const DB = {
+  SP: {
+    name:'S&P 500', label:'SPX', color:'#34D399',
+    prices:{
+      1985:211,  1986:242,  1987:247,  1988:277,  1989:353,
+      1990:330,  1991:417,  1992:435,  1993:466,  1994:459,
+      1995:615,  1996:741,  1997:970,  1998:1229, 1999:1469,
+      2000:1320, 2001:1148, 2002:880,  2003:1112, 2004:1212,
+      2005:1248, 2006:1418, 2007:1468, 2008:903,  2009:1115,
+      2010:1258, 2011:1258, 2012:1426, 2013:1848, 2014:2059,
+      2015:2044, 2016:2239, 2017:2674, 2018:2507, 2019:3231,
+      2020:3756, 2021:4766, 2022:3840, 2023:4769, 2024:5882,
+      2025:5300
+    }
+  },
+  NQ: {
+    name:'NASDAQ 100', label:'NDX', color:'#60A5FA',
+    prices:{
+      1985:330,  1986:388,  1987:295,  1988:368,  1989:452,
+      1990:330,  1991:575,  1992:648,  1993:793,  1994:705,
+      1995:1060, 1996:1390, 1997:1740, 2008:1211,
+      // Dot-com burbuja y crash
+      1998:2193, 1999:3707,
+      2000:2341, 2001:1295, 2002:798,
+      // Recuperación
+      2003:1427, 2004:1621, 2005:1670, 2006:1756, 2007:2083,
+      // Crisis financiera
+      2009:1860,
+      2010:2218, 2011:2278, 2012:2660, 2013:3592, 2014:4240,
+      2015:4594, 2016:4863, 2017:6621, 2018:6329, 2019:8733,
+      2020:12888,2021:16320,2022:10939,2023:16825,2024:21781,
+      2025:18500
+    }
+  }
+};
+
+// Crisis históricas a marcar en el gráfico
+const CRISES = [
+  { year:1987, label:'Lunes Negro', color:'rgba(252,129,129,0.2)' },
+  { year:2000, label:'Dot-com',     color:'rgba(252,129,129,0.2)' },
+  { year:2008, label:'2008',        color:'rgba(252,129,129,0.2)' },
+  { year:2020, label:'COVID',       color:'rgba(252,211,77,0.15)' },
+  { year:2022, label:'Bear',        color:'rgba(252,129,129,0.15)' },
+];
+
+const CLR = { SP:'#34D399', NQ:'#60A5FA', gold:'#F6AD55', purple:'#A78BFA', muted:'#4A5568', green:'#68D391' };
+
+let sel  = { SP:true, NQ:true };
+let amt  = 1000, hz = 20;
+let allData = [], visibleCount = 0, animTimer = null, playing = false;
+
+// ── Datos trimestrales interpolados ──────────────────────────────
+function buildQuarterly(prices, startYear){
+  const yrs = Object.keys(prices).map(Number).sort()
+               .filter(y => y >= startYear && y <= 2025);
+  if(yrs.length < 2) return [];
+  const pts = [];
+  for(let i=0; i<yrs.length-1; i++){
+    const y1=yrs[i], y2=yrs[i+1], p1=prices[y1], p2=prices[y2];
+    for(let q=0; q<4; q++)
+      pts.push({t: parseFloat((y1+q*.25).toFixed(2)), p: p1+(p2-p1)*(q/4)});
+  }
+  pts.push({t:yrs[yrs.length-1], p:prices[yrs[yrs.length-1]]});
+  return pts;
+}
+
+function buildData(){
+  const startYear = 2025 - hz;
+  const ptsSP = sel.SP ? buildQuarterly(DB.SP.prices, startYear) : [];
+  const ptsNQ = sel.NQ ? buildQuarterly(DB.NQ.prices, startYear) : [];
+  const primary = ptsSP.length ? ptsSP : ptsNQ;
+  if(!primary.length){ allData=[]; return; }
+
+  const spSP = ptsSP.length ? ptsSP[0].p : null;
+  const spNQ = ptsNQ.length ? ptsNQ[0].p : null;
+
+  allData = primary.map(mp => {
+    const row = {t: mp.t};
+    if(sel.SP && ptsSP.length){
+      const ap = ptsSP.find(p=>Math.abs(p.t-mp.t)<0.01);
+      if(ap && spSP) row.SP = Math.round(amt * ap.p / spSP);
+    }
+    if(sel.NQ && ptsNQ.length){
+      const bp = ptsNQ.find(p=>Math.abs(p.t-mp.t)<0.01);
+      if(bp && spNQ) row.NQ = Math.round(amt * bp.p / spNQ);
+    }
+    return row;
+  });
+}
+
+// ── Canvas ────────────────────────────────────────────────────────
+const canvas = document.getElementById('chart');
+const ctx    = canvas.getContext('2d');
+
+function fmt(n){
+  if(n>=1e6)  return '$'+(n/1e6).toFixed(2)+'M';
+  if(n>=1000) return '$'+(n/1000).toFixed(1)+'K';
+  return '$'+Math.round(n);
+}
+function fmtL(t){
+  const yr=Math.floor(t), q=Math.round((t%1)*4);
+  return q===0 ? String(yr) : yr+' Q'+q;
+}
+
+function drawChart(count){
+  canvas.width  = document.getElementById('chart-wrap').clientWidth - 20;
+  canvas.height = 280;
+  const W=canvas.width, H=canvas.height;
+  const P={top:20, right:14, bottom:30, left:54};
+  const cW=W-P.left-P.right, cH=H-P.top-P.bottom;
+  ctx.clearRect(0,0,W,H);
+
+  if(!allData.length){
+    ctx.fillStyle='#1A2540'; ctx.font='10px Space Mono'; ctx.textAlign='center';
+    ctx.fillText('Seleccioná al menos un índice', W/2, H/2);
+    return;
+  }
+
+  const xMin=allData[0].t, xMax=allData[allData.length-1].t;
+  const vals=allData.flatMap(d=>['SP','NQ'].map(k=>d[k]).filter(Boolean));
+  const yMax=vals.length ? Math.ceil(Math.max(...vals)*1.1/1000)*1000 : amt*2;
+  const data=allData.slice(0,count);
+
+  const px=t=>P.left+((t-xMin)/(xMax-xMin))*cW;
+  const py=v=>P.top+cH-(v/yMax)*cH;
+
+  // Zonas de crisis
+  CRISES.forEach(c=>{
+    if(c.year<xMin||c.year>xMax) return;
+    const x1=px(c.year), x2=px(Math.min(c.year+1.5, xMax));
+    ctx.fillStyle=c.color;
+    ctx.fillRect(x1,P.top,x2-x1,cH);
+    ctx.save();
+    ctx.fillStyle='rgba(252,129,129,0.55)';
+    ctx.font='7px Space Mono'; ctx.textAlign='center';
+    ctx.fillText(c.label,(x1+x2)/2,P.top+9);
+    ctx.restore();
+  });
+
+  // Grid horizontal
+  ctx.strokeStyle='#111b2e'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=P.top+i*(cH/4);
+    ctx.beginPath(); ctx.moveTo(P.left,y); ctx.lineTo(P.left+cW,y); ctx.stroke();
+  }
+
+  // Y labels
+  ctx.fillStyle='#4A5568'; ctx.font='9px Space Mono'; ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const v=yMax*(1-i/4), y=P.top+i*(cH/4);
+    const label = v>=1e6 ? (v/1e6).toFixed(1)+'M' : v>=1000 ? (v/1000).toFixed(0)+'K' : Math.round(v);
+    ctx.fillText(label, P.left-6, y+3);
+  }
+
+  // X labels
+  ctx.textAlign='center';
+  for(let y=Math.ceil(xMin); y<=xMax; y++){
+    if((xMax-xMin)>18 && y%5!==0) continue;
+    if((xMax-xMin)>8  && (xMax-xMin)<=18 && y%2!==0) continue;
+    ctx.fillText(String(y), px(y), H-8);
+  }
+
+  // Línea capital inicial
+  const ry=py(amt);
+  ctx.save(); ctx.strokeStyle=CLR.gold; ctx.lineWidth=1.5;
+  ctx.globalAlpha=.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(P.left,ry); ctx.lineTo(P.left+cW,ry); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle=CLR.gold; ctx.font='9px Space Mono'; ctx.textAlign='right';
+  ctx.fillText('Inversión', P.left+cW, ry-4);
+
+  if(data.length<2) return;
+
+  // Áreas y líneas
+  ['SP','NQ'].forEach(k=>{
+    if(!sel[k]) return;
+    const pts=data.filter(d=>d[k]!==undefined);
+    if(pts.length<2) return;
+    const col=CLR[k];
+
+    ctx.save(); ctx.globalAlpha=.2;
+    const g=ctx.createLinearGradient(0,P.top,0,P.top+cH);
+    g.addColorStop(0,col); g.addColorStop(1,'transparent');
+    ctx.fillStyle=g;
+    ctx.beginPath(); ctx.moveTo(px(pts[0].t),py(pts[0][k]));
+    pts.forEach(d=>ctx.lineTo(px(d.t),py(d[k])));
+    ctx.lineTo(px(pts[pts.length-1].t),P.top+cH);
+    ctx.lineTo(px(pts[0].t),P.top+cH);
+    ctx.closePath(); ctx.fill(); ctx.restore();
+
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=2.5; ctx.lineJoin='round';
+    ctx.beginPath(); ctx.moveTo(px(pts[0].t),py(pts[0][k]));
+    pts.forEach(d=>ctx.lineTo(px(d.t),py(d[k])));
+    ctx.stroke(); ctx.restore();
+  });
+
+  // Cursor animado
+  if(count<allData.length){
+    const last=data[data.length-1];
+    if(last){
+      ctx.save(); ctx.strokeStyle='rgba(255,255,255,.5)'; ctx.lineWidth=1.5; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(px(last.t),P.top); ctx.lineTo(px(last.t),P.top+cH); ctx.stroke(); ctx.restore();
+    }
+  }
+}
+
+// ── Tooltip ───────────────────────────────────────────────────────
+function showTT(pt, mx, W){
+  const tt=document.getElementById('tooltip');
+  document.getElementById('tt-year').textContent=fmtL(pt.t);
+  const s=document.getElementById('tt-SP'), n=document.getElementById('tt-NQ');
+  s.textContent=pt.SP!==undefined?'S&P 500: '+fmt(pt.SP):'';
+  n.textContent=pt.NQ!==undefined?'NASDAQ 100: '+fmt(pt.NQ):'';
+  s.style.display=pt.SP!==undefined?'':'none';
+  n.style.display=pt.NQ!==undefined?'':'none';
+  tt.style.display='block'; tt.style.top='28px';
+  if(mx>W*.55){tt.style.left='auto';tt.style.right=(W-mx+10)+'px';}
+  else{tt.style.right='auto';tt.style.left=(mx+10)+'px';}
+}
+function findPt(mx){
+  if(!allData.length) return null;
+  const cW=canvas.width-54-14, xMin=allData[0].t, xMax=allData[allData.length-1].t;
+  const t=xMin+((mx-54)/cW)*(xMax-xMin);
+  let c=allData[0]; allData.forEach(d=>{if(Math.abs(d.t-t)<Math.abs(c.t-t))c=d;}); return c;
+}
+canvas.addEventListener('mousemove',e=>{
+  if(playing)return;
+  const r=canvas.getBoundingClientRect(),p=findPt(e.clientX-r.left);
+  if(p) showTT(p,e.clientX-r.left,r.width);
+});
+canvas.addEventListener('mouseleave',()=>document.getElementById('tooltip').style.display='none');
+canvas.addEventListener('touchmove',e=>{
+  if(playing)return; e.preventDefault();
+  const r=canvas.getBoundingClientRect(),p=findPt(e.touches[0].clientX-r.left);
+  if(p) showTT(p,e.touches[0].clientX-r.left,r.width);
+},{passive:false});
+canvas.addEventListener('touchend',()=>document.getElementById('tooltip').style.display='none');
+
+// ── Animación ─────────────────────────────────────────────────────
+function play(){
+  if(!allData.length) return;
+  clearInterval(animTimer);
+  visibleCount=1; playing=true;
+  const btn=document.getElementById('btn-play');
+  btn.textContent='⏳  ANIMANDO...'; btn.disabled=true;
+  btn.style.color='#4A5568'; btn.style.border='1px solid #1A2540';
+  document.getElementById('tooltip').style.display='none';
+
+  animTimer=setInterval(()=>{
+    visibleCount++;
+    drawChart(visibleCount);
+    updateStats(visibleCount);
+    const cp=allData[visibleCount-1];
+    if(cp){
+      const cW=canvas.width-54-14, xMin=allData[0].t, xMax=allData[allData.length-1].t;
+      showTT(cp, 54+((cp.t-xMin)/(xMax-xMin))*cW, canvas.width);
+    }
+    if(visibleCount>=allData.length){
+      clearInterval(animTimer);
+      setTimeout(()=>{
+        playing=false; drawChart(allData.length); updateStats(allData.length);
+        document.getElementById('tooltip').style.display='none';
+        btn.textContent='↺  REPRODUCIR DE NUEVO'; btn.disabled=false;
+        btn.style.color=CLR.purple; btn.style.border='1px solid '+CLR.purple;
+      },800);
+    }
+  },200);
+}
+
+// ── Stats ─────────────────────────────────────────────────────────
+function calcStats(key){
+  const d=DB[key]; if(!d||!sel[key]||!allData.length) return null;
+  const startYear=2025-hz;
+  const yrs=Object.keys(d.prices).map(Number).sort().filter(y=>y>=startYear&&y<=2025);
+  if(yrs.length<2) return null;
+  const sp=d.prices[yrs[0]], ep=d.prices[yrs[yrs.length-1]];
+  const years=yrs[yrs.length-1]-yrs[0], fv=amt*ep/sp;
+  // Max Drawdown
+  const allP=yrs.map(y=>d.prices[y]);
+  let maxDD=0, peak=allP[0];
+  allP.forEach(p=>{if(p>peak)peak=p; const dd=(peak-p)/peak; if(dd>maxDD)maxDD=dd;});
+  // Mejor y peor año
+  let bestYr='—', bestRet=-Infinity, worstYr='—', worstRet=Infinity;
+  for(let i=1;i<yrs.length;i++){
+    const ret=(d.prices[yrs[i]]-d.prices[yrs[i-1]])/d.prices[yrs[i-1]]*100;
+    if(ret>bestRet){bestRet=ret;bestYr=yrs[i];}
+    if(ret<worstRet){worstRet=ret;worstYr=yrs[i];}
+  }
+  return {final:fv, ret:(fv/amt-1)*100, cagr:(Math.pow(ep/sp,1/years)-1)*100,
+          years, startYr:yrs[0], maxDD:maxDD*100,
+          bestYr, bestRet, worstYr, worstRet};
+}
+
+function updateStats(count){
+  const lp=allData[Math.min(count,allData.length)-1];
+  ['SP','NQ'].forEach(k=>{
+    const v=lp?.[k], el=document.getElementById('sval-'+k), re=document.getElementById('sret-'+k);
+    if(el&&v!==undefined){
+      el.textContent=fmt(v);
+      const r=(v/amt-1)*100;
+      if(re){re.textContent=(r>=0?'+':'')+r.toFixed(0)+'%';re.style.color=r>=0?CLR.green:'#FC8181';}
+    }
+  });
+}
+
+function renderStats(){
+  const grid=document.getElementById('stats-grid');
+  const active=['SP','NQ'].filter(k=>sel[k]);
+  grid.style.gridTemplateColumns=active.length===2?'1fr 1fr':'1fr';
+  grid.innerHTML='';
+  active.forEach(k=>{
+    const s=calcStats(k); if(!s) return;
+    const div=document.createElement('div'); div.className='stat-card';
+    div.style.cssText=`border:1px solid ${CLR[k]}35;border-top:2px solid ${CLR[k]}`;
+    div.innerHTML=`
+      <div class="stat-label" style="color:${CLR[k]}">— ${DB[k].name} (${DB[k].label})</div>
+      <div class="stat-val" id="sval-${k}">${fmt(s.final)}</div>
+      <div class="stat-ret" id="sret-${k}" style="color:${s.ret>=0?CLR.green:'#FC8181'}">${s.ret>=0?'+':''}${s.ret.toFixed(0)}%</div>
+      <div class="stat-row"><span>CAGR</span><span>${s.cagr.toFixed(1)}%</span></div>
+      <div class="stat-row"><span>AÑOS</span><span>${s.years}</span></div>
+      <div class="stat-row"><span>INICIO</span><span>${s.startYr}</span></div>
+      <div class="stat-row"><span>MAX DRAWDOWN</span><span style="color:#FC8181">-${s.maxDD.toFixed(0)}%</span></div>
+      <div class="stat-row"><span>MEJOR AÑO</span><span style="color:#68D391">${s.bestYr}: +${s.bestRet.toFixed(0)}%</span></div>
+      <div class="stat-row"><span>PEOR AÑO</span><span style="color:#FC8181">${s.worstYr}: ${s.worstRet.toFixed(0)}%</span></div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+// ── Controles ─────────────────────────────────────────────────────
+function toggleIdx(k){
+  const active=['SP','NQ'].filter(x=>sel[x]);
+  if(sel[k]&&active.length<=1) return;
+  sel[k]=!sel[k];
+  const btn=document.getElementById('btn-'+k), col=CLR[k];
+  btn.style.border='1.5px solid '+(sel[k]?col:'#1A2540');
+  btn.style.color=sel[k]?col:'#4A5568';
+  btn.style.background=sel[k]?col+'18':'transparent';
+  document.getElementById('leg-'+k).style.opacity=sel[k]?'1':'0.3';
+  refresh();
+}
+
+function setAmt(v){
+  amt=v; document.getElementById('amtInput').value=v;
+  [500,1000,5000,10000].forEach(p=>{
+    const b=document.getElementById('p'+p);
+    b.style.border='1px solid '+(amt===p?CLR.gold:'#1A2540');
+    b.style.color=amt===p?CLR.gold:'#4A5568';
+    b.style.background=amt===p?CLR.gold+'15':'transparent';
+  });
+  refresh();
+}
+function onAmtInput(v){ const n=parseFloat(v); if(!isNaN(n)&&n>0){amt=n;refresh();} }
+
+function setHz(v){
+  hz=v;
+  [5,10,20,30].forEach(n=>{
+    const b=document.getElementById('hz'+n);
+    b.style.border='1px solid '+(hz===n?CLR.purple:'#1A2540');
+    b.style.color=hz===n?CLR.purple:'#4A5568';
+    b.style.background=hz===n?CLR.purple+'18':'transparent';
+  });
+  refresh();
+}
+
+function refresh(){
+  clearInterval(animTimer); playing=false;
+  buildData(); renderStats();
+  visibleCount=allData.length; drawChart(allData.length);
+  const btn=document.getElementById('btn-play');
+  btn.textContent='▶  REPRODUCIR EVOLUCIÓN'; btn.disabled=false;
+  btn.style.color=CLR.purple; btn.style.border='1px solid '+CLR.purple;
+  btn.style.background=CLR.purple+'18';
+}
+
+window.addEventListener('resize',()=>drawChart(visibleCount));
+
+// ── Init ──────────────────────────────────────────────────────────
+setAmt(1000); setHz(20);
+</script>
+</body>
+</html>

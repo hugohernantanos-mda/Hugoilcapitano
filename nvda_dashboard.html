@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVDA – Dashboard Corporativo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --header-bg: #1a1a1a;
+    --header-text: #ffffff;
+    --accent: #76b900; /* NVIDIA green */
+    --accent2: #e63946;
+    --text-primary: #1a1a1a;
+    --text-muted: #6b6b6b;
+    --border: #e2e2de;
+    --row-alt: #f9f9f7;
+    --mono: 'IBM Plex Mono', monospace;
+    --sans: 'IBM Plex Sans', sans-serif;
+  }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text-primary);
+    padding: 32px 16px;
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .page {
+    max-width: 860px;
+    margin: 0 auto;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    border-bottom: 3px solid var(--accent);
+    padding-bottom: 14px;
+    margin-bottom: 28px;
+  }
+
+  .header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .header h1 {
+    font-family: var(--mono);
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+  }
+
+  .header h1 span {
+    color: var(--accent);
+  }
+
+  .header-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-top: 4px;
+    font-style: italic;
+  }
+
+  .badge-nvidia {
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    align-self: flex-start;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    margin-bottom: 24px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .section-title {
+    background: var(--header-bg);
+    color: var(--header-text);
+    font-family: var(--mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-title .num {
+    color: var(--accent);
+  }
+
+  /* ── TABLES ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    background: #2d2d2d;
+    color: #c8c8c8;
+    font-family: var(--mono);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    padding: 8px 16px;
+    text-align: left;
+    border-right: 1px solid #3d3d3d;
+  }
+  thead th:last-child { border-right: none; }
+
+  tbody tr:nth-child(even) { background: var(--row-alt); }
+  tbody tr:hover { background: #f0f0ec; transition: background 0.15s; }
+
+  tbody td {
+    padding: 9px 16px;
+    border-right: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text-primary);
+  }
+  tbody td:last-child { border-right: none; }
+
+  .td-label {
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  .td-value {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+
+  .td-desc {
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  /* ── BADGES ── */
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 7px;
+    border-radius: 2px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    vertical-align: middle;
+  }
+  .tag-green  { background: #d4f1b0; color: #3a6800; }
+  .tag-red    { background: #fddcdc; color: #9b1c1c; }
+  .tag-yellow { background: #fef3c7; color: #92400e; }
+  .tag-blue   { background: #dbeafe; color: #1e3a8a; }
+  .tag-grey   { background: #e5e5e5; color: #4a4a4a; }
+
+  .impact-high    { color: #e63946; font-weight: 600; font-family: var(--mono); font-size: 11px; }
+  .impact-med     { color: #f4a261; font-weight: 600; font-family: var(--mono); font-size: 11px; }
+  .impact-medalt  { color: #457b9d; font-weight: 600; font-family: var(--mono); font-size: 11px; }
+
+  /* ── CHART SECTION ── */
+  .chart-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    align-items: center;
+  }
+
+  @media (max-width: 580px) {
+    .chart-section { grid-template-columns: 1fr; }
+  }
+
+  .chart-wrapper {
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-right: 1px solid var(--border);
+  }
+
+  @media (max-width: 580px) {
+    .chart-wrapper { border-right: none; border-bottom: 1px solid var(--border); }
+  }
+
+  canvas#donut { display: block; }
+
+  .chart-legend {
+    padding: 16px 20px;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .legend-item:last-child { border-bottom: none; }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .legend-label {
+    flex: 1;
+    font-size: 12px;
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .legend-pct {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .legend-driver {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-left: 20px;
+    margin-top: -4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+  .legend-driver:last-child { border-bottom: none; }
+
+  /* ── FOOTER ── */
+  .footer {
+    text-align: center;
+    font-size: 10px;
+    color: #aaa;
+    margin-top: 20px;
+    font-family: var(--mono);
+    letter-spacing: 0.3px;
+  }
+
+  /* ── TOTALS ROW ── */
+  .total-row td {
+    font-weight: 600;
+    font-family: var(--mono);
+    font-size: 12px;
+    background: #f0f0ec !important;
+    border-top: 2px solid var(--border);
+  }
+
+  /* mini bar for segments inside table */
+  .mini-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mini-bar-bg {
+    flex: 1;
+    height: 4px;
+    background: #e2e2de;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .mini-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.6s ease;
+  }
+
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <h1>NVIDIA CORPORATION <span>(NVDA)</span> — DASHBOARD CORPORATIVO</h1>
+        <div class="header-meta">Análisis Integral de Mercado, Métricas Financieras y Catalizadores Clave &nbsp;·&nbsp; 2026</div>
+      </div>
+      <div class="badge-nvidia">NASDAQ: NVDA</div>
+    </div>
+  </div>
+
+  <!-- 1. PERFIL DE MERCADO -->
+  <div class="section">
+    <div class="section-title"><span class="num">01</span> Perfil de Mercado y Valuación</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Métrica Financiera</th>
+          <th style="width:18%">Valor / Indicador</th>
+          <th>Estado / Tendencia en Mercado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-label">Market Capitalization</td>
+          <td class="td-value">$3.35T</td>
+          <td class="td-desc">Top 3 empresas más valiosas a nivel global &nbsp;<span class="tag tag-green">Récord</span></td>
+        </tr>
+        <tr>
+          <td class="td-label">Forward P/E Ratio (12m)</td>
+          <td class="td-value">34.5x</td>
+          <td class="td-desc">Premium, pero respaldado por el agresivo crecimiento proyectado.</td>
+        </tr>
+        <tr>
+          <td class="td-label">PEG Ratio</td>
+          <td class="td-value">1.15</td>
+          <td class="td-desc">Subvaluación relativa a la tasa histórica de crecimiento de EPS (Ganancias por Acción).</td>
+        </tr>
+        <tr>
+          <td class="td-label">Beta (5-Year Monthly)</td>
+          <td class="td-value">1.75</td>
+          <td class="td-desc">Alta volatilidad; principal motor de movimiento del mercado macro.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Gross Margin (Margen Bruto)</td>
+          <td class="td-value">75.5%</td>
+          <td class="td-desc">Eficiencia y pricing power (poder de fijación de precios) histórico en equipamiento de Data Centers.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Free Cash Flow — TTM</td>
+          <td class="td-value">$46.5B</td>
+          <td class="td-desc">Generación de caja líquida en niveles máximos de la industria tecnológica.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 2. REVENUE BREAKDOWN con gráfico -->
+  <div class="section">
+    <div class="section-title"><span class="num">02</span> Segmentos de Negocio y Revenue Breakdown</div>
+
+    <div class="chart-section">
+      <!-- DONUT -->
+      <div class="chart-wrapper">
+        <canvas id="donut" width="200" height="200"></canvas>
+      </div>
+      <!-- LEYENDA -->
+      <div class="chart-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#76b900"></div>
+          <span class="legend-label">Data Center (IA & Cloud)</span>
+          <span class="legend-pct">85.0%</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#1a1a1a"></div>
+          <span class="legend-label">Gaming & Creadores</span>
+          <span class="legend-pct">11.0%</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#aaaaaa"></div>
+          <span class="legend-label">Automotive & Embedded</span>
+          <span class="legend-pct">2.5%</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#d4d4d4"></div>
+          <span class="legend-label">Professional Visualization</span>
+          <span class="legend-pct">1.5%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla detalle -->
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Segmento Operativo</th>
+          <th style="width:22%">Participación %</th>
+          <th>Drivers Principales de Crecimiento</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-label">Data Center (IA & Cloud)</td>
+          <td class="td-value">
+            <div class="mini-bar-wrap">
+              85.0%
+              <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:85%;background:#76b900"></div></div>
+            </div>
+          </td>
+          <td class="td-desc">Despliegue masivo de arquitectura Blackwell (B200/GB200) e inversión masiva de Hyperscalers.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Gaming & Creadores</td>
+          <td class="td-value">
+            <div class="mini-bar-wrap">
+              11.0%
+              <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:11%;background:#1a1a1a"></div></div>
+            </div>
+          </td>
+          <td class="td-desc">Lanzamiento de la línea RTX 50-Series (Blackwell comercial) y estabilidad de la base global.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Automotive & Embedded</td>
+          <td class="td-value">
+            <div class="mini-bar-wrap">
+              2.5%
+              <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:2.5%;background:#aaaaaa"></div></div>
+            </div>
+          </td>
+          <td class="td-desc">Plataforma DRIVE Thor para conducción autónoma y software integrado en EVs (vehículos eléctricos) premium.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Professional Visualization</td>
+          <td class="td-value">
+            <div class="mini-bar-wrap">
+              1.5%
+              <div class="mini-bar-bg"><div class="mini-bar-fill" style="width:1.5%;background:#d4d4d4"></div></div>
+            </div>
+          </td>
+          <td class="td-desc">Expansión de la plataforma Omniverse, gemelos digitales y metaverso industrial.</td>
+        </tr>
+        <tr class="total-row">
+          <td>Total Ingresos Consolidados</td>
+          <td>100.0%</td>
+          <td class="td-desc" style="color:var(--text-muted)">Perspectiva estructural consolidada del negocio general.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 3. CATALIZADORES -->
+  <div class="section">
+    <div class="section-title"><span class="num">03</span> Catalizadores Estratégicos y Ecosistema Tecnológico</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Catalizador Crítico</th>
+          <th style="width:18%">Impacto Estimado</th>
+          <th>Perspectiva del Mercado / Monitoreo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-label">Superciclo Blackwell</td>
+          <td><span class="impact-high">Muy Alto</span></td>
+          <td class="td-desc">Transición total de H100 a B200/GB200. Demanda asegurada; el cuello de botella es el empaquetado CoWoS (Chip on Wafer on Substrate) de TSMC.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Nexo de Energía Nuclear</td>
+          <td><span class="impact-med">Alto</span></td>
+          <td class="td-desc">La infraestructura de IA exige energía limpia y masiva. Alianzas estratégicas y contratos del sector bajo la lupa.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Soberanía de IA (Sovereign AI)</td>
+          <td><span class="impact-medalt">Medio-Alto</span></td>
+          <td class="td-desc">Naciones invirtiendo en clusters (centros de procesamiento) propios para no depender de nubes privadas extranjeras. Ingresos estables de largo plazo.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 4. ANÁLISIS TÉCNICO -->
+  <div class="section">
+    <div class="section-title"><span class="num">04</span> Análisis Técnico y Sentimiento del Mercado</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:28%">Eje de Análisis</th>
+          <th style="width:22%">Estado / Métrica</th>
+          <th>Detalle Técnico e Institucional</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-label">Tendencia Estructural</td>
+          <td><span class="tag tag-blue">Alcista de Largo Plazo</span></td>
+          <td class="td-desc">Soportes dinámicos clave en medias móviles institucionales de 50 y 200 días. Acumulación sana en correcciones.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Riesgo Geopolítico</td>
+          <td><span class="tag tag-red">Concentración Alta</span></td>
+          <td class="td-desc">Dependencia absoluta de la manufactura en plantas asiáticas (TSMC). Cualquier fricción macro impacta directo a la valuación.</td>
+        </tr>
+        <tr>
+          <td class="td-label">Consenso Analistas</td>
+          <td><span class="tag tag-green">Strong Buy</span></td>
+          <td class="td-desc">Precios objetivo se reajustan consistentemente al alza debido a la aceleración del Free Cash Flow (Flujo de Caja Libre) líquido.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="footer">MDA Investing &nbsp;·&nbsp; Hugo Tanos Investment Advisor &nbsp;·&nbsp; 2026 &nbsp;·&nbsp; Solo con fines informativos. No constituye asesoramiento de inversión.</div>
+
+</div>
+
+<script>
+// ── DONUT CHART ──────────────────────────────────────────────
+(function () {
+  const canvas = document.getElementById('donut');
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  const R = 80;
+  const r = 48;
+
+  const segments = [
+    { pct: 0.85, color: '#76b900' },
+    { pct: 0.11, color: '#1a1a1a' },
+    { pct: 0.025, color: '#aaaaaa' },
+    { pct: 0.015, color: '#d4d4d4' },
+  ];
+
+  // Animate
+  let progress = 0;
+  const total = Math.PI * 2;
+  const startAngle = -Math.PI / 2;
+
+  function draw(prog) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let angle = startAngle;
+    for (const seg of segments) {
+      const sweep = seg.pct * total * Math.min(prog, 1);
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, angle, angle + sweep);
+      ctx.closePath();
+      ctx.fillStyle = seg.color;
+      ctx.fill();
+      angle += sweep;
+    }
+
+    // Inner circle (hole)
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+    // Center label
+    if (prog >= 1) {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = 'bold 15px "IBM Plex Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('85%', cx, cy - 8);
+      ctx.fillStyle = '#6b6b6b';
+      ctx.font = '10px "IBM Plex Sans", sans-serif';
+      ctx.fillText('Data Center', cx, cy + 8);
+    }
+  }
+
+  // Gap between slices
+  function drawWithGaps(prog) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    let angle = startAngle;
+    const gap = 0.025;
+
+    for (const seg of segments) {
+      const sweep = seg.pct * total * Math.min(prog, 1);
+      if (sweep < 0.01) { angle += sweep; continue; }
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, R, angle + gap / 2, angle + sweep - gap / 2);
+      ctx.closePath();
+      ctx.fillStyle = seg.color;
+      ctx.fill();
+      angle += sweep;
+    }
+    // hole
+    ctx.beginPath();
+    ctx.arc(cx, cy, r, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffffff';
+    ctx.fill();
+
+    if (prog >= 1) {
+      ctx.fillStyle = '#1a1a1a';
+      ctx.font = 'bold 15px "IBM Plex Mono", monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('85%', cx, cy - 9);
+      ctx.fillStyle = '#6b6b6b';
+      ctx.font = '10px "IBM Plex Sans", sans-serif';
+      ctx.fillText('Data Center', cx, cy + 8);
+    }
+  }
+
+  let start = null;
+  const duration = 900;
+
+  function animate(ts) {
+    if (!start) start = ts;
+    const elapsed = ts - start;
+    const prog = Math.min(elapsed / duration, 1);
+    // ease out cubic
+    const eased = 1 - Math.pow(1 - prog, 3);
+    drawWithGaps(eased);
+    if (prog < 1) requestAnimationFrame(animate);
+  }
+
+  // Start when in view
+  const obs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting) {
+      requestAnimationFrame(animate);
+      obs.disconnect();
+    }
+  }, { threshold: 0.3 });
+  obs.observe(canvas);
+})();
+</script>
+</body>
+</html>
