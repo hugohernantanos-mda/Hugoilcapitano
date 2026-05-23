@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Visa vs Mastercard — Simulador de Inversión</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@700;800&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:#070B14;font-family:'Space Mono',monospace;color:#E2E8F0;}
+button{cursor:pointer;font-family:'Space Mono',monospace;transition:all .15s;border:none;}
+button:active{transform:scale(0.97);}
+input{font-family:'Space Mono',monospace;}
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:#1A2540;border-radius:2px;}
+.wrap{max-width:520px;margin:0 auto;padding:20px 16px 36px;}
+.header{text-align:center;margin-bottom:22px;}
+.header-sub{font-size:9px;letter-spacing:.2em;color:#4A5568;margin-bottom:6px;text-transform:uppercase;}
+.header h1{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1.1;}
+.header p{color:#4A5568;font-size:10px;margin-top:5px;}
+.card{background:#0C1322;border:1px solid #1A2540;border-radius:14px;padding:16px;margin-bottom:14px;}
+.lbl{color:#4A5568;font-size:9px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;}
+.row2{display:flex;gap:8px;}
+.btn-co{flex:1;padding:9px 0;border-radius:8px;font-size:12px;font-weight:700;background:transparent;}
+.pgrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:8px;}
+.btn-p{padding:7px 0;border-radius:6px;font-size:11px;background:transparent;}
+.hgrid{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;}
+.btn-h{padding:8px 0;border-radius:6px;font-size:11px;background:transparent;}
+.irow{display:flex;align-items:center;gap:8px;margin-bottom:0;}
+.irow span{color:#4A5568;font-size:12px;}
+.irow input{flex:1;background:#0a1120;border:1px solid #1A2540;border-radius:6px;padding:7px 10px;color:#E2E8F0;font-size:12px;}
+.sgrid{display:grid;gap:10px;margin-bottom:14px;}
+.sc{background:#0C1322;border-radius:12px;padding:14px;}
+.sl{font-size:10px;font-weight:700;margin-bottom:10px;letter-spacing:.05em;}
+.sv{font-size:22px;font-weight:700;margin-bottom:2px;}
+.sr{font-size:11px;margin-bottom:10px;}
+.srow{display:flex;justify-content:space-between;font-size:10px;margin-top:4px;}
+.srow span:first-child{color:#4A5568;}
+.cwrap{position:relative;background:#0C1322;border:1px solid #1A2540;border-radius:14px;padding:16px 12px 10px 8px;margin-bottom:14px;}
+canvas{display:block;}
+.legend{display:flex;justify-content:center;gap:16px;padding-top:8px;flex-wrap:wrap;}
+.li{display:flex;align-items:center;gap:6px;font-size:10px;}
+.ll{width:22px;height:3px;border-radius:2px;}
+
+/* Tooltip - siempre visible cuando hay datos */
+.tt{
+  position:absolute;
+  background:rgba(8,14,26,.94);
+  border:1px solid #1A2540;
+  border-radius:8px;
+  padding:8px 12px;
+  font-size:11px;
+  pointer-events:none;
+  z-index:10;
+  min-width:148px;
+  display:none;
+  font-family:'Space Mono',monospace;
+}
+.tty{color:#4A5568;margin-bottom:6px;font-size:10px;}
+.ttv{font-weight:700;margin-bottom:2px;}
+
+.btn-play{width:100%;padding:13px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.08em;}
+.disc{margin-top:16px;font-size:9px;color:#1e2d45;text-align:center;line-height:1.7;}
+.note{font-size:9px;color:#4A5568;margin-top:6px;line-height:1.5;display:none;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-sub">Simulador de inversión</div>
+    <h1>
+      <span style="color:#4F8EF7">VISA</span>
+      <span style="color:#4A5568;font-weight:400;font-size:18px"> vs </span>
+      <span style="color:#F56565">MASTERCARD</span>
+    </h1>
+    <p>¿Cuánto valdrían tus dólares invertidos hoy?</p>
+  </div>
+
+  <div class="card">
+    <div class="lbl">Empresa</div>
+    <div class="row2" style="margin-bottom:14px">
+      <button class="btn-co" id="btn-V"  onclick="toggleCo('V')">🔵 Visa (V)</button>
+      <button class="btn-co" id="btn-MA" onclick="toggleCo('MA')">🔴 Mastercard (MA)</button>
+    </div>
+    <div class="lbl">Inversión inicial (USD)</div>
+    <div class="pgrid">
+      <button class="btn-p" id="p500"   onclick="setAmt(500)">$500</button>
+      <button class="btn-p" id="p1000"  onclick="setAmt(1000)">$1K</button>
+      <button class="btn-p" id="p5000"  onclick="setAmt(5000)">$5K</button>
+      <button class="btn-p" id="p10000" onclick="setAmt(10000)">$10K</button>
+    </div>
+    <div class="irow" style="margin:8px 0 14px">
+      <span>$</span>
+      <input type="number" id="amtInput" value="1000" min="1" oninput="onAmtInput(this.value)"/>
+    </div>
+    <div class="lbl">Horizonte temporal</div>
+    <div class="hgrid">
+      <button class="btn-h" id="hz5"  onclick="setHz(5)">5 años</button>
+      <button class="btn-h" id="hz10" onclick="setHz(10)">10 años</button>
+      <button class="btn-h" id="hz15" onclick="setHz(15)">15 años</button>
+      <button class="btn-h" id="hz20" onclick="setHz(20)">20 años</button>
+    </div>
+    <div id="vnote" class="note">* Visa IPO marzo 2008. Su línea comienza ese año.</div>
+  </div>
+
+  <div class="sgrid" id="sgrid"></div>
+
+  <div class="cwrap" id="cwrap">
+    <canvas id="chart" height="270"></canvas>
+    <div class="tt" id="tt">
+      <div class="tty" id="tt-yr"></div>
+      <div class="ttv" id="tt-v"  style="color:#4F8EF7"></div>
+      <div class="ttv" id="tt-ma" style="color:#F56565"></div>
+    </div>
+    <div class="legend">
+      <div class="li" id="leg-V"  style="color:#4F8EF7"><div class="ll" style="background:#4F8EF7"></div>Visa (V)</div>
+      <div class="li" id="leg-MA" style="color:#F56565"><div class="ll" style="background:#F56565"></div>Mastercard (MA)</div>
+      <div class="li" style="color:#F6AD55"><div style="width:22px;border-top:2px dashed #F6AD55;opacity:.7"></div>Capital inicial</div>
+    </div>
+  </div>
+
+  <button class="btn-play" id="btn-play" onclick="play()">▶  REPRODUCIR EVOLUCIÓN</button>
+  <div class="disc">Precios históricos ajustados por splits. Datos aproximados con fines educativos.<br>No constituye asesoramiento de inversión.</div>
+</div>
+
+<script>
+const PRICES = {
+  V: {2008:11,2009:15.5,2010:20.5,2011:23.5,2012:38,2013:53.75,
+      2014:65.25,2015:78,2016:79,2017:114,2018:134,2019:189,
+      2020:218,2021:218,2022:209,2023:261,2024:320,2025:355},
+  MA:{2006:4.5,2007:18,2008:14,2009:21.5,2010:31,2011:35,
+      2012:52,2013:83,2014:88,2015:93,2016:103,2017:152,
+      2018:184,2019:295,2020:350,2021:365,2022:348,2023:430,
+      2024:540,2025:570}
+};
+const HORIZONS={5:2021,10:2016,15:2011,20:2006};
+const CLR={V:'#4F8EF7',MA:'#F56565',gold:'#F6AD55',purple:'#A78BFA',green:'#68D391'};
+const PAD={top:16,right:12,bottom:28,left:46};
+
+let sel=['V','MA'], amt=1000, hz=10;
+let allData=[], visCount=0, animTimer=null, isPlaying=false;
+
+// ── Datos ──────────────────────────────────────────────────────────
+function buildQ(prices, sy){
+  const yrs=Object.keys(prices).map(Number).sort().filter(y=>y>=sy&&y<=2025);
+  if(yrs.length<2) return [];
+  const pts=[];
+  for(let i=0;i<yrs.length-1;i++){
+    const y1=yrs[i],y2=yrs[i+1],p1=prices[y1],p2=prices[y2];
+    for(let q=0;q<4;q++) pts.push({t:+(y1+q*.25).toFixed(2),p:p1+(p2-p1)*(q/4)});
+  }
+  pts.push({t:yrs[yrs.length-1],p:prices[yrs[yrs.length-1]]});
+  return pts;
+}
+
+function buildData(){
+  const sy=HORIZONS[hz];
+  const hasMA=sel.includes('MA'), hasV=sel.includes('V');
+  const maS=sy, vS=Math.max(sy,2008);
+  const primary=hasMA?buildQ(PRICES.MA,maS):buildQ(PRICES.V,vS);
+  const vPts=hasV?buildQ(PRICES.V,vS):null;
+  allData=primary.map(mp=>{
+    const row={t:mp.t};
+    if(hasMA) row.MA=Math.round(amt*mp.p/PRICES.MA[maS]);
+    if(hasV&&vPts){
+      const vp=vPts.find(v=>Math.abs(v.t-mp.t)<0.01);
+      if(vp&&mp.t>=vS) row.V=Math.round(amt*vp.p/PRICES.V[vS]);
+    }
+    return row;
+  });
+}
+
+// ── Formato ────────────────────────────────────────────────────────
+function fmt(n){
+  if(n>=1e6)  return '$'+(n/1e6).toFixed(2)+'M';
+  if(n>=1000) return '$'+(n/1000).toFixed(1)+'K';
+  return '$'+Math.round(n);
+}
+function fmtLbl(t){
+  const yr=Math.floor(t),q=Math.round((t%1)*4);
+  return q===0?String(yr):yr+' Q'+q;
+}
+
+// ── Canvas ─────────────────────────────────────────────────────────
+const canvas=document.getElementById('chart');
+const ctx=canvas.getContext('2d');
+
+function resize(){
+  const w=document.getElementById('cwrap').clientWidth-20;
+  canvas.width=w; canvas.height=270;
+}
+
+function cW(){return canvas.width-PAD.left-PAD.right;}
+function cH(){return canvas.height-PAD.top-PAD.bottom;}
+
+function getYMax(){
+  const vals=allData.flatMap(d=>sel.map(c=>d[c]).filter(Boolean));
+  return vals.length?Math.ceil(Math.max(...vals)*1.1/1000)*1000:amt*2;
+}
+
+function px(t,xMin,xMax){return PAD.left+((t-xMin)/(xMax-xMin))*cW();}
+function py(v,yMax){return PAD.top+cH()-(v/yMax)*cH();}
+
+function drawChart(count){
+  resize();
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  if(!allData.length) return;
+
+  const xMin=allData[0].t, xMax=allData[allData.length-1].t;
+  const yMax=getYMax();
+  const data=allData.slice(0,Math.max(1,count));
+
+  // Grid
+  ctx.strokeStyle='#111b2e'; ctx.lineWidth=1;
+  for(let i=0;i<=4;i++){
+    const y=PAD.top+i*(cH()/4);
+    ctx.beginPath(); ctx.moveTo(PAD.left,y); ctx.lineTo(PAD.left+cW(),y); ctx.stroke();
+  }
+
+  // Y labels
+  ctx.fillStyle='#4A5568'; ctx.font='9px Space Mono'; ctx.textAlign='right';
+  for(let i=0;i<=4;i++){
+    const v=yMax*(1-i/4);
+    ctx.fillText(v>=1000?(v/1000).toFixed(0)+'K':String(Math.round(v)), PAD.left-6, PAD.top+i*(cH()/4)+3);
+  }
+
+  // X labels
+  ctx.textAlign='center';
+  const span=xMax-xMin;
+  const step=span<=6?1:span<=12?2:span<=20?2:4;
+  for(let y=Math.ceil(xMin);y<=xMax;y+=step){
+    ctx.fillText(String(y), px(y,xMin,xMax), canvas.height-8);
+  }
+
+  // Línea de capital inicial
+  const ry=py(amt,yMax);
+  ctx.save();
+  ctx.strokeStyle=CLR.gold; ctx.lineWidth=1.5; ctx.globalAlpha=.5; ctx.setLineDash([5,4]);
+  ctx.beginPath(); ctx.moveTo(PAD.left,ry); ctx.lineTo(PAD.left+cW(),ry); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle=CLR.gold; ctx.font='9px Space Mono'; ctx.textAlign='right';
+  ctx.fillText('Inversión', PAD.left+cW()-2, ry-4);
+
+  if(data.length<2) return;
+
+  // Áreas y líneas por empresa
+  sel.forEach(co=>{
+    const pts=data.filter(d=>d[co]!==undefined);
+    if(pts.length<2) return;
+
+    // Área
+    const grad=ctx.createLinearGradient(0,PAD.top,0,PAD.top+cH());
+    grad.addColorStop(0,CLR[co]+'66');
+    grad.addColorStop(1,CLR[co]+'05');
+    ctx.save();
+    ctx.fillStyle=grad;
+    ctx.beginPath();
+    ctx.moveTo(px(pts[0].t,xMin,xMax), py(pts[0][co],yMax));
+    pts.forEach(d=>ctx.lineTo(px(d.t,xMin,xMax), py(d[co],yMax)));
+    ctx.lineTo(px(pts[pts.length-1].t,xMin,xMax), PAD.top+cH());
+    ctx.lineTo(px(pts[0].t,xMin,xMax), PAD.top+cH());
+    ctx.closePath(); ctx.fill();
+    ctx.restore();
+
+    // Línea
+    ctx.save();
+    ctx.strokeStyle=CLR[co]; ctx.lineWidth=2.5; ctx.lineJoin='round';
+    ctx.beginPath();
+    ctx.moveTo(px(pts[0].t,xMin,xMax), py(pts[0][co],yMax));
+    pts.forEach(d=>ctx.lineTo(px(d.t,xMin,xMax), py(d[co],yMax)));
+    ctx.stroke();
+    ctx.restore();
+  });
+
+  // Cursor animado (línea blanca vertical)
+  if(count<allData.length){
+    const last=data[data.length-1];
+    if(last){
+      const cx=px(last.t,xMin,xMax);
+      ctx.save();
+      ctx.strokeStyle='rgba(255,255,255,.55)'; ctx.lineWidth=1.5; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(cx,PAD.top); ctx.lineTo(cx,PAD.top+cH()); ctx.stroke();
+      ctx.restore();
+    }
+  }
+}
+
+// ── Tooltip (hover + animación) ────────────────────────────────────
+function positionTooltip(t){
+  const xMin=allData[0].t, xMax=allData[allData.length-1].t;
+  const pct=(t-xMin)/(xMax-xMin);
+  const tt=document.getElementById('tt');
+  const wrapW=document.getElementById('cwrap').clientWidth;
+  const ttW=160;
+  if(pct>0.55){
+    // Tooltip a la izquierda de la línea
+    const rightPx=(1-pct)*wrapW+20;
+    tt.style.right=rightPx+'px';
+    tt.style.left='auto';
+  } else {
+    const leftPx=PAD.left+(pct*(wrapW-PAD.left-PAD.right))+10;
+    tt.style.left=leftPx+'px';
+    tt.style.right='auto';
+  }
+  tt.style.top='24px';
+}
+
+function showTooltip(pt){
+  const tt=document.getElementById('tt');
+  document.getElementById('tt-yr').textContent=fmtLbl(pt.t);
+  const tvEl=document.getElementById('tt-v');
+  const tmEl=document.getElementById('tt-ma');
+  if(pt.V!==undefined){ tvEl.textContent='Visa: '+fmt(pt.V); tvEl.style.display=''; }
+  else tvEl.style.display='none';
+  if(pt.MA!==undefined){ tmEl.textContent='Mastercard: '+fmt(pt.MA); tmEl.style.display=''; }
+  else tmEl.style.display='none';
+  positionTooltip(pt.t);
+  tt.style.display='block';
+}
+
+function hideTooltip(){
+  document.getElementById('tt').style.display='none';
+}
+
+// Hover con mouse
+canvas.addEventListener('mousemove',function(e){
+  if(isPlaying) return;
+  const rect=canvas.getBoundingClientRect();
+  pickTooltip(e.clientX-rect.left);
+});
+canvas.addEventListener('mouseleave',function(){
+  if(!isPlaying) hideTooltip();
+});
+
+// Touch
+canvas.addEventListener('touchmove',function(e){
+  if(isPlaying) return;
+  e.preventDefault();
+  const rect=canvas.getBoundingClientRect();
+  pickTooltip(e.touches[0].clientX-rect.left);
+},{passive:false});
+canvas.addEventListener('touchend',function(){
+  if(!isPlaying) hideTooltip();
+});
+
+function pickTooltip(mx){
+  if(!allData.length) return;
+  const xMin=allData[0].t, xMax=allData[allData.length-1].t;
+  const t=xMin+((mx-PAD.left)/cW())*(xMax-xMin);
+  let closest=allData[0];
+  allData.forEach(d=>{if(Math.abs(d.t-t)<Math.abs(closest.t-t)) closest=d;});
+  showTooltip(closest);
+}
+
+// ── Animación ──────────────────────────────────────────────────────
+function play(){
+  clearInterval(animTimer);
+  visCount=1; isPlaying=true;
+  const btn=document.getElementById('btn-play');
+  btn.textContent='⏳  ANIMANDO...'; btn.disabled=true;
+  btn.style.color='#4A5568'; btn.style.borderColor='#1A2540';
+
+  animTimer=setInterval(()=>{
+    visCount++;
+    drawChart(visCount);
+    updateStatCards(visCount);
+
+    // Mostrar tooltip con el punto actual
+    const pt=allData[Math.min(visCount,allData.length)-1];
+    if(pt) showTooltip(pt);
+
+    if(visCount>=allData.length){
+      clearInterval(animTimer);
+      setTimeout(()=>{
+        isPlaying=false;
+        drawChart(allData.length);
+        updateStatCards(allData.length);
+        hideTooltip();
+        btn.textContent='↺  REPRODUCIR DE NUEVO';
+        btn.disabled=false;
+        btn.style.color=CLR.purple;
+        btn.style.borderColor=CLR.purple;
+      },500);
+    }
+  },200);
+}
+
+// ── Stats ──────────────────────────────────────────────────────────
+function calcStats(co){
+  const sy=HORIZONS[hz];
+  const cs=co==='V'?Math.max(sy,2008):sy;
+  const sp=PRICES[co][cs], ep=PRICES[co][2025];
+  if(!sp||!ep) return null;
+  const yrs=2025-cs, fv=amt*ep/sp;
+  return {final:fv,ret:(fv/amt-1)*100,cagr:(Math.pow(ep/sp,1/yrs)-1)*100,yrs,cs};
+}
+
+function updateStatCards(count){
+  const pt=allData[Math.min(count,allData.length)-1];
+  sel.forEach(co=>{
+    const dv=document.getElementById('sv-'+co);
+    const dr=document.getElementById('sr-'+co);
+    if(!dv||!dr) return;
+    const val=(pt&&pt[co]!==undefined)?pt[co]:calcStats(co)?.final;
+    if(!val) return;
+    const ret=(val/amt-1)*100;
+    dv.textContent=fmt(val);
+    dr.textContent=(ret>=0?'+':'')+ret.toFixed(0)+'%';
+    dr.style.color=ret>=0?CLR.green:'#FC8181';
+  });
+}
+
+function renderStatCards(){
+  const grid=document.getElementById('sgrid');
+  grid.style.gridTemplateColumns=sel.length===2?'1fr 1fr':'1fr';
+  grid.innerHTML='';
+  sel.forEach(co=>{
+    const s=calcStats(co);
+    if(!s) return;
+    const div=document.createElement('div');
+    div.className='sc';
+    div.style.cssText=`border:1px solid ${CLR[co]}35;border-top:2px solid ${CLR[co]};`;
+    div.innerHTML=`
+      <div class="sl" style="color:${CLR[co]}">${co==='V'?'— VISA':'— MASTERCARD'}</div>
+      <div class="sv" id="sv-${co}">${fmt(s.final)}</div>
+      <div class="sr" id="sr-${co}" style="color:${s.ret>=0?CLR.green:'#FC8181'}">${s.ret>=0?'+':''}${s.ret.toFixed(0)}%</div>
+      <div class="srow"><span>CAGR</span><span>${s.cagr.toFixed(1)}%</span></div>
+      <div class="srow"><span>AÑOS</span><span>${s.yrs}</span></div>
+      <div class="srow"><span>INICIO</span><span>${s.cs}</span></div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+// ── Controles ──────────────────────────────────────────────────────
+function toggleCo(c){
+  if(sel.includes(c)){if(sel.length>1) sel=sel.filter(x=>x!==c);}
+  else sel.push(c);
+  refresh();
+}
+
+function setAmt(v){
+  amt=v;
+  document.getElementById('amtInput').value=v;
+  refresh();
+}
+
+function onAmtInput(v){
+  const n=parseFloat(v);
+  if(!isNaN(n)&&n>0){amt=n;refresh();}
+}
+
+function setHz(v){
+  hz=v;
+  if(hz===20&&sel.length===1&&sel[0]==='V') hz=15;
+  refresh();
+}
+
+function refresh(){
+  clearInterval(animTimer);
+  isPlaying=false;
+  hideTooltip();
+
+  // Botones empresa
+  ['V','MA'].forEach(c=>{
+    const btn=document.getElementById('btn-'+c);
+    const on=sel.includes(c);
+    btn.style.cssText=`border:1.5px solid ${on?CLR[c]:'#1A2540'};color:${on?CLR[c]:'#4A5568'};background:${on?CLR[c]+'1a':'transparent'};`;
+  });
+
+  // Botones horizonte
+  [5,10,15,20].forEach(v=>{
+    const btn=document.getElementById('hz'+v);
+    const dis=v===20&&sel.length===1&&sel[0]==='V';
+    btn.disabled=dis;
+    btn.style.cssText=`border:1px solid ${hz===v?CLR.purple:'#1A2540'};color:${dis?'#1e2d45':hz===v?CLR.purple:'#4A5568'};background:${hz===v?CLR.purple+'18':'transparent'};`;
+  });
+
+  // Nota Visa
+  document.getElementById('vnote').style.display=(hz===20&&sel.includes('V'))?'':'none';
+
+  // Leyenda
+  document.getElementById('leg-V').style.display=sel.includes('V')?'flex':'none';
+  document.getElementById('leg-MA').style.display=sel.includes('MA')?'flex':'none';
+
+  // Presets
+  [500,1000,5000,10000].forEach(p=>{
+    const btn=document.getElementById('p'+p);
+    btn.style.cssText=`border:1px solid ${amt===p?CLR.gold:'#1A2540'};color:${amt===p?CLR.gold:'#4A5568'};background:${amt===p?CLR.gold+'15':'transparent'};`;
+  });
+
+  // Play btn
+  const pb=document.getElementById('btn-play');
+  pb.textContent='▶  REPRODUCIR EVOLUCIÓN'; pb.disabled=false;
+  pb.style.cssText=`border:1px solid ${CLR.purple};color:${CLR.purple};background:${CLR.purple+'18'};width:100%;padding:13px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.08em;`;
+
+  buildData();
+  renderStatCards();
+  visCount=allData.length;
+  drawChart(allData.length);
+}
+
+window.addEventListener('resize',()=>{
+  resize();
+  drawChart(isPlaying?visCount:allData.length);
+});
+
+refresh();
+setAmt(1000);
+</script>
+</body>
+</html>
