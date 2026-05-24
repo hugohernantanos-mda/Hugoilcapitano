@@ -395,7 +395,7 @@
   </div>
   <div class="header-right">
     <div class="stat-badge">
-      <span class="stat-num" id="doc-count">8</span>
+      <span class="stat-num" id="doc-count">9</span>
       <span class="stat-label">Análisis publicados</span>
     </div>
   </div>
@@ -503,10 +503,23 @@
   <section id="fundamentales">
     <div class="section-header">
       <span class="section-num">03</span>
-      <h2 class="section-title">Análisis Fundamentales — NVIDIA</h2>
-      <span class="section-count">2 reportes</span>
+      <h2 class="section-title">Análisis Fundamentales</h2>
+      <span class="section-count">3 reportes</span>
     </div>
     <div class="cards-grid">
+
+      <a class="card" href="ypf_analisis_fundamental.html" style="--accent-color: #003DA6;">
+        <div class="card-top">
+          <div class="card-icon">🛢️</div>
+          <span class="tag tag-analysis">Análisis Fundamental</span>
+        </div>
+        <div class="card-title">YPF — Análisis Fundamental</div>
+        <div class="card-desc">Resultados FY2025 y Q1 2026. Vaca Muerta, proyecto LNG, upstream, downstream, catalizadores y riesgos. 10 slides interactivos.</div>
+        <div class="card-footer">
+          <span class="card-ticker">YPF · NYSE</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
 
       <a class="card" href="nvidia_income_statementHugoTanos.html" style="--accent-color: #76B900;">
         <div class="card-top">
@@ -593,7 +606,7 @@
   // COUNT ANIMATION
   const countEl = document.getElementById('doc-count');
   let count = 0;
-  const target = 8;
+  const target = 9;
   const interval = setInterval(() => {
     count++;
     countEl.textContent = count;
