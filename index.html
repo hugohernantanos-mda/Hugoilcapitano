@@ -395,7 +395,7 @@
   </div>
   <div class="header-right">
     <div class="stat-badge">
-      <span class="stat-num" id="doc-count">9</span>
+      <span class="stat-num" id="doc-count">10</span>
       <span class="stat-label">Análisis publicados</span>
     </div>
   </div>
@@ -466,9 +466,22 @@
     <div class="section-header">
       <span class="section-num">02</span>
       <h2 class="section-title">Simuladores Interactivos</h2>
-      <span class="section-count">2 herramientas</span>
+      <span class="section-count">3 herramientas</span>
     </div>
     <div class="cards-grid">
+
+      <a class="card" href="merval_ccl_vs_sp500.html" style="--accent-color: #4CAF7A;">
+        <div class="card-top">
+          <div class="card-icon">🇦🇷</div>
+          <span class="tag tag-simulator">Simulador</span>
+        </div>
+        <div class="card-title">MERVAL CCL vs S&P 500</div>
+        <div class="card-desc">Comparación histórica del MERVAL en dólares CCL (Contado con Liquidación) versus el S&P 500. Rendimientos y CAGR.</div>
+        <div class="card-footer">
+          <span class="card-ticker">MERVAL · SPX</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
 
       <a class="card" href="simulador-spx-ndx.html" style="--accent-color: #4A90D9;">
         <div class="card-top">
@@ -606,7 +619,7 @@
   // COUNT ANIMATION
   const countEl = document.getElementById('doc-count');
   let count = 0;
-  const target = 9;
+  const target = 10;
   const interval = setInterval(() => {
     count++;
     countEl.textContent = count;
