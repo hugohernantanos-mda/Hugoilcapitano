@@ -1,0 +1,962 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MERVAL en USD vs S&P 500 | MDA Investing</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+
+*{box-sizing:border-box;margin:0;padding:0;}
+body{
+  font-family:'Space Grotesk',sans-serif;
+  background:#08081a;
+  color:#e2e8f0;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  overflow-x:hidden;
+}
+
+/* ── HEADER ── */
+.header{
+  text-align:center;
+  padding:22px 20px 16px;
+  border-bottom:1px solid #1e1e3a;
+  background:#08081a;
+}
+.header-eyebrow{
+  font-family:'Space Mono',monospace;
+  font-size:10px;
+  letter-spacing:2.5px;
+  color:#4a4a7a;
+  text-transform:uppercase;
+  margin-bottom:8px;
+}
+.header-title{
+  font-size:32px;
+  font-weight:700;
+  letter-spacing:-0.5px;
+  line-height:1;
+  margin-bottom:6px;
+}
+.header-title .merval{color:#7c6ef5;}
+.header-title .vs{color:#4a4a7a;font-size:20px;margin:0 6px;}
+.header-title .spx{color:#22c55e;}
+.header-sub{
+  font-size:12px;
+  color:#4a4a7a;
+  letter-spacing:0.3px;
+}
+
+/* ── BODY LAYOUT ── */
+.app-body{
+  display:flex;
+  flex:1;
+  height:calc(100vh - 130px);
+  min-height:540px;
+}
+
+/* ── LEFT PANEL ── */
+.sidebar{
+  width:258px;
+  flex-shrink:0;
+  background:#0d0d22;
+  border-right:1px solid #1e1e3a;
+  padding:14px 14px 12px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  overflow-y:auto;
+}
+
+.alert-box{
+  background:#1a1400;
+  border:1px solid #a16207;
+  border-radius:6px;
+  padding:9px 10px;
+  font-size:10.5px;
+  line-height:1.55;
+  color:#fbbf24;
+}
+.alert-box strong{color:#fcd34d;}
+
+.section-label{
+  font-family:'Space Mono',monospace;
+  font-size:9px;
+  letter-spacing:1.8px;
+  color:#4a4a7a;
+  text-transform:uppercase;
+  margin-bottom:7px;
+}
+
+.toggle-row{
+  display:flex;
+  gap:6px;
+}
+.toggle-btn{
+  flex:1;
+  padding:7px 4px;
+  border-radius:6px;
+  font-size:11px;
+  font-weight:600;
+  font-family:'Space Mono',monospace;
+  cursor:pointer;
+  border:none;
+  transition:all 0.15s;
+  letter-spacing:0.3px;
+  text-align:center;
+}
+.toggle-btn.merval{background:#1a1535;color:#7c6ef5;border:1px solid #3a2e7a;}
+.toggle-btn.merval.active{background:#2d2060;color:#a78bfa;border-color:#7c6ef5;}
+.toggle-btn.spx{background:#0a1f10;color:#22c55e;border:1px solid #14532d;}
+.toggle-btn.spx.active{background:#14532d;color:#4ade80;border-color:#22c55e;}
+
+.amount-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+  margin-bottom:6px;
+}
+.amt-btn{
+  padding:7px 2px;
+  border-radius:5px;
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+  border:1px solid #1e1e3a;
+  background:#111128;
+  color:#94a3b8;
+  transition:all 0.15s;
+  font-family:'Space Mono',monospace;
+  text-align:center;
+}
+.amt-btn:hover{border-color:#7c6ef5;color:#a78bfa;}
+.amt-btn.active{background:#1a1535;border-color:#7c6ef5;color:#a78bfa;}
+
+.amount-input-wrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+.dollar-sign{
+  position:absolute;
+  left:10px;
+  color:#4a4a7a;
+  font-size:13px;
+  font-weight:600;
+  pointer-events:none;
+}
+.amount-input{
+  width:100%;
+  background:#0d0d22;
+  border:1px solid #1e1e3a;
+  border-radius:6px;
+  padding:7px 10px 7px 22px;
+  color:#e2e8f0;
+  font-size:14px;
+  font-weight:600;
+  font-family:'Space Mono',monospace;
+  transition:border-color 0.2s;
+}
+.amount-input:focus{outline:none;border-color:#7c6ef5;}
+
+.hz-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:5px;
+}
+.hz-btn{
+  padding:7px 4px;
+  border-radius:5px;
+  font-size:11px;
+  font-weight:600;
+  cursor:pointer;
+  border:1px solid #1e1e3a;
+  background:#111128;
+  color:#94a3b8;
+  transition:all 0.15s;
+  font-family:'Space Mono',monospace;
+  text-align:center;
+}
+.hz-btn:hover{border-color:#7c6ef5;color:#a78bfa;}
+.hz-btn.active{background:#1a1535;border-color:#7c6ef5;color:#a78bfa;}
+
+/* ── STAT CARDS ── */
+.stats-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+  flex:1;
+}
+.stat-card{
+  background:#111128;
+  border-radius:8px;
+  padding:10px 9px;
+  border-top:3px solid;
+  min-height:160px;
+}
+.stat-card.merval{border-color:#7c6ef5;}
+.stat-card.spx{border-color:#22c55e;}
+.stat-card-label{
+  font-family:'Space Mono',monospace;
+  font-size:8.5px;
+  letter-spacing:1px;
+  margin-bottom:6px;
+}
+.stat-card.merval .stat-card-label{color:#7c6ef5;}
+.stat-card.spx .stat-card-label{color:#22c55e;}
+.stat-card-value{
+  font-family:'Space Mono',monospace;
+  font-size:20px;
+  font-weight:700;
+  color:#f8fafc;
+  margin-bottom:2px;
+  letter-spacing:-0.5px;
+}
+.stat-card-pct{
+  font-size:11px;
+  font-weight:700;
+  margin-bottom:8px;
+}
+.stat-card.merval .stat-card-pct{color:#a78bfa;}
+.stat-card.spx .stat-card-pct{color:#4ade80;}
+.stat-row{
+  display:flex;
+  justify-content:space-between;
+  font-size:9.5px;
+  padding:2px 0;
+  border-bottom:1px solid #1e1e3a;
+}
+.stat-row:last-child{border-bottom:none;}
+.stat-row-label{color:#4a4a7a;font-family:'Space Mono',monospace;letter-spacing:0.3px;font-size:8.5px;}
+.stat-row-val{color:#cbd5e1;font-family:'Space Mono',monospace;font-size:9px;font-weight:600;}
+.stat-row-val.neg{color:#f87171;}
+.stat-row-val.pos{color:#4ade80;}
+
+/* ── CHART AREA ── */
+.chart-wrap{
+  flex:1;
+  background:#ffffff;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  overflow:hidden;
+}
+canvas#chart{
+  flex:1;
+  width:100%;
+  display:block;
+  cursor:crosshair;
+}
+
+/* ── TOOLTIP ── */
+.tooltip{
+  position:absolute;
+  background:#0f172a;
+  color:white;
+  border:1px solid #334155;
+  border-radius:7px;
+  padding:10px 13px;
+  font-size:12px;
+  pointer-events:none;
+  display:none;
+  min-width:155px;
+  z-index:20;
+  box-shadow:0 4px 20px rgba(0,0,0,0.4);
+}
+.tt-yr{
+  font-family:'Space Mono',monospace;
+  font-size:12px;
+  font-weight:700;
+  color:#94a3b8;
+  margin-bottom:7px;
+  padding-bottom:5px;
+  border-bottom:1px solid #1e293b;
+}
+.tt-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:4px;
+}
+.tt-lbl{color:#64748b;font-size:10px;}
+.tt-val{font-family:'Space Mono',monospace;font-weight:700;font-size:11px;}
+.tt-m{color:#a78bfa;}
+.tt-s{color:#4ade80;}
+
+/* ── BOTTOM BUTTON ── */
+.bottom-bar{
+  background:#08081a;
+  border-top:1px solid #1e1e3a;
+  padding:0;
+}
+.play-btn{
+  width:100%;
+  padding:14px 20px;
+  background:linear-gradient(135deg,#6d28d9,#7c3aed);
+  border:none;
+  color:white;
+  font-size:13px;
+  font-weight:700;
+  font-family:'Space Grotesk',sans-serif;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  transition:all 0.2s;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+}
+.play-btn:hover{background:linear-gradient(135deg,#5b21b6,#6d28d9);}
+.play-btn:disabled{opacity:0.6;cursor:not-allowed;}
+
+/* ── FOOTER ── */
+.footer{
+  background:#08081a;
+  text-align:center;
+  padding:8px;
+  font-size:9.5px;
+  color:#2e2e5a;
+  border-top:1px solid #1e1e3a;
+  line-height:1.6;
+}
+
+/* Legend */
+.chart-legend{
+  display:flex;
+  justify-content:center;
+  gap:22px;
+  padding:8px 0 6px;
+  background:white;
+  border-top:1px solid #f1f5f9;
+}
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-size:11px;
+  font-weight:600;
+  color:#475569;
+}
+.legend-line{width:28px;height:3px;border-radius:2px;}
+.legend-dash{width:28px;height:2px;background:repeating-linear-gradient(to right,#f97316 0,#f97316 5px,transparent 5px,transparent 9px);}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-eyebrow">SIMULADOR DE INVERSIÓN · ARGENTINA</div>
+  <div class="header-title">
+    <span class="merval">MERVAL</span>
+    <span style="color:#4a4a7a;font-size:18px;vertical-align:middle;margin:0 8px;">en USD vs</span>
+    <span class="spx">S&P 500</span>
+  </div>
+  <div class="header-sub">Rendimiento del mercado argentino en dólares frente al mercado americano</div>
+</div>
+
+<!-- BODY -->
+<div class="app-body">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+
+    <div class="alert-box">
+      ⚠&nbsp; El <strong>MERVAL en USD</strong> se calcula dividiendo el índice por el tipo de cambio <strong>CCL (Contado con Liquidación)</strong>, que es la metodología usada en TradingView y por analistas argentinos. Refleja el retorno real en dólares para el inversor.
+    </div>
+
+    <div>
+      <div class="section-label">Índices a comparar</div>
+      <div class="toggle-row">
+        <button class="toggle-btn merval active" id="btnMerval" onclick="toggleSeries('merval')">AR MERVAL (USD)</button>
+        <button class="toggle-btn spx active" id="btnSpx" onclick="toggleSeries('spx')">US S&amp;P 500 (SPX)</button>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Inversión inicial (USD)</div>
+      <div class="amount-grid">
+        <button class="amt-btn" onclick="setAmount(500)">$500</button>
+        <button class="amt-btn active" id="ab1k" onclick="setAmount(1000)">$1K</button>
+        <button class="amt-btn" onclick="setAmount(5000)">$5K</button>
+        <button class="amt-btn" onclick="setAmount(10000)">$10K</button>
+      </div>
+      <div class="amount-input-wrap">
+        <span class="dollar-sign">$</span>
+        <input type="number" class="amount-input" id="amtInput" value="1000" min="100">
+      </div>
+    </div>
+
+    <div>
+      <div class="section-label">Horizonte temporal</div>
+      <div class="hz-grid">
+        <button class="hz-btn" onclick="setHorizon(5)">5 años</button>
+        <button class="hz-btn" onclick="setHorizon(10)">10 años</button>
+        <button class="hz-btn active" onclick="setHorizon(20)">20 años</button>
+        <button class="hz-btn" onclick="setHorizon(30)">30 años</button>
+      </div>
+    </div>
+
+    <div class="stats-row" id="statsRow">
+      <!-- populated by JS -->
+    </div>
+
+  </div>
+
+  <!-- CHART -->
+  <div class="chart-wrap">
+    <canvas id="chart"></canvas>
+    <div class="chart-legend">
+      <div class="legend-item">
+        <div class="legend-line" style="background:#7c6ef5;"></div>
+        MERVAL (USD/CCL)
+      </div>
+      <div class="legend-item">
+        <div class="legend-line" style="background:#22c55e;"></div>
+        S&amp;P 500 (SPX)
+      </div>
+      <div class="legend-item">
+        <div class="legend-dash"></div>
+        Capital inicial
+      </div>
+    </div>
+    <div class="tooltip" id="tooltip">
+      <div class="tt-yr" id="tt-yr">—</div>
+      <div class="tt-row"><span class="tt-lbl">MERVAL:</span><span class="tt-val tt-m" id="tt-m">—</span></div>
+      <div class="tt-row"><span class="tt-lbl">S&P 500:</span><span class="tt-val tt-s" id="tt-s">—</span></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- BOTTOM -->
+<div class="bottom-bar">
+  <button class="play-btn" id="playBtn" onclick="playAnimation()">▶&nbsp; REPRODUCIR EVOLUCIÓN</button>
+</div>
+<div class="footer">
+  MERVAL en USD calculado con tipo de cambio CCL · S&P 500 = índice de precios, sin dividendos<br>
+  Datos históricos aproximados · Rendimiento pasado no garantiza resultados futuros<br>
+  No constituye asesoramiento de inversión &nbsp;·&nbsp; MDA Investing — Hugo Tanos Investment Advisor
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════════════════
+// DATOS HISTÓRICOS
+// ══════════════════════════════════════════════════════════════════════════════
+
+// S&P 500 — cierres anuales
+const SPX = {
+  1995:615,  1996:741,  1997:970,  1998:1229, 1999:1469,
+  2000:1320, 2001:1148, 2002:880,  2003:1112,
+  2004:1212, 2005:1248, 2006:1418, 2007:1468,
+  2008:903,  2009:1115, 2010:1258, 2011:1258,
+  2012:1426, 2013:1848, 2014:2059, 2015:2044,
+  2016:2239, 2017:2674, 2018:2507, 2019:3231,
+  2020:3756, 2021:4766, 2022:3840, 2023:4770,
+  2024:5882
+};
+
+// MERVAL en USD/CCL — cierres anuales (calibrado: 2005=450, 2015=620)
+const MERVAL = {
+  2000: 420,  2001: 190,  2002: 350,  2003: 490,
+  2004: 480,  2005: 450,  2006: 580,  2007: 720,
+  2008: 480,  2009: 560,  2010: 750,  2011: 620,
+  2012: 520,  2013: 560,  2014: 650,  2015: 620,
+  2016: 720,  2017: 1610, 2018: 710,  2019: 400,
+  2020: 580,  2021: 770,  2022: 660,  2023: 1050,
+  2024: 1780
+};
+
+// Bandas históricas de crisis
+const CRISIS_BANDS = [
+  {start:2007.5, end:2009.0, color:'rgba(239,68,68,0.08)', label:'Crisis 2008'},
+  {start:2018.0, end:2020.5, color:'rgba(234,179,8,0.09)',  label:'PASO + COVID'},
+];
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════════════════════════════════════
+let horizon    = 20;
+let amount     = 1000;
+let showMerval = true;
+let showSpx    = true;
+let animFrame  = null;
+let animProg   = 0;
+let animActive = false;
+let lastSpxPts   = [];
+let lastMervalPts = [];
+
+// ══════════════════════════════════════════════════════════════════════════════
+// UTILIDADES
+// ══════════════════════════════════════════════════════════════════════════════
+function fmt(n){
+  if(n >= 1000000) return '$'+(n/1000000).toFixed(2)+'M';
+  if(n >= 1000)    return '$'+(n/1000).toFixed(1)+'K';
+  return '$'+Math.round(n).toLocaleString('de-DE');
+}
+function fmtPct(c){return (c>=0?'+':'')+( c*100).toFixed(1)+'%';}
+
+function getYears(priceObj){ return Object.keys(priceObj).map(Number).sort((a,b)=>a-b); }
+
+function buildPortfolio(priceObj, startY, endY, inv){
+  const years = getYears(priceObj).filter(y => y>=startY && y<=endY);
+  const p0 = priceObj[startY];
+  return years.map(y=>({year:y, value:(priceObj[y]/p0)*inv}));
+}
+
+function computeStats(priceObj, startY, endY, inv){
+  const years = getYears(priceObj).filter(y => y>=startY && y<=endY);
+  if(years.length<2) return null;
+  const prices = years.map(y=>priceObj[y]);
+  const finalVal = (prices[prices.length-1]/prices[0])*inv;
+  const totalPct = prices[prices.length-1]/prices[0]-1;
+  const n = years[years.length-1] - years[0];
+  const cagrVal = n>0 ? Math.pow(prices[prices.length-1]/prices[0], 1/n)-1 : 0;
+
+  // Annual returns
+  let bestY='—', bestR=-Infinity, worstY='—', worstR=Infinity;
+  for(let i=1;i<years.length;i++){
+    const r = prices[i]/prices[i-1]-1;
+    if(r>bestR){ bestR=r; bestY=years[i]; }
+    if(r<worstR){ worstR=r; worstY=years[i]; }
+  }
+
+  // Max drawdown (peak to trough in portfolio values)
+  let peak=prices[0], maxDD=0;
+  for(let i=0;i<prices.length;i++){
+    if(prices[i]>peak) peak=prices[i];
+    const dd=(prices[i]-peak)/peak;
+    if(dd<maxDD) maxDD=dd;
+  }
+
+  return {
+    finalVal, totalPct, cagrVal, n,
+    startY: years[0], endY: years[years.length-1],
+    bestY, bestR, worstY, worstR, maxDD
+  };
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// CONTROLES
+// ══════════════════════════════════════════════════════════════════════════════
+function toggleSeries(which){
+  if(which==='merval'){ showMerval=!showMerval; }
+  else { showSpx=!showSpx; }
+  // prevent both off
+  if(!showMerval && !showSpx){ showMerval=true; showSpx=true; }
+  document.getElementById('btnMerval').classList.toggle('active', showMerval);
+  document.getElementById('btnSpx').classList.toggle('active', showSpx);
+  render(1);
+}
+
+function setAmount(v){
+  amount = v;
+  document.getElementById('amtInput').value = v;
+  document.querySelectorAll('.amt-btn').forEach(b=>{
+    const bv = parseInt(b.textContent.replace('$','').replace('K','000'));
+    b.classList.toggle('active', bv===v);
+  });
+  render(1);
+}
+
+function setHorizon(hz){
+  horizon = hz;
+  document.querySelectorAll('.hz-btn').forEach(b=>{
+    b.classList.toggle('active', b.textContent.trim()===hz+' años');
+  });
+  render(1);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// RENDER PRINCIPAL
+// ══════════════════════════════════════════════════════════════════════════════
+function render(prog){
+  amount = parseFloat(document.getElementById('amtInput').value)||1000;
+
+  const spxEnd   = 2024;
+  const spxStart = spxEnd - horizon;
+  const mEnd     = 2024;
+  const mStart   = 2025 - horizon; // lógica desplazada para MERVAL
+
+  // Clamp
+  const spxS = Math.max(spxStart, Math.min(...getYears(SPX)));
+  const mS   = Math.max(mStart,   Math.min(...getYears(MERVAL)));
+
+  lastSpxPts    = buildPortfolio(SPX,    spxS, spxEnd, amount);
+  lastMervalPts = buildPortfolio(MERVAL, mS,   mEnd,   amount);
+
+  // Stats
+  const sM = computeStats(MERVAL, mS, mEnd, amount);
+  const sS = computeStats(SPX,    spxS, spxEnd, amount);
+
+  // Update sidebar cards
+  const sr = document.getElementById('statsRow');
+  if(sM && sS){
+    sr.innerHTML = `
+      <div class="stat-card merval">
+        <div class="stat-card-label">MERVAL (USD/CCL)</div>
+        <div class="stat-card-value">${fmt(sM.finalVal)}</div>
+        <div class="stat-card-pct">${fmtPct(sM.totalPct)}</div>
+        <div class="stat-row"><span class="stat-row-label">CAGR</span><span class="stat-row-val">${fmtPct(sM.cagrVal)}</span></div>
+        <div class="stat-row"><span class="stat-row-label">AÑOS</span><span class="stat-row-val">${sM.n}</span></div>
+        <div class="stat-row"><span class="stat-row-label">INICIO</span><span class="stat-row-val">${sM.startY}</span></div>
+        <div class="stat-row"><span class="stat-row-label">MAX DRAWDOWN</span><span class="stat-row-val neg">${fmtPct(sM.maxDD)}</span></div>
+        <div class="stat-row"><span class="stat-row-label">MEJOR AÑO</span><span class="stat-row-val pos">${sM.bestY}: ${fmtPct(sM.bestR)}</span></div>
+        <div class="stat-row"><span class="stat-row-label">PEOR AÑO</span><span class="stat-row-val neg">${sM.worstY}: ${fmtPct(sM.worstR)}</span></div>
+      </div>
+      <div class="stat-card spx">
+        <div class="stat-card-label">S&amp;P 500 (SPX)</div>
+        <div class="stat-card-value">${fmt(sS.finalVal)}</div>
+        <div class="stat-card-pct">${fmtPct(sS.totalPct)}</div>
+        <div class="stat-row"><span class="stat-row-label">CAGR</span><span class="stat-row-val">${fmtPct(sS.cagrVal)}</span></div>
+        <div class="stat-row"><span class="stat-row-label">AÑOS</span><span class="stat-row-val">${sS.n}</span></div>
+        <div class="stat-row"><span class="stat-row-label">INICIO</span><span class="stat-row-val">${sS.startY}</span></div>
+        <div class="stat-row"><span class="stat-row-label">MAX DRAWDOWN</span><span class="stat-row-val neg">${fmtPct(sS.maxDD)}</span></div>
+        <div class="stat-row"><span class="stat-row-label">MEJOR AÑO</span><span class="stat-row-val pos">${sS.bestY}: ${fmtPct(sS.bestR)}</span></div>
+        <div class="stat-row"><span class="stat-row-label">PEOR AÑO</span><span class="stat-row-val neg">${sS.worstY}: ${fmtPct(sS.worstR)}</span></div>
+      </div>
+    `;
+  }
+
+  drawChart(lastSpxPts, lastMervalPts, prog);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// GRÁFICO
+// ══════════════════════════════════════════════════════════════════════════════
+function drawChart(spxPts, mPts, progress){
+  const canvas = document.getElementById('chart');
+  const dpr    = window.devicePixelRatio || 1;
+  const rect   = canvas.getBoundingClientRect();
+  const W = rect.width, H = rect.height;
+
+  if(canvas.width!==Math.round(W*dpr)||canvas.height!==Math.round(H*dpr)){
+    canvas.width = Math.round(W*dpr);
+    canvas.height= Math.round(H*dpr);
+  }
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.save();
+  ctx.scale(dpr,dpr);
+
+  const pad={top:18,right:24,bottom:34,left:64};
+  const cW=W-pad.left-pad.right, cH=H-pad.top-pad.bottom;
+
+  // All data union
+  const allPts  = [...(showSpx?spxPts:[]),...(showMerval?mPts:[])];
+  const allVals = allPts.map(d=>d.value);
+  allVals.push(amount);
+  const maxY = Math.max(...allVals)*1.08;
+  const minY = 0;
+
+  const allYears = [...new Set([
+    ...(showSpx?spxPts:[]).map(d=>d.year),
+    ...(showMerval?mPts:[]).map(d=>d.year)
+  ])].sort((a,b)=>a-b);
+  if(allYears.length<2){ctx.restore();return;}
+  const minX=allYears[0], maxX=allYears[allYears.length-1];
+
+  function xp(y)  {return pad.left + ((y-minX)/(maxX-minX))*cW;}
+  function yp(v)  {return pad.top  + cH - ((v-minY)/(maxY-minY))*cH;}
+
+  // White bg
+  ctx.fillStyle='#ffffff';
+  ctx.fillRect(0,0,W,H);
+
+  // Crisis bands
+  CRISIS_BANDS.forEach(b=>{
+    const bx1=Math.max(xp(b.start), pad.left);
+    const bx2=Math.min(xp(b.end),   pad.left+cW);
+    if(bx2>bx1){
+      ctx.fillStyle=b.color;
+      ctx.fillRect(bx1,pad.top,bx2-bx1,cH);
+    }
+  });
+
+  // Grid
+  const steps=5;
+  for(let i=0;i<=steps;i++){
+    const v  = (maxY/steps)*i;
+    const y  = yp(v);
+    ctx.strokeStyle = i===0 ? '#cbd5e1' : '#f1f5f9';
+    ctx.lineWidth   = i===0 ? 1.5 : 1;
+    ctx.beginPath(); ctx.moveTo(pad.left,y); ctx.lineTo(W-pad.right,y); ctx.stroke();
+    ctx.fillStyle='#94a3b8';
+    ctx.font='10px Space Mono, monospace';
+    ctx.textAlign='right';
+    ctx.textBaseline='middle';
+    ctx.fillText(fmt(v), pad.left-7, y);
+  }
+
+  // X labels
+  allYears.forEach(y=>{
+    const x=xp(y);
+    ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(x,pad.top+cH); ctx.lineTo(x,pad.top+cH+4); ctx.stroke();
+    if(allYears.length<=12 || y%2===0 || allYears.length<=6){
+      ctx.fillStyle='#94a3b8';
+      ctx.font='9px Space Mono, monospace';
+      ctx.textAlign='center';
+      ctx.textBaseline='top';
+      ctx.fillText(y, x, pad.top+cH+7);
+    }
+  });
+
+  // Capital inicial dashed line
+  ctx.setLineDash([5,5]);
+  ctx.strokeStyle='#f97316';
+  ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(pad.left,yp(amount)); ctx.lineTo(W-pad.right,yp(amount)); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.fillStyle='#f97316';
+  ctx.font='9px Space Grotesk, sans-serif';
+  ctx.textAlign='right';
+  ctx.textBaseline='bottom';
+  ctx.fillText('Inversión', W-pad.right-2, yp(amount)-3);
+
+  // Draw series — devuelve el punto final animado
+  function drawSeries(pts, color, prog){
+    if(!pts.length) return null;
+    const n   = Math.max(2, Math.ceil(pts.length*prog));
+    const sub = pts.slice(0,n);
+    const tip = sub[sub.length-1];
+
+    // Area fill
+    ctx.beginPath();
+    ctx.moveTo(xp(sub[0].year), yp(0));
+    sub.forEach(d=>ctx.lineTo(xp(d.year),yp(d.value)));
+    ctx.lineTo(xp(tip.year), yp(0));
+    ctx.closePath();
+    const grad=ctx.createLinearGradient(0,pad.top,0,pad.top+cH);
+    grad.addColorStop(0, color+'22');
+    grad.addColorStop(1, color+'04');
+    ctx.fillStyle=grad;
+    ctx.fill();
+
+    // Line
+    ctx.beginPath();
+    ctx.lineWidth=2.5;
+    ctx.strokeStyle=color;
+    ctx.lineJoin='round'; ctx.lineCap='round';
+    ctx.moveTo(xp(sub[0].year),yp(sub[0].value));
+    sub.forEach(d=>ctx.lineTo(xp(d.year),yp(d.value)));
+    ctx.stroke();
+
+    // Dots
+    sub.forEach((d,i)=>{
+      const isLast = i===sub.length-1;
+      ctx.beginPath();
+      ctx.arc(xp(d.year),yp(d.value), isLast?5.5:3, 0, Math.PI*2);
+      ctx.fillStyle   = isLast ? color : 'white';
+      ctx.strokeStyle = color;
+      ctx.lineWidth   = 2;
+      ctx.fill(); ctx.stroke();
+      if(isLast){
+        ctx.beginPath();
+        ctx.arc(xp(d.year),yp(d.value),9,0,Math.PI*2);
+        ctx.strokeStyle=color+'44';
+        ctx.lineWidth=2;
+        ctx.stroke();
+      }
+    });
+    return tip;
+  }
+
+  const tipSpx    = showSpx    ? drawSeries(spxPts, '#22c55e', progress) : null;
+  const tipMerval = showMerval ? drawSeries(mPts,   '#7c6ef5', progress) : null;
+
+  // ── Recuadro flotante que acompaña la animación ───────────────────────────
+  if(progress < 0.999 && (tipSpx || tipMerval)){
+    const refTip     = tipMerval || tipSpx;
+    const currentYear = refTip.year;
+    const tipXs = [];
+    if(tipSpx)    tipXs.push(xp(tipSpx.year));
+    if(tipMerval) tipXs.push(xp(tipMerval.year));
+    const tipX = Math.max(...tipXs);
+
+    const rows  = [tipMerval, tipSpx].filter(Boolean).length;
+    const bW=128, bH=26+rows*21, bR=6;
+    const margin=10;
+    let bX = tipX + margin;
+    if(bX + bW > W - pad.right - 4) bX = tipX - bW - margin;
+    bX = Math.max(pad.left+4, Math.min(bX, W-pad.right-bW-4));
+
+    const tipYs=[];
+    if(tipSpx)    tipYs.push(yp(tipSpx.value));
+    if(tipMerval) tipYs.push(yp(tipMerval.value));
+    const midY = tipYs.reduce((a,b)=>a+b,0)/tipYs.length;
+    let bY = midY - bH/2;
+    bY = Math.max(pad.top+4, Math.min(bY, pad.top+cH-bH-4));
+
+    // Fondo
+    ctx.fillStyle='rgba(8,8,26,0.90)';
+    ctx.beginPath();
+    ctx.roundRect(bX, bY, bW, bH, bR);
+    ctx.fill();
+    ctx.strokeStyle='#2e2e5a';
+    ctx.lineWidth=1;
+    ctx.stroke();
+
+    // Año header
+    ctx.fillStyle='#64748b';
+    ctx.font='bold 10px Space Mono, monospace';
+    ctx.textAlign='left';
+    ctx.textBaseline='top';
+    ctx.fillText(currentYear, bX+9, bY+7);
+
+    let ly = bY+21;
+    if(tipMerval){
+      ctx.beginPath();
+      ctx.arc(bX+13, ly+5, 4, 0, Math.PI*2);
+      ctx.fillStyle='#7c6ef5'; ctx.fill();
+      ctx.fillStyle='#a78bfa';
+      ctx.font='10px Space Mono, monospace';
+      ctx.textAlign='left'; ctx.textBaseline='top';
+      ctx.fillText(fmt(tipMerval.value), bX+22, ly);
+      ly+=21;
+    }
+    if(tipSpx){
+      ctx.beginPath();
+      ctx.arc(bX+13, ly+5, 4, 0, Math.PI*2);
+      ctx.fillStyle='#22c55e'; ctx.fill();
+      ctx.fillStyle='#4ade80';
+      ctx.font='10px Space Mono, monospace';
+      ctx.textAlign='left'; ctx.textBaseline='top';
+      ctx.fillText(fmt(tipSpx.value), bX+22, ly);
+    }
+
+    // Línea vertical guía
+    ctx.setLineDash([3,3]);
+    ctx.strokeStyle='rgba(148,163,184,0.2)';
+    ctx.lineWidth=1;
+    ctx.beginPath();
+    ctx.moveTo(tipX, pad.top);
+    ctx.lineTo(tipX, pad.top+cH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.restore();
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// ANIMACIÓN — paso a paso, una pausa por año
+// ══════════════════════════════════════════════════════════════════════════════
+const PAUSE_PER_YEAR = 800; // ms que se detiene en cada año
+const TRANSITION_MS  = 300; // ms de transición suave entre años
+
+function playAnimation(){
+  if(animActive) return;
+  animActive = true;
+  if(animFrame) clearTimeout(animFrame);
+
+  const btn = document.getElementById('playBtn');
+  btn.innerHTML = '⏹&nbsp; REPRODUCIENDO...';
+  btn.disabled  = true;
+
+  // Determinar cuántos puntos tiene la serie más larga
+  const totalSteps = Math.max(lastSpxPts.length, lastMervalPts.length);
+  let step = 1; // arrancamos mostrando el primer punto
+
+  function showStep(s, onDone){
+    // Animación suave desde (s-1)/total hasta s/total en TRANSITION_MS
+    const startProg = (s-1) / totalSteps;
+    const endProg   = s     / totalSteps;
+    const startTime = performance.now();
+
+    function frame(now){
+      const t   = Math.min((now - startTime) / TRANSITION_MS, 1);
+      const prog = startProg + (endProg - startProg) * t;
+      drawChart(lastSpxPts, lastMervalPts, prog);
+      if(t < 1){
+        animFrame = requestAnimationFrame(frame);
+      } else {
+        drawChart(lastSpxPts, lastMervalPts, endProg);
+        onDone();
+      }
+    }
+    animFrame = requestAnimationFrame(frame);
+  }
+
+  function next(){
+    if(!animActive){ finish(); return; }
+    if(step > totalSteps){ finish(); return; }
+
+    showStep(step, ()=>{
+      step++;
+      if(step > totalSteps){
+        finish();
+      } else {
+        // Pausa en el año actual antes de avanzar
+        animFrame = setTimeout(next, PAUSE_PER_YEAR);
+      }
+    });
+  }
+
+  function finish(){
+    animActive = false;
+    drawChart(lastSpxPts, lastMervalPts, 1);
+    btn.innerHTML = '▶&nbsp; REPRODUCIR EVOLUCIÓN';
+    btn.disabled  = false;
+  }
+
+  // Pausa inicial antes de arrancar
+  animFrame = setTimeout(next, 300);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// TOOLTIP
+// ══════════════════════════════════════════════════════════════════════════════
+const canvas  = document.getElementById('chart');
+const tooltip = document.getElementById('tooltip');
+
+canvas.addEventListener('mousemove', e=>{
+  if(!lastSpxPts.length && !lastMervalPts.length) return;
+  const rect=canvas.getBoundingClientRect();
+  const mx=e.clientX-rect.left;
+  const pad={left:64,right:24};
+  const cW=rect.width-pad.left-pad.right;
+
+  const allYears=[...new Set([
+    ...lastSpxPts.map(d=>d.year),
+    ...lastMervalPts.map(d=>d.year)
+  ])].sort((a,b)=>a-b);
+  if(!allYears.length){ tooltip.style.display='none'; return; }
+  const minX=allYears[0], maxX=allYears[allYears.length-1];
+
+  let closest=null, minDist=999;
+  allYears.forEach(y=>{
+    const x=pad.left+((y-minX)/(maxX-minX))*cW;
+    const d=Math.abs(mx-x);
+    if(d<minDist){ minDist=d; closest=y; }
+  });
+  if(minDist>28){ tooltip.style.display='none'; return; }
+
+  const mp=lastMervalPts.find(d=>d.year===closest);
+  const sp=lastSpxPts.find(d=>d.year===closest);
+
+  document.getElementById('tt-yr').textContent=closest;
+  document.getElementById('tt-m').textContent = mp ? fmt(mp.value) : '—';
+  document.getElementById('tt-s').textContent = sp ? fmt(sp.value) : '—';
+
+  tooltip.style.display='block';
+  const tx=Math.min(mx+16, rect.width-170);
+  const ty=Math.max(e.clientY-rect.top-70, 8);
+  tooltip.style.left=tx+'px';
+  tooltip.style.top =ty+'px';
+});
+canvas.addEventListener('mouseleave',()=>{ tooltip.style.display='none'; });
+
+// ══════════════════════════════════════════════════════════════════════════════
+// EVENTS
+// ══════════════════════════════════════════════════════════════════════════════
+document.getElementById('amtInput').addEventListener('input', ()=>render(1));
+window.addEventListener('resize', ()=>{ if(lastSpxPts.length) drawChart(lastSpxPts,lastMervalPts,1); });
+
+// INIT
+render(1);
+</script>
+</body>
+</html>
