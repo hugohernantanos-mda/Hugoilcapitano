@@ -3,469 +3,259 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Hugo Tanos — MDA Investing</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<title>MDA Investing — Hugo Tanos Investment Advisor</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold: #C9A84C;
-    --gold-light: #E8C96A;
-    --dark: #0A0A0A;
-    --dark-2: #111111;
-    --dark-3: #1A1A1A;
-    --dark-4: #222222;
-    --border: rgba(201,168,76,0.2);
-    --text: #E8E4DC;
-    --text-muted: #7A7468;
-    --text-mid: #B0A99A;
-    --green: #4CAF7A;
-    --blue: #4A90D9;
-    --red: #E05A5A;
-  }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #f6f5f0;
+  --surface: #fff;
+  --border: #e0dfd8;
+  --text: #0f0f0f;
+  --muted: #666;
+  --dim: #999;
+  --header-bg: #0f0f0f;
+  --accent: #1D9E75;
+  --mono: 'IBM Plex Mono', monospace;
+  --sans: 'IBM Plex Sans', sans-serif;
+}
 
-  html { scroll-behavior: smooth; }
+body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
 
-  body {
-    background: var(--dark);
-    color: var(--text);
-    font-family: 'IBM Plex Sans', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+/* ── HEADER ── */
+.header { background: var(--header-bg); padding: 0 32px; }
+.header-inner { max-width: 1100px; margin: 0 auto; padding: 32px 0 28px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
+.brand { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.header h1 { font-size: 2rem; font-weight: 300; color: #fff; letter-spacing: -0.02em; line-height: 1.2; }
+.header h1 strong { font-weight: 600; }
+.header-sub { font-size: 13px; color: #777; margin-top: 8px; }
+.header-stats { display: flex; gap: 24px; }
+.stat { text-align: center; }
+.stat-num { font-family: var(--mono); font-size: 1.8rem; font-weight: 600; color: var(--accent); line-height: 1; }
+.stat-lbl { font-size: 10px; color: #666; margin-top: 4px; letter-spacing: 0.05em; }
 
-  /* BACKGROUND TEXTURE */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.07) 0%, transparent 70%),
-      radial-gradient(ellipse 40% 40% at 90% 80%, rgba(74,144,217,0.04) 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── PAGE ── */
+.page { max-width: 1100px; margin: 0 auto; padding: 40px 32px 60px; }
 
-  /* GRID LINES */
-  body::after {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(201,168,76,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(201,168,76,0.03) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
-  }
+/* ── SECTION ── */
+.section { margin-bottom: 48px; }
+.section-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.section-num { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.18em; color: var(--accent); }
+.section-title { font-size: 18px; font-weight: 500; color: var(--text); }
+.section-count { font-size: 12px; color: var(--dim); margin-left: auto; font-family: var(--mono); }
 
-  /* HEADER */
-  header {
-    position: relative;
-    z-index: 10;
-    padding: 60px 48px 48px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    flex-wrap: wrap;
-    gap: 24px;
-  }
+/* ── GRID ── */
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
 
-  .logo-area { max-width: 600px; }
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  background: var(--accent-color, var(--accent));
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); border-color: #ccc; }
+.card:hover::before { opacity: 1; }
 
-  .brand-tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 0.25em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+.card-top { display: flex; align-items: center; justify-content: space-between; }
+.card-icon { font-size: 22px; line-height: 1; }
+.tag {
+  font-family: var(--mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+.tag-dashboard  { background: #E1F5EE; color: #0f6e56; }
+.tag-simulator  { background: #E6F1FB; color: #0C447C; }
+.tag-analysis   { background: #FAEEDA; color: #633806; }
+.tag-stats      { background: #EEEDFE; color: #3C3489; }
+.tag-strategy   { background: #FAECE7; color: #712B13; }
+.tag-nvidia     { background: #EAF3DE; color: #27500A; }
 
-  .brand-tag::before {
-    content: '';
-    display: inline-block;
-    width: 24px;
-    height: 1px;
-    background: var(--gold);
-  }
+.card-title { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.3; }
+.card-desc { font-size: 12px; color: var(--muted); line-height: 1.6; flex-grow: 1; }
+.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border); }
+.card-ticker { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--dim); letter-spacing: 0.05em; }
+.card-arrow { font-size: 16px; color: var(--dim); transition: transform 0.15s ease, color 0.15s ease; }
+.card:hover .card-arrow { transform: translateX(3px); color: var(--accent); }
 
-  h1 {
-    font-family: 'DM Serif Display', serif;
-    font-size: clamp(36px, 5vw, 58px);
-    font-weight: 400;
-    line-height: 1.1;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
+/* ── FOOTER ── */
+.footer { text-align: center; padding: 24px 32px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 2; }
+.footer strong { color: var(--muted); }
 
-  h1 em {
-    font-style: italic;
-    color: var(--gold);
-  }
-
-  .header-sub {
-    font-size: 13px;
-    color: var(--text-muted);
-    margin-top: 12px;
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.05em;
-  }
-
-  .header-right {
-    text-align: right;
-  }
-
-  .stat-badge {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 2px;
-  }
-
-  .stat-num {
-    font-family: 'DM Serif Display', serif;
-    font-size: 40px;
-    color: var(--gold);
-    line-height: 1;
-  }
-
-  .stat-label {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-  }
-
-  /* NAV */
-  nav {
-    position: relative;
-    z-index: 10;
-    padding: 0 48px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    gap: 0;
-    overflow-x: auto;
-  }
-
-  nav a {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-muted);
-    text-decoration: none;
-    padding: 16px 20px;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    white-space: nowrap;
-  }
-
-  nav a:hover, nav a.active {
-    color: var(--gold);
-    border-bottom-color: var(--gold);
-  }
-
-  /* MAIN */
-  main {
-    position: relative;
-    z-index: 10;
-    padding: 48px;
-    max-width: 1400px;
-    margin: 0 auto;
-  }
-
-  /* SECTION HEADER */
-  .section-header {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    margin-bottom: 28px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .section-num {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--gold);
-    letter-spacing: 0.1em;
-  }
-
-  .section-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    font-weight: 400;
-    color: var(--text);
-  }
-
-  .section-count {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 10px;
-    color: var(--text-muted);
-    margin-left: auto;
-    letter-spacing: 0.1em;
-  }
-
-  /* SECTION */
-  section { margin-bottom: 56px; }
-
-  /* CARDS GRID */
-  .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 2px;
-  }
-
-  .card {
-    background: var(--dark-2);
-    border: 1px solid var(--border);
-    padding: 28px;
-    text-decoration: none;
-    color: inherit;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.25s;
-    cursor: pointer;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent-color, var(--gold)), transparent);
-    opacity: 0;
-    transition: opacity 0.25s;
-  }
-
-  .card:hover {
-    background: var(--dark-3);
-    border-color: rgba(201,168,76,0.4);
-    transform: translateY(-2px);
-  }
-
-  .card:hover::before { opacity: 1; }
-
-  .card-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
-
-  .card-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    background: rgba(201,168,76,0.08);
-    border: 1px solid var(--border);
-  }
-
-  .tag {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    padding: 4px 8px;
-    border-radius: 2px;
-    border: 1px solid;
-  }
-
-  .tag-dashboard { color: var(--blue); border-color: rgba(74,144,217,0.3); background: rgba(74,144,217,0.06); }
-  .tag-simulator { color: var(--green); border-color: rgba(76,175,122,0.3); background: rgba(76,175,122,0.06); }
-  .tag-analysis  { color: var(--gold);  border-color: rgba(201,168,76,0.3);  background: rgba(201,168,76,0.06);  }
-  .tag-strategy  { color: var(--red);   border-color: rgba(224,90,90,0.3);   background: rgba(224,90,90,0.06);   }
-
-  .card-title {
-    font-family: 'DM Serif Display', serif;
-    font-size: 19px;
-    font-weight: 400;
-    line-height: 1.2;
-    color: var(--text);
-  }
-
-  .card-desc {
-    font-size: 12px;
-    color: var(--text-muted);
-    line-height: 1.6;
-  }
-
-  .card-footer {
-    margin-top: auto;
-    padding-top: 14px;
-    border-top: 1px solid rgba(255,255,255,0.05);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .card-ticker {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--gold);
-    letter-spacing: 0.08em;
-  }
-
-  .card-arrow {
-    font-size: 14px;
-    color: var(--text-muted);
-    transition: transform 0.2s, color 0.2s;
-  }
-
-  .card:hover .card-arrow {
-    transform: translateX(4px);
-    color: var(--gold);
-  }
-
-  /* FOOTER */
-  footer {
-    position: relative;
-    z-index: 10;
-    padding: 32px 48px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-  }
-
-  .footer-brand {
-    font-family: 'IBM Plex Mono', monospace;
-    font-size: 11px;
-    color: var(--text-muted);
-    letter-spacing: 0.1em;
-  }
-
-  .footer-brand span { color: var(--gold); }
-
-  .disclaimer {
-    font-size: 10px;
-    color: var(--text-muted);
-    max-width: 500px;
-    line-height: 1.6;
-    font-family: 'IBM Plex Mono', monospace;
-    letter-spacing: 0.02em;
-  }
-
-  /* ANIMATIONS */
-  @keyframes fadeUp {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  header { animation: fadeUp 0.6s ease both; }
-  nav    { animation: fadeUp 0.6s 0.1s ease both; }
-  section:nth-child(1) { animation: fadeUp 0.6s 0.2s ease both; }
-  section:nth-child(2) { animation: fadeUp 0.6s 0.3s ease both; }
-  section:nth-child(3) { animation: fadeUp 0.6s 0.4s ease both; }
-
-  /* RESPONSIVE */
-  @media (max-width: 768px) {
-    header, main, footer { padding: 32px 24px; }
-    nav { padding: 0 24px; }
-    .header-right { display: none; }
-    .cards-grid { grid-template-columns: 1fr; }
-  }
+@media (max-width: 600px) {
+  .header-inner { flex-direction: column; align-items: flex-start; }
+  .page { padding: 24px 20px 40px; }
+  .cards-grid { grid-template-columns: 1fr; }
+}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="logo-area">
-    <div class="brand-tag">MDA Investing — Financial Analysis Hub</div>
-    <h1>Hugo Tanos<br><em>Investment Advisor</em></h1>
-    <div class="header-sub">Análisis Fundamental · Valuación · Mercado de Capitales</div>
-  </div>
-  <div class="header-right">
-    <div class="stat-badge">
-      <span class="stat-num" id="doc-count">10</span>
-      <span class="stat-label">Análisis publicados</span>
+<!-- HEADER -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="brand">MDA Investing · Hugo Tanos Investment Advisor</div>
+      <h1>Portal de <strong>Análisis</strong><br>Financiero</h1>
+      <div class="header-sub">Herramientas, dashboards y análisis para inversores</div>
+    </div>
+    <div class="header-stats">
+      <div class="stat">
+        <div class="stat-num" id="doc-count">17</div>
+        <div class="stat-lbl">análisis publicados</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5</div>
+        <div class="stat-lbl">categorías</div>
+      </div>
     </div>
   </div>
-</header>
+</div>
 
-<nav>
-  <a href="#dashboards" class="active">Dashboards</a>
-  <a href="#simuladores">Simuladores</a>
-  <a href="#fundamentales">Análisis Fundamentales</a>
-  <a href="#estrategia">Estrategia</a>
-</nav>
+<div class="page">
 
-<main>
-
-  <!-- DASHBOARDS -->
-  <section id="dashboards">
+  <!-- ── 01 DASHBOARDS DE EMPRESAS ── -->
+  <div class="section">
     <div class="section-header">
       <span class="section-num">01</span>
-      <h2 class="section-title">Dashboards de Empresas</h2>
-      <span class="section-count">3 reportes</span>
+      <span class="section-title">Dashboards de empresas</span>
+      <span class="section-count">4 reportes</span>
     </div>
     <div class="cards-grid">
 
-      <a class="card" href="nvda_dashboard.html" style="--accent-color: #76B900;">
+      <a class="card" href="nvda_dashboard.html" style="--accent-color: #76b900;">
         <div class="card-top">
-          <div class="card-icon">📊</div>
+          <div class="card-icon">🟢</div>
           <span class="tag tag-dashboard">Dashboard</span>
         </div>
-        <div class="card-title">NVIDIA — Análisis Completo</div>
-        <div class="card-desc">Dashboard interactivo: perfil, valuación, desglose de ingresos por segmento, catalizadores y análisis técnico.</div>
+        <div class="card-title">NVIDIA Corporation</div>
+        <div class="card-desc">Dashboard corporativo con desglose de ingresos por segmento, márgenes históricos, catalizadores y análisis técnico.</div>
         <div class="card-footer">
-          <span class="card-ticker">NVDA</span>
+          <span class="card-ticker">NVDA · NYSE</span>
           <span class="card-arrow">→</span>
         </div>
       </a>
 
-      <a class="card" href="vistra_vst_fundamental_dashboard.html" style="--accent-color: #E8A020;">
+      <a class="card" href="vistra_vst_fundamental_dashboard.html" style="--accent-color: #F59E0B;">
         <div class="card-top">
           <div class="card-icon">⚡</div>
           <span class="tag tag-dashboard">Dashboard</span>
         </div>
-        <div class="card-title">Vistra Energy — Dashboard Fundamental</div>
-        <div class="card-desc">Análisis fundamental completo de Vistra Corp., operador energético con exposición a energía nuclear y gas.</div>
+        <div class="card-title">Vistra Corp</div>
+        <div class="card-desc">Análisis fundamental del mayor generador independiente de electricidad de EE.UU. Márgenes EBITDA, deuda y catalizadores IA.</div>
         <div class="card-footer">
-          <span class="card-ticker">VST</span>
+          <span class="card-ticker">VST · NYSE</span>
           <span class="card-arrow">→</span>
         </div>
       </a>
 
-      <a class="card" href="meli_correcciones_2026_1.html" style="--accent-color: #FFE600;">
+      <a class="card" href="meli_correcciones_2026_1.html" style="--accent-color: #378ADD;">
         <div class="card-top">
           <div class="card-icon">🛒</div>
-          <span class="tag tag-analysis">Análisis</span>
+          <span class="tag tag-dashboard">Dashboard</span>
         </div>
         <div class="card-title">MercadoLibre — Correcciones 2026</div>
-        <div class="card-desc">Análisis de las correcciones de precio de MELI durante 2026. Contexto de valuación y oportunidad.</div>
+        <div class="card-desc">Análisis de las correcciones históricas de MELI y contexto de valuación actual. Oportunidad vs. riesgo.</div>
         <div class="card-footer">
-          <span class="card-ticker">MELI</span>
+          <span class="card-ticker">MELI · NASDAQ</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="ypf_analisis_fundamental.html" style="--accent-color: #000080;">
+        <div class="card-top">
+          <div class="card-icon">🛢️</div>
+          <span class="tag tag-dashboard">Dashboard</span>
+        </div>
+        <div class="card-title">YPF — Análisis Fundamental</div>
+        <div class="card-desc">Análisis fundamental de YPF basado en la Investor Presentation Q4 2025. Segmentos, producción Vaca Muerta y financials.</div>
+        <div class="card-footer">
+          <span class="card-ticker">YPF · NYSE</span>
           <span class="card-arrow">→</span>
         </div>
       </a>
 
     </div>
-  </section>
+  </div>
 
-  <!-- SIMULADORES -->
-  <section id="simuladores">
+  <!-- ── 02 ANÁLISIS ESTADÍSTICO HISTÓRICO ── -->
+  <div class="section">
     <div class="section-header">
       <span class="section-num">02</span>
-      <h2 class="section-title">Simuladores Interactivos</h2>
+      <span class="section-title">Análisis estadístico histórico</span>
+      <span class="section-count">3 análisis</span>
+    </div>
+    <div class="cards-grid">
+
+      <a class="card" href="brk_vs_sp500_dashboard.html" style="--accent-color: #1D9E75;">
+        <div class="card-top">
+          <div class="card-icon">🏛️</div>
+          <span class="tag tag-stats">Histórico</span>
+        </div>
+        <div class="card-title">Berkshire vs. S&amp;P 500</div>
+        <div class="card-desc">30 años de retornos anuales (1996–2025). Diferencial año a año, dispersión por cuadrante y análisis de protección ante caídas del mercado.</div>
+        <div class="card-footer">
+          <span class="card-ticker">BRK.B · 1996–2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="sp500_ventanas_moviles.html" style="--accent-color: #534AB7;">
+        <div class="card-top">
+          <div class="card-icon">📊</div>
+          <span class="tag tag-stats">Histórico</span>
+        </div>
+        <div class="card-title">S&amp;P 500 — Ventanas Móviles</div>
+        <div class="card-desc">98 años de datos (1928–2025). Mejores y peores períodos para ventanas de 5, 10, 15, 20 y 30 años mediante rolling windows solapadas.</div>
+        <div class="card-footer">
+          <span class="card-ticker">SPX · 1928–2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="meli_ventanas_moviles.html" style="--accent-color: #378ADD;">
+        <div class="card-top">
+          <div class="card-icon">📈</div>
+          <span class="tag tag-stats">Histórico</span>
+        </div>
+        <div class="card-title">MercadoLibre — Ventanas Móviles</div>
+        <div class="card-desc">Mejores y peores períodos de 5 y 10 años desde el IPO de MELI (2007–2025). Análisis de retornos anualizados históricos.</div>
+        <div class="card-footer">
+          <span class="card-ticker">MELI · 2007–2025</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ── 03 SIMULADORES INTERACTIVOS ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">Simuladores interactivos</span>
       <span class="section-count">3 herramientas</span>
     </div>
     <div class="cards-grid">
@@ -475,8 +265,8 @@
           <div class="card-icon">🇦🇷</div>
           <span class="tag tag-simulator">Simulador</span>
         </div>
-        <div class="card-title">MERVAL CCL vs S&P 500</div>
-        <div class="card-desc">Comparación histórica del MERVAL en dólares CCL (Contado con Liquidación) versus el S&P 500. Rendimientos y CAGR.</div>
+        <div class="card-title">MERVAL CCL vs S&amp;P 500</div>
+        <div class="card-desc">Comparación histórica del MERVAL en dólares CCL (Contado con Liquidación) versus el S&amp;P 500. Rendimientos y CAGR animados.</div>
         <div class="card-footer">
           <span class="card-ticker">MERVAL · SPX</span>
           <span class="card-arrow">→</span>
@@ -485,147 +275,115 @@
 
       <a class="card" href="simulador-spx-ndx.html" style="--accent-color: #4A90D9;">
         <div class="card-top">
-          <div class="card-icon">📈</div>
+          <div class="card-icon">🇺🇸</div>
           <span class="tag tag-simulator">Simulador</span>
         </div>
-        <div class="card-title">SPX vs NDX — Simulador Histórico</div>
-        <div class="card-desc">Comparación interactiva del S&P 500 y el NASDAQ 100. Rendimientos históricos, ventanas móviles y CAGR.</div>
+        <div class="card-title">S&amp;P 500 vs NASDAQ 100</div>
+        <div class="card-desc">Simulador interactivo para comparar el crecimiento de una inversión en SPX vs NDX desde 1985. CAGR por horizonte de inversión.</div>
         <div class="card-footer">
-          <span class="card-ticker">SPX · NDX</span>
+          <span class="card-ticker">SPX · NDX · 1985–hoy</span>
           <span class="card-arrow">→</span>
         </div>
       </a>
 
-      <a class="card" href="visa-mastercard.html" style="--accent-color: #1A1F71;">
+      <a class="card" href="visa-mastercard.html" style="--accent-color: #1A56DB;">
         <div class="card-top">
           <div class="card-icon">💳</div>
           <span class="tag tag-simulator">Simulador</span>
         </div>
-        <div class="card-title">Visa vs Mastercard — Comparador</div>
-        <div class="card-desc">Simulador comparativo de las dos redes de pago globales. Valuación, márgenes y rendimiento histórico.</div>
+        <div class="card-title">Visa, Mastercard y CEDEARs</div>
+        <div class="card-desc">Simulador de inversión en 30+ CEDEARs con datos históricos. Proyección animada del crecimiento del capital invertido.</div>
         <div class="card-footer">
-          <span class="card-ticker">V · MA</span>
+          <span class="card-ticker">V · MA · CEDEARs</span>
           <span class="card-arrow">→</span>
         </div>
       </a>
 
     </div>
-  </section>
+  </div>
 
-  <!-- ANÁLISIS FUNDAMENTALES -->
-  <section id="fundamentales">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <h2 class="section-title">Análisis Fundamentales</h2>
-      <span class="section-count">3 reportes</span>
-    </div>
-    <div class="cards-grid">
-
-      <a class="card" href="ypf_analisis_fundamental.html" style="--accent-color: #003DA6;">
-        <div class="card-top">
-          <div class="card-icon">🛢️</div>
-          <span class="tag tag-analysis">Análisis Fundamental</span>
-        </div>
-        <div class="card-title">YPF — Análisis Fundamental</div>
-        <div class="card-desc">Resultados FY2025 y Q1 2026. Vaca Muerta, proyecto LNG, upstream, downstream, catalizadores y riesgos. 10 slides interactivos.</div>
-        <div class="card-footer">
-          <span class="card-ticker">YPF · NYSE</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </a>
-
-      <a class="card" href="nvidia_income_statementHugoTanos.html" style="--accent-color: #76B900;">
-        <div class="card-top">
-          <div class="card-icon">📋</div>
-          <span class="tag tag-analysis">Estado de Resultados</span>
-        </div>
-        <div class="card-title">NVIDIA — Income Statement</div>
-        <div class="card-desc">Análisis detallado del estado de resultados: ingresos, márgenes brutos, operativos y netos. Evolución por trimestre.</div>
-        <div class="card-footer">
-          <span class="card-ticker">NVDA</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </a>
-
-      <a class="card" href="nvidia_balance_sheet.html" style="--accent-color: #76B900;">
-        <div class="card-top">
-          <div class="card-icon">🏦</div>
-          <span class="tag tag-analysis">Balance Sheet</span>
-        </div>
-        <div class="card-title">NVIDIA — Balance General</div>
-        <div class="card-desc">Estructura de activos, pasivos y patrimonio. Análisis de solidez financiera y posición de caja.</div>
-        <div class="card-footer">
-          <span class="card-ticker">NVDA</span>
-          <span class="card-arrow">→</span>
-        </div>
-      </a>
-
-    </div>
-  </section>
-
-  <!-- ESTRATEGIA -->
-  <section id="estrategia">
+  <!-- ── 04 ANÁLISIS NVIDIA DETALLE ── -->
+  <div class="section">
     <div class="section-header">
       <span class="section-num">04</span>
-      <h2 class="section-title">Estrategia & Portafolio</h2>
-      <span class="section-count">1 reporte</span>
+      <span class="section-title">NVIDIA — Estados financieros interactivos</span>
+      <span class="section-count">2 reportes</span>
     </div>
     <div class="cards-grid">
 
-      <a class="card" href="cashflow_strategy_mda.html" style="--accent-color: #4CAF7A;">
+      <a class="card" href="nvidia_income_statementHugoTanos.html" style="--accent-color: #76b900;">
+        <div class="card-top">
+          <div class="card-icon">📋</div>
+          <span class="tag tag-nvidia">NVIDIA</span>
+        </div>
+        <div class="card-title">Estado de Resultados</div>
+        <div class="card-desc">Estado de resultados interactivo de NVIDIA. Explorá cada línea del Income Statement y cómo fluye cada dólar de ingresos.</div>
+        <div class="card-footer">
+          <span class="card-ticker">NVDA · Income Statement</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+      <a class="card" href="nvidia_balance_sheet.html" style="--accent-color: #76b900;">
+        <div class="card-top">
+          <div class="card-icon">🏦</div>
+          <span class="tag tag-nvidia">NVIDIA</span>
+        </div>
+        <div class="card-title">Balance General</div>
+        <div class="card-desc">Balance sheet interactivo de NVIDIA. Activos, pasivos y patrimonio neto con desglose visual por categoría.</div>
+        <div class="card-footer">
+          <span class="card-ticker">NVDA · Balance Sheet</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ── 05 ESTRATEGIA ── -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <span class="section-title">Estrategia &amp; portafolio</span>
+      <span class="section-count">1 herramienta</span>
+    </div>
+    <div class="cards-grid">
+
+      <a class="card" href="cashflow_strategy_mda.html" style="--accent-color: #D85A30;">
         <div class="card-top">
           <div class="card-icon">💰</div>
           <span class="tag tag-strategy">Estrategia</span>
         </div>
-        <div class="card-title">Cash Flow Strategy — MDA Investing</div>
-        <div class="card-desc">Estrategia de inversión orientada a flujo de caja. Marco de selección de activos para generación de ingresos pasivos.</div>
+        <div class="card-title">Estrategia Cashflow MDA</div>
+        <div class="card-desc">Portafolio orientado a generación de flujo de caja. Selección de activos, frecuencia de cobro y rendimiento esperado por perfil.</div>
         <div class="card-footer">
-          <span class="card-ticker">MDA Investing</span>
+          <span class="card-ticker">Dividendos · CEDEARs</span>
           <span class="card-arrow">→</span>
         </div>
       </a>
 
     </div>
-  </section>
-
-</main>
-
-<footer>
-  <div class="footer-brand">
-    <span>MDA Investing</span> · Hugo Tanos Investment Advisor
   </div>
-  <div class="disclaimer">
-    El contenido de este sitio es únicamente informativo y educativo. No constituye asesoramiento de inversión. Consulte a un profesional antes de tomar decisiones financieras.
-  </div>
-</footer>
+
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  Contenido elaborado con fines educativos e informativos · No constituye asesoramiento de inversión<br>
+  Rendimiento pasado no garantiza resultados futuros · Consulte con un asesor antes de invertir<br>
+  <strong>MDA Investing — Hugo Tanos Investment Advisor · 2025–2026</strong>
+</div>
 
 <script>
-  // NAV ACTIVE STATE ON SCROLL
-  const sections = document.querySelectorAll('section[id]');
-  const navLinks = document.querySelectorAll('nav a');
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        navLinks.forEach(a => a.classList.remove('active'));
-        const active = document.querySelector(`nav a[href="#${entry.target.id}"]`);
-        if (active) active.classList.add('active');
-      }
-    });
-  }, { threshold: 0.4 });
-
-  sections.forEach(s => observer.observe(s));
-
-  // COUNT ANIMATION
-  const countEl = document.getElementById('doc-count');
-  let count = 0;
-  const target = 10;
-  const interval = setInterval(() => {
-    count++;
-    countEl.textContent = count;
-    if (count >= target) clearInterval(interval);
-  }, 80);
+  const target = 17;
+  const el = document.getElementById('doc-count');
+  let current = 0;
+  const step = () => {
+    current = Math.min(current + 1, target);
+    el.textContent = current;
+    if (current < target) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
 </script>
-
 </body>
 </html>
