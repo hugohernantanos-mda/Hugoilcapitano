@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>S&P 500 — Análisis de Ventanas Móviles | MDA Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700;900&family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #080c16;
+    --bg-card:   #0e1525;
+    --bg-hover:  #141c30;
+    --border:    #1e2d4a;
+    --gold:      #c9a84c;
+    --gold-dim:  #8a6f2e;
+    --gold-glow: rgba(201,168,76,0.15);
+    --red:       #e05555;
+    --red-dim:   #7a2a2a;
+    --red-bg:    rgba(224,85,85,0.08);
+    --green:     #3fb97a;
+    --green-dim: #1e5c3c;
+    --green-bg:  rgba(63,185,122,0.08);
+    --text:      #e8eaf0;
+    --text-muted:#7a8aaa;
+    --text-dim:  #4a5a7a;
+    --accent:    #2a4080;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID NOISE TEXTURE ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      radial-gradient(ellipse 80% 60% at 20% 10%, rgba(42,64,128,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 50% at 80% 90%, rgba(201,168,76,0.06) 0%, transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative; z-index: 1;
+    padding: 3.5rem 2rem 2.5rem;
+    max-width: 1100px; margin: 0 auto;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.25em;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-weight: 900; line-height: 1.1;
+    color: var(--text);
+    margin-bottom: 1rem;
+  }
+
+  h1 span { color: var(--gold); }
+
+  .header-sub {
+    font-size: 0.95rem; color: var(--text-muted);
+    max-width: 620px; line-height: 1.7;
+  }
+
+  .header-meta {
+    display: flex; gap: 2rem; margin-top: 1.8rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.08em;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 100px; color: var(--text-muted);
+    background: var(--bg-card);
+  }
+
+  .meta-pill b { color: var(--gold); font-weight: 500; }
+
+  /* ── MAIN LAYOUT ── */
+  main {
+    position: relative; z-index: 1;
+    max-width: 1100px; margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  /* ── WINDOW TABS ── */
+  .tabs-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.2em;
+    color: var(--text-dim); text-transform: uppercase;
+    margin-bottom: 0.8rem;
+  }
+
+  .tabs {
+    display: flex; gap: 0.5rem;
+    margin-bottom: 2.5rem; flex-wrap: wrap;
+  }
+
+  .tab-btn {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem; font-weight: 500;
+    padding: 0.55rem 1.3rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--bg-card);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+
+  .tab-btn:hover { border-color: var(--gold-dim); color: var(--text); }
+
+  .tab-btn.active {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #0a0c10;
+    font-weight: 600;
+  }
+
+  /* ── BEST / WORST TOGGLE ── */
+  .toggle-wrap {
+    display: flex; align-items: center; gap: 0;
+    margin-bottom: 2rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px; overflow: hidden;
+    width: fit-content;
+  }
+
+  .toggle-btn {
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-size: 0.85rem; font-weight: 500;
+    padding: 0.65rem 1.6rem;
+    border: none; background: transparent;
+    color: var(--text-muted);
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+
+  .toggle-btn.active-best {
+    background: var(--green-bg);
+    color: var(--green);
+    border-right: 1px solid var(--border);
+  }
+
+  .toggle-btn.active-worst {
+    background: var(--red-bg);
+    color: var(--red);
+  }
+
+  /* ── PANEL HEADER ── */
+  .panel-header {
+    display: flex; align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+  }
+
+  .panel-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 700;
+  }
+
+  .panel-title.best  { color: var(--green); }
+  .panel-title.worst { color: var(--red);   }
+
+  .panel-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; color: var(--text-dim);
+    letter-spacing: 0.06em; margin-top: 0.3rem;
+  }
+
+  .interval-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem; color: var(--text-muted);
+    text-align: right;
+  }
+
+  /* ── TABLE ── */
+  .data-table { width: 100%; border-collapse: collapse; }
+
+  .data-table thead tr {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .data-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--text-dim);
+    padding: 0 0 0.8rem; text-align: left;
+    font-weight: 400;
+  }
+
+  .data-table th.right { text-align: right; }
+
+  .data-table tbody tr {
+    border-bottom: 1px solid rgba(30,45,74,0.5);
+    transition: background 0.15s;
+    animation: rowIn 0.4s ease both;
+  }
+
+  .data-table tbody tr:hover { background: var(--bg-hover); }
+
+  @keyframes rowIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+
+  .data-table td {
+    padding: 0.9rem 0;
+    vertical-align: middle;
+  }
+
+  /* RANK */
+  .rank {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.75rem; color: var(--text-dim);
+    width: 36px;
+  }
+
+  .rank-1 { color: var(--gold); font-weight: 600; font-size: 0.85rem; }
+  .rank-2 { color: #a0a9b8; font-weight: 500; }
+  .rank-3 { color: #8a7050; font-weight: 500; }
+
+  /* PERIOD */
+  .period {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem; font-weight: 600;
+    color: var(--text); padding-right: 1.5rem;
+  }
+
+  /* BAR + CAGR */
+  .bar-cell { width: 38%; padding-right: 1rem; }
+
+  .bar-wrap {
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+
+  .bar-track {
+    flex: 1; height: 6px;
+    background: var(--border); border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%; border-radius: 3px;
+    transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .bar-fill.green { background: linear-gradient(90deg, var(--green-dim), var(--green)); }
+  .bar-fill.red   { background: linear-gradient(90deg, var(--red-dim), var(--red)); }
+
+  .cagr-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.88rem; font-weight: 600;
+    min-width: 70px; text-align: right;
+    white-space: nowrap;
+  }
+
+  .cagr-val.green { color: var(--green); }
+  .cagr-val.red   { color: var(--red);   }
+
+  /* MULTIPLIER */
+  .mult {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.85rem; text-align: right;
+    white-space: nowrap; padding-left: 0.5rem;
+  }
+
+  .mult.green { color: var(--green); }
+  .mult.red   { color: var(--red);   }
+  .mult.neutral { color: var(--text-muted); }
+
+  /* ── SUMMARY SECTION ── */
+  .summary-section {
+    margin-top: 4rem;
+    padding-top: 3rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .summary-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem; font-weight: 700;
+    color: var(--gold); margin-bottom: 0.6rem;
+  }
+
+  .summary-desc {
+    font-size: 0.9rem; color: var(--text-muted);
+    max-width: 580px; line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+
+  .summary-card {
+    background: var(--bg-card);
+    padding: 1.6rem 1.4rem;
+    transition: background 0.2s;
+  }
+
+  .summary-card:hover { background: var(--bg-hover); }
+
+  .sc-window {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.15em;
+    color: var(--gold); text-transform: uppercase;
+    margin-bottom: 0.9rem;
+  }
+
+  .sc-cagr {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; font-weight: 700;
+    line-height: 1;
+    margin-bottom: 0.4rem;
+  }
+
+  .sc-cagr.neg { color: var(--red); }
+  .sc-cagr.pos { color: var(--green); }
+
+  .sc-label {
+    font-size: 0.75rem; color: var(--text-dim);
+    margin-bottom: 0.8rem; line-height: 1.4;
+  }
+
+  .sc-dollar {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.82rem; color: var(--text-muted);
+  }
+
+  .sc-dollar span {
+    font-size: 1rem; font-weight: 600;
+    color: var(--text);
+  }
+
+  /* ── KEY INSIGHT BOX ── */
+  .insight {
+    margin-top: 2.5rem;
+    padding: 1.8rem 2rem;
+    background: var(--bg-card);
+    border: 1px solid var(--gold-dim);
+    border-left: 3px solid var(--gold);
+    border-radius: 8px;
+  }
+
+  .insight-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--gold);
+    margin-bottom: 0.7rem;
+  }
+
+  .insight p {
+    font-size: 0.92rem; line-height: 1.75;
+    color: var(--text-muted);
+  }
+
+  .insight p b { color: var(--text); font-weight: 600; }
+
+  /* ── FOOTER ── */
+  footer {
+    position: relative; z-index: 1;
+    border-top: 1px solid var(--border);
+    padding: 1.5rem 2rem;
+    max-width: 1100px; margin: 0 auto;
+    display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 1rem;
+  }
+
+  .footer-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.78rem; color: var(--gold);
+    font-weight: 500; letter-spacing: 0.08em;
+  }
+
+  .footer-disc {
+    font-size: 0.72rem; color: var(--text-dim);
+    max-width: 520px; line-height: 1.5;
+  }
+
+  /* ── HIDDEN ── */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    header, main { padding-left: 1.2rem; padding-right: 1.2rem; }
+    .bar-cell { display: none; }
+    .data-table th.hide-mobile,
+    .data-table td.hide-mobile { display: none; }
+    h1 { font-size: 1.8rem; }
+    .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-eyebrow">MDA Investing · Análisis Histórico</div>
+  <h1>S&P 500: <span>Ventanas Móviles</span><br>de Retorno</h1>
+  <p class="header-sub">
+    98 años de datos (1928–2025). Análisis de los mejores y peores períodos históricos
+    para cada horizonte de inversión mediante rolling windows solapadas.
+  </p>
+  <div class="header-meta">
+    <span class="meta-pill">Datos: <b>1928 – 2025</b></span>
+    <span class="meta-pill">Ventanas: <b>5 · 10 · 15 · 20 · 30 años</b></span>
+    <span class="meta-pill">Método: <b>CAGR sobre retornos anuales</b></span>
+  </div>
+</header>
+
+<main>
+
+  <p class="tabs-label">Seleccioná el horizonte de inversión</p>
+  <div class="tabs">
+    <button class="tab-btn" onclick="setWindow(5)"  id="tab-5">5 años</button>
+    <button class="tab-btn active" onclick="setWindow(10)" id="tab-10">10 años</button>
+    <button class="tab-btn" onclick="setWindow(15)" id="tab-15">15 años</button>
+    <button class="tab-btn" onclick="setWindow(20)" id="tab-20">20 años</button>
+    <button class="tab-btn" onclick="setWindow(30)" id="tab-30">30 años</button>
+  </div>
+
+  <div class="toggle-wrap">
+    <button class="toggle-btn active-best" id="btn-best"  onclick="setMode('best')">▲ Mejores períodos</button>
+    <button class="toggle-btn"             id="btn-worst" onclick="setMode('worst')">▼ Peores períodos</button>
+  </div>
+
+  <div id="panel-container"></div>
+
+  <!-- ── SUMMARY ── -->
+  <section class="summary-section">
+    <div class="summary-title">El peor caso por horizonte</div>
+    <p class="summary-desc">
+      El tiempo reduce el riesgo de manera contundente. Cuanto mayor el horizonte,
+      menor la probabilidad de destruir capital — y más acotado el daño en el peor escenario posible.
+    </p>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="sc-window">5 años</div>
+        <div class="sc-cagr neg">−17.09%</div>
+        <div class="sc-label">Anual compuesto<br>1928–1932</div>
+        <div class="sc-dollar">$1 → <span style="color:var(--red)">$0.39</span></div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-window">10 años</div>
+        <div class="sc-cagr neg">−5.98%</div>
+        <div class="sc-label">Anual compuesto<br>1929–1938</div>
+        <div class="sc-dollar">$1 → <span style="color:var(--red)">$0.54</span></div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-window">15 años</div>
+        <div class="sc-cagr neg">−4.78%</div>
+        <div class="sc-label">Anual compuesto<br>1929–1943</div>
+        <div class="sc-dollar">$1 → <span style="color:var(--red)">$0.48</span></div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-window">20 años</div>
+        <div class="sc-cagr neg">−2.33%</div>
+        <div class="sc-label">Anual compuesto<br>1929–1948</div>
+        <div class="sc-dollar">$1 → <span style="color:var(--red)">$0.62</span></div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-window">30 años</div>
+        <div class="sc-cagr pos">+2.76%</div>
+        <div class="sc-label">Anual compuesto<br>1928–1957</div>
+        <div class="sc-dollar">$1 → <span style="color:var(--green)">$2.26</span></div>
+      </div>
+    </div>
+
+    <div class="insight">
+      <div class="insight-label">⬡ Conclusión clave</div>
+      <p>
+        A <b>30 años, ningún período de la historia del S&P 500 terminó con retorno negativo</b> — ni siquiera el que abarcó la Gran Depresión y la Segunda Guerra Mundial. A 5 años, en cambio, el peor escenario destruyó el 61% del capital.<br><br>
+        A 10 años, el período más rentable de todos (2012–2021, +16.19% anual) multiplicó la inversión por <b>4.5×</b>. A 30 años, el mejor período (1975–2004, +10.05% anual) la multiplicó por <b>17.7×</b>. No es magia: es interés compuesto trabajando el tiempo suficiente.
+      </p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-brand">MDA Investing</div>
+  <div class="footer-disc">
+    Análisis elaborado con fines educativos. Los retornos históricos no garantizan resultados futuros.
+    Datos de retornos anuales del S&P 500 (1928–2025). CAGR = Tasa de Crecimiento Anual Compuesta.
+    El rendimiento pasado del índice no incluye costos de inversión ni inflación.
+  </div>
+</footer>
+
+<script>
+const DATA = {
+  5: {
+    intervals: 94,
+    best: [
+      { r:1, p:'1995–1999', cagr:26.18, mult:3.20 },
+      { r:2, p:'1994–1998', cagr:21.38, mult:2.64 },
+      { r:3, p:'2017–2021', cagr:18.36, mult:2.32 },
+      { r:4, p:'1993–1997', cagr:17.37, mult:2.23 },
+      { r:5, p:'1951–1955', cagr:17.36, mult:2.23 },
+      { r:6, p:'1954–1958', cagr:17.35, mult:2.23 },
+      { r:7, p:'1996–2000', cagr:16.47, mult:2.14 },
+      { r:8, p:'1950–1954', cagr:16.47, mult:2.14 },
+      { r:9, p:'1932–1936', cagr:16.17, mult:2.12 },
+      { r:10,p:'1985–1989', cagr:16.14, mult:2.11 },
+    ],
+    worst: [
+      { r:1, p:'1928–1932', cagr:-17.09, mult:0.39 },
+      { r:2, p:'1929–1933', cagr:-16.35, mult:0.41 },
+      { r:3, p:'1930–1934', cagr:-15.03, mult:0.44 },
+      { r:4, p:'1937–1941', cagr:-12.74, mult:0.51 },
+      { r:5, p:'1970–1974', cagr:-5.73,  mult:0.74 },
+      { r:6, p:'1936–1940', cagr:-4.66,  mult:0.79 },
+      { r:7, p:'1973–1977', cagr:-4.23,  mult:0.81 },
+      { r:8, p:'2004–2008', cagr:-4.07,  mult:0.81 },
+      { r:9, p:'2000–2004', cagr:-3.78,  mult:0.82 },
+      { r:10,p:'1931–1935', cagr:-2.62,  mult:0.88 },
+    ]
+  },
+  10: {
+    intervals: 89,
+    best: [
+      { r:1, p:'2012–2021', cagr:16.19, mult:4.48 },
+      { r:2, p:'1989–1998', cagr:16.04, mult:4.43 },
+      { r:3, p:'1990–1999', cagr:15.31, mult:4.16 },
+      { r:4, p:'1991–2000', cagr:14.87, mult:4.00 },
+      { r:5, p:'1988–1997', cagr:14.66, mult:3.93 },
+      { r:6, p:'2016–2025', cagr:14.44, mult:3.85 },
+      { r:7, p:'1949–1958', cagr:13.77, mult:3.63 },
+      { r:8, p:'1950–1959', cagr:13.56, mult:3.57 },
+      { r:9, p:'2011–2020', cagr:13.29, mult:3.48 },
+      { r:10,p:'1982–1991', cagr:13.03, mult:3.40 },
+    ],
+    worst: [
+      { r:1, p:'1929–1938', cagr:-5.98, mult:0.54 },
+      { r:2, p:'1930–1939', cagr:-5.29, mult:0.58 },
+      { r:3, p:'1928–1937', cagr:-5.02, mult:0.60 },
+      { r:4, p:'1931–1940', cagr:-3.65, mult:0.69 },
+      { r:5, p:'1999–2008', cagr:-3.04, mult:0.73 },
+      { r:6, p:'2000–2009', cagr:-2.72, mult:0.76 },
+      { r:7, p:'1965–1974', cagr:-2.10, mult:0.81 },
+      { r:8, p:'1937–1946', cagr:-1.15, mult:0.89 },
+      { r:9, p:'1969–1978', cagr:-0.77, mult:0.93 },
+      { r:10,p:'2001–2010', cagr:-0.49, mult:0.95 },
+    ]
+  },
+  15: {
+    intervals: 84,
+    best: [
+      { r:1, p:'1985–1999', cagr:15.59, mult:8.79 },
+      { r:2, p:'1984–1998', cagr:14.33, mult:7.45 },
+      { r:3, p:'1983–1997', cagr:13.74, mult:6.90 },
+      { r:4, p:'2011–2025', cagr:13.46, mult:6.64 },
+      { r:5, p:'2010–2024', cagr:13.20, mult:6.42 },
+      { r:6, p:'2009–2023', cagr:13.11, mult:6.35 },
+      { r:7, p:'1986–2000', cagr:12.99, mult:6.25 },
+      { r:8, p:'1982–1996', cagr:12.74, mult:6.04 },
+      { r:9, p:'1942–1956', cagr:11.86, mult:5.37 },
+      { r:10,p:'1975–1989', cagr:11.55, mult:5.15 },
+    ],
+    worst: [
+      { r:1, p:'1929–1943', cagr:-4.78, mult:0.48 },
+      { r:2, p:'1928–1942', cagr:-3.87, mult:0.55 },
+      { r:3, p:'1930–1944', cagr:-3.15, mult:0.62 },
+      { r:4, p:'1931–1945', cagr:0.83,  mult:1.13 },
+      { r:5, p:'1960–1974', cagr:0.91,  mult:1.14 },
+      { r:6, p:'1965–1979', cagr:1.63,  mult:1.27 },
+      { r:7, p:'1964–1978', cagr:1.66,  mult:1.28 },
+      { r:8, p:'1937–1951', cagr:2.19,  mult:1.38 },
+      { r:9, p:'2000–2014', cagr:2.54,  mult:1.46 },
+      { r:10,p:'1968–1982', cagr:2.54,  mult:1.46 },
+    ]
+  },
+  20: {
+    intervals: 79,
+    best: [
+      { r:1, p:'1980–1999', cagr:13.94, mult:13.61 },
+      { r:2, p:'1979–1998', cagr:13.59, mult:12.79 },
+      { r:3, p:'1978–1997', cagr:12.31, mult:10.20 },
+      { r:4, p:'1981–2000', cagr:12.05, mult:9.72  },
+      { r:5, p:'1982–2001', cagr:11.84, mult:9.37  },
+      { r:6, p:'1942–1961', cagr:11.12, mult:8.24  },
+      { r:7, p:'1985–2004', cagr:10.41, mult:7.25  },
+      { r:8, p:'1977–1996', cagr:10.13, mult:6.89  },
+      { r:9, p:'1949–1968', cagr:10.09, mult:6.83  },
+      { r:10,p:'1976–1995', cagr:10.08, mult:6.83  },
+    ],
+    worst: [
+      { r:1, p:'1929–1948', cagr:-2.33, mult:0.62 },
+      { r:2, p:'1930–1949', cagr:-1.22, mult:0.78 },
+      { r:3, p:'1928–1947', cagr:-0.71, mult:0.87 },
+      { r:4, p:'1931–1950', cagr:1.44,  mult:1.33 },
+      { r:5, p:'1962–1981', cagr:2.73,  mult:1.71 },
+      { r:6, p:'1959–1978', cagr:2.81,  mult:1.74 },
+      { r:7, p:'1960–1979', cagr:2.99,  mult:1.80 },
+      { r:8, p:'1955–1974', cagr:3.28,  mult:1.91 },
+      { r:9, p:'1965–1984', cagr:3.46,  mult:1.97 },
+      { r:10,p:'1956–1975', cagr:3.48,  mult:1.98 },
+    ]
+  },
+  30: {
+    intervals: 69,
+    best: [
+      { r:1, p:'1975–2004', cagr:10.05, mult:17.68 },
+      { r:2, p:'1970–1999', cagr:9.67,  mult:15.96 },
+      { r:3, p:'1995–2024', cagr:9.59,  mult:15.59 },
+      { r:4, p:'1978–2007', cagr:9.55,  mult:15.44 },
+      { r:5, p:'1971–2000', cagr:9.28,  mult:14.33 },
+      { r:6, p:'1976–2005', cagr:9.15,  mult:13.84 },
+      { r:7, p:'1996–2025', cagr:9.08,  mult:13.56 },
+      { r:8, p:'1992–2021', cagr:9.07,  mult:13.52 },
+      { r:9, p:'1991–2020', cagr:9.00,  mult:13.26 },
+      { r:10,p:'1977–2006', cagr:8.98,  mult:13.20 },
+    ],
+    worst: [
+      { r:1, p:'1928–1957', cagr:2.76, mult:2.26 },
+      { r:2, p:'1929–1958', cagr:2.77, mult:2.27 },
+      { r:3, p:'1930–1959', cagr:3.48, mult:2.79 },
+      { r:4, p:'1931–1960', cagr:4.54, mult:3.79 },
+      { r:5, p:'1956–1985', cagr:5.25, mult:4.65 },
+      { r:6, p:'1955–1984', cagr:5.26, mult:4.65 },
+      { r:7, p:'1937–1966', cagr:5.28, mult:4.68 },
+      { r:8, p:'1959–1988', cagr:5.53, mult:5.03 },
+      { r:9, p:'1952–1981', cagr:5.62, mult:5.16 },
+      { r:10,p:'1945–1974', cagr:5.62, mult:5.16 },
+    ]
+  }
+};
+
+let currentWindow = 10;
+let currentMode   = 'best';
+
+function setWindow(w) {
+  currentWindow = w;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + w).classList.add('active');
+  render();
+}
+
+function setMode(m) {
+  currentMode = m;
+  const bb = document.getElementById('btn-best');
+  const bw = document.getElementById('btn-worst');
+  bb.className = 'toggle-btn' + (m === 'best'  ? ' active-best'  : '');
+  bw.className = 'toggle-btn' + (m === 'worst' ? ' active-worst' : '');
+  render();
+}
+
+function fmt(v) {
+  const s = (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+  return s;
+}
+
+function rankLabel(r) {
+  if (r === 1) return '🥇';
+  if (r === 2) return '🥈';
+  if (r === 3) return '🥉';
+  return '#' + r;
+}
+
+function render() {
+  const d    = DATA[currentWindow];
+  const rows = currentMode === 'best' ? d.best : d.worst;
+  const isBest = currentMode === 'best';
+
+  // find max absolute cagr for bar scaling
+  const maxAbs = Math.max(...rows.map(r => Math.abs(r.cagr)));
+
+  const windowLabel = currentWindow + ' años';
+  const modeLabel   = isBest ? 'Mejores' : 'Peores';
+  const modeClass   = isBest ? 'best' : 'worst';
+
+  const bestBestCagr  = DATA[currentWindow].best[0].cagr;
+  const worstWorstCagr = DATA[currentWindow].worst[0].cagr;
+
+  let html = `
+    <div class="panel-header">
+      <div>
+        <div class="panel-title ${modeClass}">${isBest ? '▲' : '▼'} ${modeLabel} 10 períodos · ${windowLabel}</div>
+        <div class="panel-subtitle">Ranking por CAGR anual compuesta · ${d.intervals} intervalos posibles · 1928–2025</div>
+      </div>
+      <div class="interval-count">
+        Mejor: <b style="color:var(--green)">${fmt(DATA[currentWindow].best[0].cagr)}</b> &nbsp;|&nbsp;
+        Peor: <b style="color:var(--red)">${fmt(DATA[currentWindow].worst[0].cagr)}</b>
+      </div>
+    </div>
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:44px">#</th>
+          <th>Período</th>
+          <th class="bar-cell">CAGR anual</th>
+          <th class="right" style="width:120px">$1 invertido →</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  rows.forEach((row, i) => {
+    const isPos    = row.cagr >= 0;
+    const color    = isPos ? 'green' : 'red';
+    const pct      = (Math.abs(row.cagr) / maxAbs * 100).toFixed(1);
+    const multCol  = row.mult >= 1 ? 'green' : 'red';
+    const multStr  = '$' + row.mult.toFixed(2);
+    const delay    = (i * 0.05).toFixed(2);
+
+    html += `
+      <tr style="animation-delay:${delay}s">
+        <td class="rank rank-${row.r}">${rankLabel(row.r)}</td>
+        <td><div class="period">${row.p}</div></td>
+        <td class="bar-cell">
+          <div class="bar-wrap">
+            <div class="bar-track">
+              <div class="bar-fill ${color}" style="width:${pct}%"></div>
+            </div>
+            <div class="cagr-val ${color}">${fmt(row.cagr)}</div>
+          </div>
+        </td>
+        <td class="mult ${multCol}">${multStr}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table>`;
+
+  document.getElementById('panel-container').innerHTML = html;
+}
+
+// Init
+render();
+</script>
+</body>
+</html>
