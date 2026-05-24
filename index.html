@@ -9,14 +9,16 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg: #f6f5f0;
-  --surface: #fff;
-  --border: #e0dfd8;
-  --text: #0f0f0f;
-  --muted: #666;
-  --dim: #999;
-  --header-bg: #0f0f0f;
+  --bg: #0a0a0a;
+  --surface: #111111;
+  --surface2: #161616;
+  --border: #222222;
+  --border2: #2a2a2a;
+  --text: #f0f0f0;
+  --muted: #888;
+  --dim: #555;
   --accent: #1D9E75;
+  --accent-dim: #0f4a37;
   --mono: 'IBM Plex Mono', monospace;
   --sans: 'IBM Plex Sans', sans-serif;
 }
@@ -24,42 +26,42 @@
 body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
 
 /* ── HEADER ── */
-.header { background: var(--header-bg); padding: 0 32px; }
-.header-inner { max-width: 1100px; margin: 0 auto; padding: 32px 0 28px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
-.brand { font-family: var(--mono); font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
-.header h1 { font-size: 2rem; font-weight: 300; color: #fff; letter-spacing: -0.02em; line-height: 1.2; }
-.header h1 strong { font-weight: 600; }
-.header-sub { font-size: 13px; color: #777; margin-top: 8px; }
-.header-stats { display: flex; gap: 24px; }
+.header { background: #000; border-bottom: 1px solid var(--border); padding: 0 32px; }
+.header-inner { max-width: 1100px; margin: 0 auto; padding: 36px 0 30px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
+.brand { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+.header h1 { font-size: 2.2rem; font-weight: 300; color: #fff; letter-spacing: -0.02em; line-height: 1.15; }
+.header h1 strong { font-weight: 600; color: var(--accent); }
+.header-sub { font-size: 13px; color: #555; margin-top: 10px; }
+.header-stats { display: flex; gap: 28px; padding-bottom: 4px; }
 .stat { text-align: center; }
-.stat-num { font-family: var(--mono); font-size: 1.8rem; font-weight: 600; color: var(--accent); line-height: 1; }
-.stat-lbl { font-size: 10px; color: #666; margin-top: 4px; letter-spacing: 0.05em; }
+.stat-num { font-family: var(--mono); font-size: 2rem; font-weight: 600; color: var(--accent); line-height: 1; }
+.stat-lbl { font-size: 10px; color: #444; margin-top: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
 
 /* ── PAGE ── */
-.page { max-width: 1100px; margin: 0 auto; padding: 40px 32px 60px; }
+.page { max-width: 1100px; margin: 0 auto; padding: 44px 32px 70px; }
 
 /* ── SECTION ── */
-.section { margin-bottom: 48px; }
-.section-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-.section-num { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.18em; color: var(--accent); }
-.section-title { font-size: 18px; font-weight: 500; color: var(--text); }
-.section-count { font-size: 12px; color: var(--dim); margin-left: auto; font-family: var(--mono); }
+.section { margin-bottom: 52px; }
+.section-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
+.section-num { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--accent); }
+.section-title { font-size: 17px; font-weight: 400; color: #ccc; }
+.section-count { font-size: 11px; color: var(--dim); margin-left: auto; font-family: var(--mono); }
 
 /* ── GRID ── */
-.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
 
 /* ── CARD ── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 20px;
   text-decoration: none;
   color: inherit;
   display: flex;
   flex-direction: column;
   gap: 10px;
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
   position: relative;
   overflow: hidden;
 }
@@ -67,16 +69,17 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 3px;
+  height: 2px;
   background: var(--accent-color, var(--accent));
   opacity: 0;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.2s ease;
 }
-.card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.08); border-color: #ccc; }
+.card:hover { background: var(--surface2); border-color: var(--border2); transform: translateY(-1px); }
 .card:hover::before { opacity: 1; }
 
 .card-top { display: flex; align-items: center; justify-content: space-between; }
-.card-icon { font-size: 22px; line-height: 1; }
+.card-icon { font-size: 20px; line-height: 1; }
+
 .tag {
   font-family: var(--mono);
   font-size: 9px;
@@ -86,34 +89,34 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
   padding: 3px 8px;
   border-radius: 4px;
 }
-.tag-dashboard  { background: #E1F5EE; color: #0f6e56; }
-.tag-simulator  { background: #E6F1FB; color: #0C447C; }
-.tag-analysis   { background: #FAEEDA; color: #633806; }
-.tag-stats      { background: #EEEDFE; color: #3C3489; }
-.tag-strategy   { background: #FAECE7; color: #712B13; }
-.tag-nvidia     { background: #EAF3DE; color: #27500A; }
+.tag-dashboard { background: #0f3d2a; color: #4ade80; }
+.tag-simulator { background: #0c2444; color: #60a5fa; }
+.tag-stats     { background: #1e1533; color: #a78bfa; }
+.tag-strategy  { background: #3b1a0f; color: #fb923c; }
+.tag-nvidia    { background: #1a2a05; color: #86efac; }
+.tag-analysis  { background: #2a1f0a; color: #fbbf24; }
 
-.card-title { font-size: 15px; font-weight: 500; color: var(--text); line-height: 1.3; }
-.card-desc { font-size: 12px; color: var(--muted); line-height: 1.6; flex-grow: 1; }
-.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 10px; border-top: 1px solid var(--border); }
+.card-title { font-size: 14px; font-weight: 500; color: #e8e8e8; line-height: 1.35; }
+.card-desc { font-size: 12px; color: var(--muted); line-height: 1.65; flex-grow: 1; }
+.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--border); }
 .card-ticker { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--dim); letter-spacing: 0.05em; }
-.card-arrow { font-size: 16px; color: var(--dim); transition: transform 0.15s ease, color 0.15s ease; }
-.card:hover .card-arrow { transform: translateX(3px); color: var(--accent); }
+.card-arrow { font-size: 15px; color: var(--dim); transition: transform 0.15s ease, color 0.15s ease; }
+.card:hover .card-arrow { transform: translateX(4px); color: var(--accent); }
 
 /* ── FOOTER ── */
-.footer { text-align: center; padding: 24px 32px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 2; }
-.footer strong { color: var(--muted); }
+.footer { text-align: center; padding: 24px 32px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 2.2; }
+.footer strong { color: #444; }
 
 @media (max-width: 600px) {
   .header-inner { flex-direction: column; align-items: flex-start; }
-  .page { padding: 24px 20px 40px; }
+  .page { padding: 28px 20px 48px; }
   .cards-grid { grid-template-columns: 1fr; }
+  .header h1 { font-size: 1.7rem; }
 }
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="header-inner">
     <div>
@@ -124,7 +127,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     <div class="header-stats">
       <div class="stat">
         <div class="stat-num" id="doc-count">17</div>
-        <div class="stat-lbl">análisis publicados</div>
+        <div class="stat-lbl">publicados</div>
       </div>
       <div class="stat">
         <div class="stat-num">5</div>
@@ -136,7 +139,7 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
 <div class="page">
 
-  <!-- ── 01 DASHBOARDS DE EMPRESAS ── -->
+  <!-- 01 DASHBOARDS -->
   <div class="section">
     <div class="section-header">
       <span class="section-num">01</span>
@@ -145,62 +148,38 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     </div>
     <div class="cards-grid">
 
-      <a class="card" href="nvda_dashboard.html" style="--accent-color: #76b900;">
-        <div class="card-top">
-          <div class="card-icon">🟢</div>
-          <span class="tag tag-dashboard">Dashboard</span>
-        </div>
+      <a class="card" href="nvda_dashboard.html" style="--accent-color:#76b900;">
+        <div class="card-top"><div class="card-icon">🟢</div><span class="tag tag-dashboard">Dashboard</span></div>
         <div class="card-title">NVIDIA Corporation</div>
         <div class="card-desc">Dashboard corporativo con desglose de ingresos por segmento, márgenes históricos, catalizadores y análisis técnico.</div>
-        <div class="card-footer">
-          <span class="card-ticker">NVDA · NYSE</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">NVDA · NYSE</span><span class="card-arrow">→</span></div>
       </a>
 
-      <a class="card" href="vistra_vst_fundamental_dashboard.html" style="--accent-color: #F59E0B;">
-        <div class="card-top">
-          <div class="card-icon">⚡</div>
-          <span class="tag tag-dashboard">Dashboard</span>
-        </div>
+      <a class="card" href="vistra_vst_fundamental_dashboard.html" style="--accent-color:#F59E0B;">
+        <div class="card-top"><div class="card-icon">⚡</div><span class="tag tag-dashboard">Dashboard</span></div>
         <div class="card-title">Vistra Corp</div>
         <div class="card-desc">Análisis fundamental del mayor generador independiente de electricidad de EE.UU. Márgenes EBITDA, deuda y catalizadores IA.</div>
-        <div class="card-footer">
-          <span class="card-ticker">VST · NYSE</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">VST · NYSE</span><span class="card-arrow">→</span></div>
       </a>
 
-      <a class="card" href="meli_correcciones_2026_1.html" style="--accent-color: #378ADD;">
-        <div class="card-top">
-          <div class="card-icon">🛒</div>
-          <span class="tag tag-dashboard">Dashboard</span>
-        </div>
+      <a class="card" href="meli_correcciones_2026_1.html" style="--accent-color:#378ADD;">
+        <div class="card-top"><div class="card-icon">🛒</div><span class="tag tag-dashboard">Dashboard</span></div>
         <div class="card-title">MercadoLibre — Correcciones 2026</div>
         <div class="card-desc">Análisis de las correcciones históricas de MELI y contexto de valuación actual. Oportunidad vs. riesgo.</div>
-        <div class="card-footer">
-          <span class="card-ticker">MELI · NASDAQ</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">MELI · NASDAQ</span><span class="card-arrow">→</span></div>
       </a>
 
-      <a class="card" href="ypf_analisis_fundamental.html" style="--accent-color: #000080;">
-        <div class="card-top">
-          <div class="card-icon">🛢️</div>
-          <span class="tag tag-dashboard">Dashboard</span>
-        </div>
+      <a class="card" href="ypf_analisis_fundamental.html" style="--accent-color:#4f8ef7;">
+        <div class="card-top"><div class="card-icon">🛢️</div><span class="tag tag-dashboard">Dashboard</span></div>
         <div class="card-title">YPF — Análisis Fundamental</div>
         <div class="card-desc">Análisis fundamental de YPF basado en la Investor Presentation Q4 2025. Segmentos, producción Vaca Muerta y financials.</div>
-        <div class="card-footer">
-          <span class="card-ticker">YPF · NYSE</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">YPF · NYSE</span><span class="card-arrow">→</span></div>
       </a>
 
     </div>
   </div>
 
-  <!-- ── 02 ANÁLISIS ESTADÍSTICO HISTÓRICO ── -->
+  <!-- 02 ANÁLISIS ESTADÍSTICO HISTÓRICO -->
   <div class="section">
     <div class="section-header">
       <span class="section-num">02</span>
@@ -209,49 +188,31 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     </div>
     <div class="cards-grid">
 
-      <a class="card" href="brk_vs_sp500_dashboard.html" style="--accent-color: #1D9E75;">
-        <div class="card-top">
-          <div class="card-icon">🏛️</div>
-          <span class="tag tag-stats">Histórico</span>
-        </div>
+      <a class="card" href="brk_vs_sp500_dashboard.html" style="--accent-color:#1D9E75;">
+        <div class="card-top"><div class="card-icon">🏛️</div><span class="tag tag-stats">Histórico</span></div>
         <div class="card-title">Berkshire vs. S&amp;P 500</div>
         <div class="card-desc">30 años de retornos anuales (1996–2025). Diferencial año a año, dispersión por cuadrante y análisis de protección ante caídas del mercado.</div>
-        <div class="card-footer">
-          <span class="card-ticker">BRK.B · 1996–2025</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">BRK.B · 1996–2025</span><span class="card-arrow">→</span></div>
       </a>
 
-      <a class="card" href="sp500_ventanas_moviles.html" style="--accent-color: #534AB7;">
-        <div class="card-top">
-          <div class="card-icon">📊</div>
-          <span class="tag tag-stats">Histórico</span>
-        </div>
+      <a class="card" href="sp500_ventanas_moviles.html" style="--accent-color:#7c6ef5;">
+        <div class="card-top"><div class="card-icon">📊</div><span class="tag tag-stats">Histórico</span></div>
         <div class="card-title">S&amp;P 500 — Ventanas Móviles</div>
         <div class="card-desc">98 años de datos (1928–2025). Mejores y peores períodos para ventanas de 5, 10, 15, 20 y 30 años mediante rolling windows solapadas.</div>
-        <div class="card-footer">
-          <span class="card-ticker">SPX · 1928–2025</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">SPX · 1928–2025</span><span class="card-arrow">→</span></div>
       </a>
 
-      <a class="card" href="meli_ventanas_moviles.html" style="--accent-color: #378ADD;">
-        <div class="card-top">
-          <div class="card-icon">📈</div>
-          <span class="tag tag-stats">Histórico</span>
-        </div>
+      <a class="card" href="meli_ventanas_moviles.html" style="--accent-color:#378ADD;">
+        <div class="card-top"><div class="card-icon">📈</div><span class="tag tag-stats">Histórico</span></div>
         <div class="card-title">MercadoLibre — Ventanas Móviles</div>
         <div class="card-desc">Mejores y peores períodos de 5 y 10 años desde el IPO de MELI (2007–2025). Análisis de retornos anualizados históricos.</div>
-        <div class="card-footer">
-          <span class="card-ticker">MELI · 2007–2025</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">MELI · 2007–2025</span><span class="card-arrow">→</span></div>
       </a>
 
     </div>
   </div>
 
-  <!-- ── 03 SIMULADORES INTERACTIVOS ── -->
+  <!-- 03 SIMULADORES -->
   <div class="section">
     <div class="section-header">
       <span class="section-num">03</span>
@@ -260,49 +221,31 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     </div>
     <div class="cards-grid">
 
-      <a class="card" href="merval_ccl_vs_sp500.html" style="--accent-color: #4CAF7A;">
-        <div class="card-top">
-          <div class="card-icon">🇦🇷</div>
-          <span class="tag tag-simulator">Simulador</span>
-        </div>
+      <a class="card" href="merval_ccl_vs_sp500.html" style="--accent-color:#4CAF7A;">
+        <div class="card-top"><div class="card-icon">🇦🇷</div><span class="tag tag-simulator">Simulador</span></div>
         <div class="card-title">MERVAL CCL vs S&amp;P 500</div>
-        <div class="card-desc">Comparación histórica del MERVAL en dólares CCL (Contado con Liquidación) versus el S&amp;P 500. Rendimientos y CAGR animados.</div>
-        <div class="card-footer">
-          <span class="card-ticker">MERVAL · SPX</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-desc">Comparación histórica del MERVAL en dólares CCL versus el S&amp;P 500. Rendimientos y CAGR animados por horizonte de inversión.</div>
+        <div class="card-footer"><span class="card-ticker">MERVAL · SPX</span><span class="card-arrow">→</span></div>
       </a>
 
-      <a class="card" href="simulador-spx-ndx.html" style="--accent-color: #4A90D9;">
-        <div class="card-top">
-          <div class="card-icon">🇺🇸</div>
-          <span class="tag tag-simulator">Simulador</span>
-        </div>
+      <a class="card" href="simulador-spx-ndx.html" style="--accent-color:#4A90D9;">
+        <div class="card-top"><div class="card-icon">🇺🇸</div><span class="tag tag-simulator">Simulador</span></div>
         <div class="card-title">S&amp;P 500 vs NASDAQ 100</div>
-        <div class="card-desc">Simulador interactivo para comparar el crecimiento de una inversión en SPX vs NDX desde 1985. CAGR por horizonte de inversión.</div>
-        <div class="card-footer">
-          <span class="card-ticker">SPX · NDX · 1985–hoy</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-desc">Comparación del crecimiento de una inversión en SPX vs NDX desde 1985. CAGR por horizonte de inversión seleccionable.</div>
+        <div class="card-footer"><span class="card-ticker">SPX · NDX · 1985–hoy</span><span class="card-arrow">→</span></div>
       </a>
 
-      <a class="card" href="visa-mastercard.html" style="--accent-color: #1A56DB;">
-        <div class="card-top">
-          <div class="card-icon">💳</div>
-          <span class="tag tag-simulator">Simulador</span>
-        </div>
+      <a class="card" href="visa-mastercard.html" style="--accent-color:#1A56DB;">
+        <div class="card-top"><div class="card-icon">💳</div><span class="tag tag-simulator">Simulador</span></div>
         <div class="card-title">Visa, Mastercard y CEDEARs</div>
         <div class="card-desc">Simulador de inversión en 30+ CEDEARs con datos históricos. Proyección animada del crecimiento del capital invertido.</div>
-        <div class="card-footer">
-          <span class="card-ticker">V · MA · CEDEARs</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">V · MA · CEDEARs</span><span class="card-arrow">→</span></div>
       </a>
 
     </div>
   </div>
 
-  <!-- ── 04 ANÁLISIS NVIDIA DETALLE ── -->
+  <!-- 04 NVIDIA DETALLE -->
   <div class="section">
     <div class="section-header">
       <span class="section-num">04</span>
@@ -311,36 +254,24 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     </div>
     <div class="cards-grid">
 
-      <a class="card" href="nvidia_income_statementHugoTanos.html" style="--accent-color: #76b900;">
-        <div class="card-top">
-          <div class="card-icon">📋</div>
-          <span class="tag tag-nvidia">NVIDIA</span>
-        </div>
+      <a class="card" href="nvidia_income_statementHugoTanos.html" style="--accent-color:#76b900;">
+        <div class="card-top"><div class="card-icon">📋</div><span class="tag tag-nvidia">NVIDIA</span></div>
         <div class="card-title">Estado de Resultados</div>
-        <div class="card-desc">Estado de resultados interactivo de NVIDIA. Explorá cada línea del Income Statement y cómo fluye cada dólar de ingresos.</div>
-        <div class="card-footer">
-          <span class="card-ticker">NVDA · Income Statement</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-desc">Estado de resultados interactivo de NVIDIA. Explorá cada línea del Income Statement (estado de resultados) y cómo fluye cada dólar de ingresos.</div>
+        <div class="card-footer"><span class="card-ticker">NVDA · Income Statement</span><span class="card-arrow">→</span></div>
       </a>
 
-      <a class="card" href="nvidia_balance_sheet.html" style="--accent-color: #76b900;">
-        <div class="card-top">
-          <div class="card-icon">🏦</div>
-          <span class="tag tag-nvidia">NVIDIA</span>
-        </div>
+      <a class="card" href="nvidia_balance_sheet.html" style="--accent-color:#76b900;">
+        <div class="card-top"><div class="card-icon">🏦</div><span class="tag tag-nvidia">NVIDIA</span></div>
         <div class="card-title">Balance General</div>
         <div class="card-desc">Balance sheet interactivo de NVIDIA. Activos, pasivos y patrimonio neto con desglose visual por categoría.</div>
-        <div class="card-footer">
-          <span class="card-ticker">NVDA · Balance Sheet</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-footer"><span class="card-ticker">NVDA · Balance Sheet</span><span class="card-arrow">→</span></div>
       </a>
 
     </div>
   </div>
 
-  <!-- ── 05 ESTRATEGIA ── -->
+  <!-- 05 ESTRATEGIA -->
   <div class="section">
     <div class="section-header">
       <span class="section-num">05</span>
@@ -349,17 +280,11 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
     </div>
     <div class="cards-grid">
 
-      <a class="card" href="cashflow_strategy_mda.html" style="--accent-color: #D85A30;">
-        <div class="card-top">
-          <div class="card-icon">💰</div>
-          <span class="tag tag-strategy">Estrategia</span>
-        </div>
+      <a class="card" href="cashflow_strategy_mda.html" style="--accent-color:#D85A30;">
+        <div class="card-top"><div class="card-icon">💰</div><span class="tag tag-strategy">Estrategia</span></div>
         <div class="card-title">Estrategia Cashflow MDA</div>
-        <div class="card-desc">Portafolio orientado a generación de flujo de caja. Selección de activos, frecuencia de cobro y rendimiento esperado por perfil.</div>
-        <div class="card-footer">
-          <span class="card-ticker">Dividendos · CEDEARs</span>
-          <span class="card-arrow">→</span>
-        </div>
+        <div class="card-desc">Portafolio orientado a generación de flujo de caja. Selección de activos, frecuencia de cobro y rendimiento esperado por perfil de inversión.</div>
+        <div class="card-footer"><span class="card-ticker">Dividendos · CEDEARs</span><span class="card-arrow">→</span></div>
       </a>
 
     </div>
@@ -367,7 +292,6 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 
 </div>
 
-<!-- FOOTER -->
 <div class="footer">
   Contenido elaborado con fines educativos e informativos · No constituye asesoramiento de inversión<br>
   Rendimiento pasado no garantiza resultados futuros · Consulte con un asesor antes de invertir<br>
@@ -377,12 +301,8 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); min-
 <script>
   const target = 17;
   const el = document.getElementById('doc-count');
-  let current = 0;
-  const step = () => {
-    current = Math.min(current + 1, target);
-    el.textContent = current;
-    if (current < target) requestAnimationFrame(step);
-  };
+  let c = 0;
+  const step = () => { c = Math.min(c + 1, target); el.textContent = c; if (c < target) requestAnimationFrame(step); };
   requestAnimationFrame(step);
 </script>
 </body>
