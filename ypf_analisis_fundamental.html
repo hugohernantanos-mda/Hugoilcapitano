@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YPF — Análisis Fundamental | Hugo Tanos</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --dark: #0A0A0A;
+    --dark-2: #111111;
+    --dark-3: #1A1A1A;
+    --border: rgba(201,168,76,0.2);
+    --text: #E8E4DC;
+    --text-muted: #7A7468;
+    --text-mid: #B0A99A;
+    --green: #4CAF7A;
+    --blue: #4A90D9;
+    --red: #E05A5A;
+    --yellow: #F0C040;
+    --ypf-blue: #003DA6;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--dark);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,168,76,0.06) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 90% 80%, rgba(0,61,166,0.04) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,168,76,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,168,76,0.025) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 56px;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .back-link {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover { color: var(--gold); }
+
+  .topbar-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--border);
+  }
+
+  .topbar-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--text-mid);
+  }
+
+  .topbar-title span { color: var(--gold); }
+
+  .slide-counter {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.08em;
+  }
+
+  /* SLIDE NAV DOTS */
+  .slide-nav {
+    position: fixed;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--border);
+    cursor: pointer;
+    transition: all 0.25s;
+    border: 1px solid transparent;
+  }
+
+  .dot:hover { background: var(--text-muted); }
+  .dot.active { background: var(--gold); transform: scale(1.4); }
+
+  /* SLIDES CONTAINER */
+  .slides {
+    padding-top: 56px;
+  }
+
+  /* EACH SLIDE */
+  .slide {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 60px 80px;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .slide-num {
+    position: absolute;
+    top: 32px;
+    left: 40px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--text-muted);
+  }
+
+  /* ─── SLIDE 1: COVER ─── */
+  .slide-cover {
+    align-items: center;
+    text-align: center;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(201,168,76,0.05) 0%, transparent 70%);
+  }
+
+  .cover-tag {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    justify-content: center;
+  }
+
+  .cover-tag::before, .cover-tag::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold));
+  }
+
+  .cover-tag::after { background: linear-gradient(90deg, var(--gold), transparent); }
+
+  .cover-ticker {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(72px, 12vw, 120px);
+    color: var(--gold);
+    line-height: 1;
+    letter-spacing: -0.03em;
+  }
+
+  .cover-subtitle {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(20px, 3vw, 32px);
+    color: var(--text);
+    font-weight: 400;
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  .cover-meta {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .cover-period {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    color: var(--text-mid);
+    letter-spacing: 0.1em;
+    padding: 6px 16px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+
+  .cover-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 0.12em;
+    margin-top: 8px;
+  }
+
+  /* ─── SLIDE TITLE ─── */
+  .slide-heading {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 400;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.15;
+  }
+
+  .slide-heading em { color: var(--gold); font-style: italic; }
+
+  .slide-lead {
+    font-size: 14px;
+    color: var(--text-mid);
+    margin-bottom: 40px;
+    line-height: 1.6;
+    max-width: 700px;
+  }
+
+  /* ─── STAT BLOCKS ─── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 2px;
+    margin-bottom: 32px;
+  }
+
+  .stat-block {
+    background: var(--dark-2);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: relative;
+  }
+
+  .stat-block::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent, var(--gold)), transparent);
+  }
+
+  .stat-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 4vw, 44px);
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 6px;
+  }
+
+  .stat-delta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    margin-top: 4px;
+  }
+
+  .up { color: var(--green); }
+  .down { color: var(--red); }
+  .neutral { color: var(--text-mid); }
+
+  /* ─── GRID CARDS ─── */
+  .cards-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 24px;
+  }
+
+  .cards-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 24px;
+  }
+
+  .info-card {
+    background: var(--dark-2);
+    border: 1px solid var(--border);
+    padding: 20px 22px;
+  }
+
+  .info-card-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+  }
+
+  .info-card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px;
+    color: var(--text);
+    margin-bottom: 8px;
+    line-height: 1.3;
+  }
+
+  .info-card p {
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  /* ─── HIGHLIGHT BOX ─── */
+  .highlight-box {
+    background: rgba(201,168,76,0.05);
+    border: 1px solid rgba(201,168,76,0.25);
+    border-left: 3px solid var(--gold);
+    padding: 20px 24px;
+    margin-top: 20px;
+    border-radius: 0 2px 2px 0;
+  }
+
+  .highlight-box p {
+    font-size: 13px;
+    color: var(--text-mid);
+    line-height: 1.7;
+  }
+
+  .highlight-box strong { color: var(--text); }
+
+  /* ─── BLOCK LIST ─── */
+  .block-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .block-item {
+    background: var(--dark-2);
+    border: 1px solid var(--border);
+    padding: 18px 22px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .block-item-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .block-item-content h4 {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+
+  .block-item-content p {
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.6;
+  }
+
+  /* ─── KEY METRICS ─── */
+  .key-metrics {
+    display: flex;
+    gap: 2px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .kpi {
+    background: var(--dark-2);
+    border: 1px solid var(--border);
+    padding: 14px 18px;
+    min-width: 140px;
+    flex: 1;
+  }
+
+  .kpi-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .kpi-lbl {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  /* ─── RISK ITEMS ─── */
+  .risk-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .risk-item {
+    display: grid;
+    grid-template-columns: 80px 160px 1fr;
+    gap: 0;
+    border: 1px solid var(--border);
+  }
+
+  .risk-level {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 12px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.15em;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .risk-high   { background: rgba(224,90,90,0.1);   color: var(--red);    border-right: 1px solid rgba(224,90,90,0.2); }
+  .risk-medium { background: rgba(240,192,64,0.1);  color: var(--yellow); border-right: 1px solid rgba(240,192,64,0.2); }
+  .risk-low    { background: rgba(76,175,122,0.1);  color: var(--green);  border-right: 1px solid rgba(76,175,122,0.2); }
+
+  .risk-name {
+    background: var(--dark-2);
+    padding: 16px 16px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .risk-desc {
+    background: var(--dark-2);
+    padding: 16px 20px;
+    font-size: 12px;
+    color: var(--text-mid);
+    line-height: 1.6;
+    display: flex;
+    align-items: center;
+  }
+
+  /* ─── CONCLUSION TABLE ─── */
+  .verdict-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+  }
+
+  .verdict-table th {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    background: var(--dark-2);
+  }
+
+  .verdict-table td {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    background: var(--dark-2);
+  }
+
+  .verdict-table td:first-child {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text);
+    letter-spacing: 0.05em;
+  }
+
+  .badge-ok   { color: var(--green); }
+  .badge-warn { color: var(--yellow); }
+
+  /* ─── VACA MUERTA BLOCKS ─── */
+  .vm-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-bottom: 20px;
+  }
+
+  .vm-block {
+    background: var(--dark-2);
+    border: 1px solid var(--border);
+    padding: 18px 20px;
+  }
+
+  .vm-name {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+
+  .vm-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .vm-key {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .vm-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  .progress-bar-wrap {
+    height: 3px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    margin-top: 10px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light));
+    border-radius: 2px;
+  }
+
+  /* ─── DOWNSTREAM ─── */
+  .downstream-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 20px;
+  }
+
+  /* ─── DISCLAIMER ─── */
+  .disclaimer-bar {
+    background: var(--dark-2);
+    border-top: 1px solid var(--border);
+    padding: 20px 80px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .disclaimer-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+  }
+
+  .disclaimer-text {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    max-width: 600px;
+    line-height: 1.6;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  .slide { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
+  .slide.visible { opacity: 1; transform: translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .slide { padding: 60px 32px; }
+    .cards-2col, .cards-3col, .vm-grid { grid-template-columns: 1fr; }
+    .risk-item { grid-template-columns: 70px 1fr; }
+    .risk-desc { display: none; }
+    .slide-nav { display: none; }
+    .topbar { padding: 0 20px; }
+    .disclaimer-bar { padding: 20px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <a class="back-link" href="index.html">← Portal</a>
+    <div class="topbar-divider"></div>
+    <div class="topbar-title"><span>YPF</span> · Análisis Fundamental · FY2025 / Q1 2026</div>
+  </div>
+  <div class="slide-counter"><span id="cur-slide">1</span> / 10</div>
+</div>
+
+<!-- SLIDE NAV DOTS -->
+<nav class="slide-nav" id="slide-nav">
+  <div class="dot active" data-slide="0" title="Portada"></div>
+  <div class="dot" data-slide="1" title="¿Qué es YPF?"></div>
+  <div class="dot" data-slide="2" title="FY2025"></div>
+  <div class="dot" data-slide="3" title="Upstream"></div>
+  <div class="dot" data-slide="4" title="Vaca Muerta"></div>
+  <div class="dot" data-slide="5" title="Downstream"></div>
+  <div class="dot" data-slide="6" title="Q1 2026"></div>
+  <div class="dot" data-slide="7" title="Catalizadores"></div>
+  <div class="dot" data-slide="8" title="Riesgos"></div>
+  <div class="dot" data-slide="9" title="Conclusión"></div>
+</nav>
+
+<div class="slides">
+
+  <!-- SLIDE 1: COVER -->
+  <section class="slide slide-cover" id="slide-0">
+    <div class="slide-num">01 / 10</div>
+    <div class="cover-tag">MDA Investing · Análisis Fundamental</div>
+    <div class="cover-ticker">YPF</div>
+    <div class="cover-subtitle">Análisis Fundamental</div>
+    <div class="cover-meta">
+      <div class="cover-period">Resultados FY2025 · Q1 2026</div>
+      <div class="cover-brand">Hugo Tanos Investment Advisor &nbsp;·&nbsp; @HugoTanosInvestmentAdvisor</div>
+      <div class="cover-brand" style="margin-top:2px;">Datos: Investor Presentation Marzo 2026 + Earnings Q1 2026</div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: QUÉ ES YPF -->
+  <section class="slide" id="slide-1">
+    <div class="slide-num">02 / 10</div>
+    <h2 class="slide-heading">¿Qué es <em>YPF</em>?</h2>
+    <p class="slide-lead">La empresa energética más grande de Argentina — integrada en toda la cadena de valor del petróleo y gas.</p>
+
+    <div class="cards-2col">
+      <div class="info-card">
+        <div class="info-card-label">⛏ Upstream</div>
+        <div class="info-card-title">Exploración y Producción</div>
+        <p>Extracción de crudo y gas. Core del negocio con foco creciente en shale no convencional en Vaca Muerta.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">🏭 Downstream</div>
+        <div class="info-card-title">Refinación y Comercialización</div>
+        <p>3 refinerías propias, 338 Kbbl/d de capacidad. 56% de market share en combustibles al público.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">🔁 Midstream</div>
+        <div class="info-card-title">Transporte y Logística</div>
+        <p>Gasoductos, oleoductos y redes de transporte. Infraestructura clave para la cadena de valor energética.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">🌿 Energías Nuevas</div>
+        <div class="info-card-title">Renovables y GNL</div>
+        <p>Proyecto LNG de exportación (18 MTPA). Nuevos negocios que pueden transformar el perfil de la compañía.</p>
+      </div>
+    </div>
+
+    <div class="key-metrics">
+      <div class="kpi">
+        <div class="kpi-val">30%</div>
+        <div class="kpi-lbl">Market share · Producción de hidrocarburos</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val">56%</div>
+        <div class="kpi-lbl">Market share · Combustibles al público</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val">~51%</div>
+        <div class="kpi-lbl">Control estatal</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-val">NYSE + BYMA</div>
+        <div class="kpi-lbl">Listada en ambos mercados</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 3: FY2025 -->
+  <section class="slide" id="slide-2">
+    <div class="slide-num">03 / 10</div>
+    <h2 class="slide-heading">Resultados Financieros <em>FY2025</em></h2>
+    <p class="slide-lead">Récord en 10 años a nivel EBITDA — pese a una caída del 15% en el precio del Brent.</p>
+
+    <div class="stats-row">
+      <div class="stat-block" style="--accent: var(--gold);">
+        <div class="stat-value">$18.4B</div>
+        <div class="stat-label">Ingresos Totales</div>
+        <div class="stat-delta down">↓ 4% vs 2024 (caída del Brent)</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--green);">
+        <div class="stat-value">$5.0B</div>
+        <div class="stat-label">EBITDA Ajustado</div>
+        <div class="stat-delta up">↑ 8% · Margen 27%</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--blue);">
+        <div class="stat-value">$4.5B</div>
+        <div class="stat-label">CAPEX Invertido</div>
+        <div class="stat-delta neutral">72% en activos no convencionales</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--yellow);">
+        <div class="stat-value">1.9x</div>
+        <div class="stat-label">Apalancamiento Neto</div>
+        <div class="stat-delta neutral">Deuda neta: $9.4B</div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p>⚠️ <strong>¿Por qué el FCF (Flujo de Caja Libre) fue negativo?</strong><br>
+      FCF = -$1.816B en 2025. Causa: inversiones estratégicas en M&A (Fusiones y Adquisiciones) — compra de bloques en Vaca Muerta. <strong>No refleja debilidad operativa</strong> — el EBITDA creció 8%. El Q1 2026 ya revirtió la situación: FCF = +$871M positivo.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: UPSTREAM -->
+  <section class="slide" id="slide-3">
+    <div class="slide-num">04 / 10</div>
+    <h2 class="slide-heading">Upstream — <em>El Motor de Crecimiento</em></h2>
+    <p class="slide-lead">Vaca Muerta · Shale Oil — la transformación operativa más importante de la compañía en su historia reciente.</p>
+
+    <div class="stats-row">
+      <div class="stat-block" style="--accent: var(--gold);">
+        <div class="stat-value">165K</div>
+        <div class="stat-label">Kbbl/d shale promedio 2025</div>
+        <div class="stat-delta up">↑ 35% vs 2024</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--green);">
+        <div class="stat-value">204K</div>
+        <div class="stat-label">Kbbl/d · Diciembre 2025</div>
+        <div class="stat-delta up">Récord histórico</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--blue);">
+        <div class="stat-value">$11.6</div>
+        <div class="stat-label">Lifting cost (costo de extracción) /boe</div>
+        <div class="stat-delta up">↓ 26% vs 2024</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--yellow);">
+        <div class="stat-value">72%</div>
+        <div class="stat-label">Shale / total producción Q4</div>
+        <div class="stat-delta neutral">Era 40% en 2022</div>
+      </div>
+    </div>
+
+    <div class="cards-3col">
+      <div class="info-card">
+        <div class="info-card-label">📦 Reservas P1 Shale (SEC)</div>
+        <div class="info-card-title">1.128 MBOE</div>
+        <p>Total reservas shale · +32% Y/Y</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">⏳ Vida de Reservas</div>
+        <div class="info-card-title">9.0 años</div>
+        <p>Vida de reservas certificadas</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">🔁 RRR — Reposición</div>
+        <div class="info-card-title">3.2x</div>
+        <p>Tasa de reposición de reservas — reemplaza 3.2 barriles por cada 1 producido</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 5: VACA MUERTA -->
+  <section class="slide" id="slide-4">
+    <div class="slide-num">05 / 10</div>
+    <h2 class="slide-heading">Vaca Muerta — <em>La Joya de la Corona</em></h2>
+    <p class="slide-lead">YPF es el mayor tenedor de inventario de pozos en Vaca Muerta — y apenas está comenzando.</p>
+
+    <div class="vm-grid">
+      <div class="vm-block">
+        <div class="vm-name">Loma Campana</div>
+        <div class="vm-row"><span class="vm-key">Tipo</span><span class="vm-val">Shale Oil</span></div>
+        <div class="vm-row"><span class="vm-key">Socio</span><span class="vm-val">Chevron</span></div>
+        <div class="vm-row"><span class="vm-key">Desarrollo</span><span class="vm-val">50%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:50%"></div></div>
+      </div>
+      <div class="vm-block">
+        <div class="vm-name">La Amarga Chica</div>
+        <div class="vm-row"><span class="vm-key">Tipo</span><span class="vm-val">Shale Oil</span></div>
+        <div class="vm-row"><span class="vm-key">Socio</span><span class="vm-val">Vista</span></div>
+        <div class="vm-row"><span class="vm-key">Desarrollo</span><span class="vm-val">50%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:50%"></div></div>
+      </div>
+      <div class="vm-block">
+        <div class="vm-name">Bandurria Sur</div>
+        <div class="vm-row"><span class="vm-key">Tipo</span><span class="vm-val">Shale Oil</span></div>
+        <div class="vm-row"><span class="vm-key">Socio</span><span class="vm-val">Vista / Shell</span></div>
+        <div class="vm-row"><span class="vm-key">Desarrollo</span><span class="vm-val">27%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:27%"></div></div>
+      </div>
+      <div class="vm-block">
+        <div class="vm-name">Aguada del Chañar</div>
+        <div class="vm-row"><span class="vm-key">Tipo</span><span class="vm-val">Shale Oil</span></div>
+        <div class="vm-row"><span class="vm-key">Socio</span><span class="vm-val">CGC</span></div>
+        <div class="vm-row"><span class="vm-key">Desarrollo</span><span class="vm-val">37%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:37%"></div></div>
+      </div>
+      <div class="vm-block">
+        <div class="vm-name">Aguada de la Arena</div>
+        <div class="vm-row"><span class="vm-key">Tipo</span><span class="vm-val">Shale Gas</span></div>
+        <div class="vm-row"><span class="vm-key">Socio</span><span class="vm-val">YPF 100%</span></div>
+        <div class="vm-row"><span class="vm-key">Desarrollo</span><span class="vm-val">15%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:15%"></div></div>
+      </div>
+      <div class="vm-block">
+        <div class="vm-name">Sierra Chata</div>
+        <div class="vm-row"><span class="vm-key">Tipo</span><span class="vm-val">Shale Gas</span></div>
+        <div class="vm-row"><span class="vm-key">Socio</span><span class="vm-val">Pampa</span></div>
+        <div class="vm-row"><span class="vm-key">Desarrollo</span><span class="vm-val">1%</span></div>
+        <div class="progress-bar-wrap"><div class="progress-bar" style="width:1%"></div></div>
+      </div>
+    </div>
+
+    <div class="highlight-box">
+      <p>💡 <strong>Insight clave:</strong> Los bloques con mayor potencial (Sierra Chata, Aguada de la Arena) tienen solo 1–15% de desarrollo. El crecimiento de producción tiene runway (horizonte de crecimiento) de 10–15 años.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: DOWNSTREAM -->
+  <section class="slide" id="slide-5">
+    <div class="slide-num">06 / 10</div>
+    <h2 class="slide-heading">Downstream — <em>Dominancia en el Mercado Local</em></h2>
+    <p class="slide-lead">Líder indiscutido en refinación y comercialización de combustibles en Argentina.</p>
+
+    <div class="stats-row">
+      <div class="stat-block" style="--accent: var(--gold);">
+        <div class="stat-value">56%</div>
+        <div class="stat-label">Market share combustibles</div>
+        <div class="stat-delta neutral">Diésel + nafta en Argentina</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--green);">
+        <div class="stat-value">99%</div>
+        <div class="stat-label">Utilización refinería 4Q25</div>
+        <div class="stat-delta neutral">335 Kbbl/d procesados</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--blue);">
+        <div class="stat-value">$22.5</div>
+        <div class="stat-label">Margen M&D en 4Q25 /bbl</div>
+        <div class="stat-delta up">Mejor trimestre en años</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--yellow);">
+        <div class="stat-value">1.688</div>
+        <div class="stat-label">Estaciones de servicio</div>
+        <div class="stat-delta neutral">32% market share red</div>
+      </div>
+    </div>
+
+    <div class="block-list">
+      <div class="block-item">
+        <div class="block-item-icon">🏭</div>
+        <div class="block-item-content">
+          <h4>3 Refinerías Propias</h4>
+          <p>Luján de Cuyo, La Plata, Plaza Huincul — 338 Kbbl/d de capacidad total instalada.</p>
+        </div>
+      </div>
+      <div class="block-item">
+        <div class="block-item-icon">⚗️</div>
+        <div class="block-item-content">
+          <h4>Líder Petroquímico</h4>
+          <p>BTX, Metanol y Propileno — 2M ton/año de capacidad. Diversificación dentro del segmento downstream.</p>
+        </div>
+      </div>
+      <div class="block-item">
+        <div class="block-item-icon">📈</div>
+        <div class="block-item-content">
+          <h4>Enero 2026: 104% de Utilización</h4>
+          <p>Ya supera la capacidad nominal con operación optimizada. Precios de combustibles alineados a paridad de importación: sostenibilidad del margen garantizada.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 7: Q1 2026 -->
+  <section class="slide" id="slide-6">
+    <div class="slide-num">07 / 10</div>
+    <h2 class="slide-heading">Q1 2026 — <em>EBITDA Récord Histórico</em></h2>
+    <p class="slide-lead">Últimos resultados publicados el 7 de Mayo 2026 — superan cualquier Q1 anterior en la historia de la compañía.</p>
+
+    <div class="stats-row">
+      <div class="stat-block" style="--accent: var(--gold);">
+        <div class="stat-value">$4.946B</div>
+        <div class="stat-label">Ingresos Q1 2026</div>
+        <div class="stat-delta up">↑ 7% vs Q1 2025</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--green);">
+        <div class="stat-value">$1.594B</div>
+        <div class="stat-label">EBITDA Ajustado Q1</div>
+        <div class="stat-delta up">↑ 28% vs Q1 2025 · Margen 32%</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--blue);">
+        <div class="stat-value">$409M</div>
+        <div class="stat-label">Utilidad Neta</div>
+        <div class="stat-delta up">Fue -$10M en Q1 2025</div>
+      </div>
+      <div class="stat-block" style="--accent: var(--yellow);">
+        <div class="stat-value">$871M</div>
+        <div class="stat-label">FCF (Flujo de Caja Libre)</div>
+        <div class="stat-delta up">Reversión del FCF negativo</div>
+      </div>
+    </div>
+
+    <div class="block-list">
+      <div class="block-item">
+        <div class="block-item-icon">🛢️</div>
+        <div class="block-item-content">
+          <h4>Shale Oil: 205 Kbbl/d promedio (+39% Y/Y)</h4>
+          <p>Ya representa el 76% de la producción total de crudo. Lifting cost shale: ~$3/boe — break-even por debajo de $40/bbl (margen muy amplio).</p>
+        </div>
+      </div>
+      <div class="block-item">
+        <div class="block-item-icon">🏭</div>
+        <div class="block-item-content">
+          <h4>Refinería: 344 Kbbl/d — Récord para un Q1</h4>
+          <p>Utilización al 102%. Record histórico para el primer trimestre del año.</p>
+        </div>
+      </div>
+      <div class="block-item">
+        <div class="block-item-icon">📉</div>
+        <div class="block-item-content">
+          <h4>Deuda: Apalancamiento 1.9x → 1.57x</h4>
+          <p>CAPEX (Inversiones de Capital) 2026 guidance confirmado: $5.5B–$5.8B — aceleración en el segundo semestre.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 8: CATALIZADORES -->
+  <section class="slide" id="slide-7">
+    <div class="slide-num">08 / 10</div>
+    <h2 class="slide-heading">Catalizadores — <em>Por qué puede valer más</em></h2>
+    <p class="slide-lead">Los drivers de valor que no están completamente reflejados en el precio actual.</p>
+
+    <div class="cards-2col">
+      <div class="info-card">
+        <div class="info-card-label">🚢 Proyecto LNG (Gas Natural Licuado)</div>
+        <div class="info-card-title">Exportaciones a escala global</div>
+        <p>18 MTPA (millones de toneladas por año) de capacidad, expandible a 24. FID (Decisión Final de Inversión) de SESA firmada (6 MTPA). ARG LNG: socios internacionales confirmados. Primera exportación estimada: 2027.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">⛰️ Runway en Vaca Muerta</div>
+        <div class="info-card-title">20+ años de inventario de pozos</div>
+        <p>Bloques core con solo 1–50% desarrollados. La Angostura Sur: 100% YPF, objetivo 100 Kbbl/d. Concesiones vigentes hasta 2059.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">💼 M&A + Desinversiones</div>
+        <div class="info-card-title">Reasignación estratégica de capital</div>
+        <p>Venta de activos maduros no rentables: $1B ingresado. Compra de 3 bloques world-class en Vaca Muerta. Salida de campos convencionales → mejora ROIC (Retorno sobre el Capital Invertido). Foco 100% en shale + exportaciones.</p>
+      </div>
+      <div class="info-card">
+        <div class="info-card-label">📉 Reducción de Costos</div>
+        <div class="info-card-title">Estructura competitiva a nivel global</div>
+        <p>Lifting cost total: $15.6 → $11.6/boe (-26%). Shale hub: $4.4/boe · La Angostura Sur: ~$3/boe. Bono 2034 al 8.1% — mínimo en 9 años. Apalancamiento cayendo: 1.9x → 1.57x.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 9: RIESGOS -->
+  <section class="slide" id="slide-8">
+    <div class="slide-num">09 / 10</div>
+    <h2 class="slide-heading">Riesgos — <em>Lo que hay que monitorear</em></h2>
+    <p class="slide-lead">Invertir en YPF requiere entender y aceptar estos riesgos. Ningún análisis honesto los omite.</p>
+
+    <div class="risk-list">
+      <div class="risk-item">
+        <div class="risk-level risk-high">ALTO</div>
+        <div class="risk-name">Precio del Brent</div>
+        <div class="risk-desc">Cada -$10/bbl impacta significativamente los ingresos. El Brent cayó 15% en 2025 y aún así el EBITDA creció. Con Brent bajo $45, la rentabilidad se comprime materialmente.</div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-level risk-high">ALTO</div>
+        <div class="risk-name">Riesgo País Argentina</div>
+        <div class="risk-desc">Marco regulatorio, controles de capital, intervención del Estado, precio de combustibles regulado. Historia del caso Repsol (expropiación 2012). Riesgo endémico e inherente al activo.</div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-level risk-medium">MEDIO</div>
+        <div class="risk-name">Deuda y Vencimientos</div>
+        <div class="risk-desc">Deuda neta $9.4B. Vencimientos 2027-2028 concentrados (~$3.3B). FCF negativo en 2025 requirió nueva emisión de deuda para financiar M&A. Mejorando, pero a monitorear.</div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-level risk-medium">MEDIO</div>
+        <div class="risk-name">Demora en Proyecto LNG</div>
+        <div class="risk-desc">El proyecto LNG es el principal catalizador a largo plazo. Cualquier demora en la FID final o en la ejecución impacta la tesis de inversión de largo plazo.</div>
+      </div>
+      <div class="risk-item">
+        <div class="risk-level risk-low">BAJO</div>
+        <div class="risk-name">Macro Argentina</div>
+        <div class="risk-desc">Inflación, tipo de cambio, recesión doméstica. Afecta demanda local de combustibles y acceso de la empresa a mercados de capitales internacionales.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 10: CONCLUSIÓN -->
+  <section class="slide" id="slide-9">
+    <div class="slide-num">10 / 10</div>
+    <h2 class="slide-heading">Conclusión — <em>Veredicto del Análisis</em></h2>
+    <p class="slide-lead">Evaluación final de los principales vectores de la tesis de inversión en YPF.</p>
+
+    <table class="verdict-table">
+      <thead>
+        <tr>
+          <th>Categoría</th>
+          <th>Evaluación</th>
+          <th>Nota</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Calidad Operativa</td>
+          <td>EBITDA récord pese a caída del Brent. Shale en expansión.</td>
+          <td class="badge-ok">✅ Fuerte</td>
+        </tr>
+        <tr>
+          <td>Crecimiento Futuro</td>
+          <td>Vaca Muerta apenas iniciada. LNG: catalizador de 10 años.</td>
+          <td class="badge-ok">✅ Muy alto</td>
+        </tr>
+        <tr>
+          <td>Rentabilidad</td>
+          <td>Margen EBITDA 27–32%. Lifting cost shale $3–4/boe.</td>
+          <td class="badge-ok">✅ Sólida</td>
+        </tr>
+        <tr>
+          <td>Deuda</td>
+          <td>1.57x apalancamiento. Mejorando pero aún elevada en términos absolutos.</td>
+          <td class="badge-warn">⚠️ Vigilar</td>
+        </tr>
+        <tr>
+          <td>Riesgo País</td>
+          <td>Regulación, macro, expropiaciones históricas. Riesgo endémico.</td>
+          <td class="badge-warn">⚠️ Presente</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight-box">
+      <p>📌 <strong>Tesis de inversión en resumen:</strong><br>
+      YPF es una empresa que mejoró operativamente de forma notable. La tesis es clara: Vaca Muerta tiene décadas de producción por delante y el proyecto LNG puede transformar el perfil de exportaciones de la compañía. El riesgo no está en la empresa — está en el contexto: Brent, macro argentina y estructura de deuda. Para el inversor con tolerancia al riesgo país, el upside es significativo si los catalizadores se materializan.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer-bar">
+  <div class="disclaimer-brand">MDA Investing · Hugo Tanos Investment Advisor</div>
+  <div class="disclaimer-text">El contenido de este análisis es únicamente informativo y educativo. No constituye asesoramiento de inversión ni recomendación de compra o venta. Fuente: YPF Investor Presentation Q4 2025 + Earnings Release Q1 2026.</div>
+</div>
+
+<script>
+  // INTERSECTION OBSERVER para animaciones y dots
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.querySelectorAll('.dot');
+  const curSlideEl = document.getElementById('cur-slide');
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        const idx = [...slides].indexOf(entry.target);
+        dots.forEach(d => d.classList.remove('active'));
+        if (dots[idx]) dots[idx].classList.add('active');
+        curSlideEl.textContent = idx + 1;
+      }
+    });
+  }, { threshold: 0.4 });
+
+  slides.forEach(s => observer.observe(s));
+
+  // DOTS CLICK
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      slides[i].scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+
+</body>
+</html>
