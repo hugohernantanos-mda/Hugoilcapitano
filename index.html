@@ -4,318 +4,824 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>MDA Investing — Hugo Tanos Investment Advisor</title>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:       #0a0e1a;
+    --surface:  #111827;
+    --surface2: #0f172a;
+    --border:   #1e2d40;
+    --gold:     #c9a84c;
+    --gold-dim: #a07a2e;
+    --green:    #22c55e;
+    --text:     #e2e8f0;
+    --muted:    #64748b;
+    --blue:     #1d4ed8;
+  }
 
-:root {
-  --bg: #0a0a0a;
-  --surface: #111111;
-  --surface2: #161616;
-  --border: #222222;
-  --border2: #2a2a2a;
-  --text: #f0f0f0;
-  --muted: #888;
-  --dim: #555;
-  --accent: #1D9E75;
-  --accent-dim: #0f4a37;
-  --mono: 'IBM Plex Mono', monospace;
-  --sans: 'IBM Plex Sans', sans-serif;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body { font-family: var(--sans); background: var(--bg); color: var(--text); min-height: 100vh; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 3rem;
+  }
 
-/* ── HEADER ── */
-.header { background: #111008; border-bottom: 1px solid #2a2818; padding: 0 32px; }
-.header-inner { max-width: 1100px; margin: 0 auto; padding: 40px 0 36px; display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; }
-.brand-line { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
-.brand-dash { width: 32px; height: 1px; background: #c9a84c; }
-.brand { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: #c9a84c; }
-.header h1 { font-family: 'Playfair Display', serif; font-size: 3.2rem; font-weight: 700; color: #f4f0e6; letter-spacing: -0.01em; line-height: 1; }
-.header h1 em { display: block; font-style: italic; color: #c9a84c; line-height: 1.1; margin-top: 2px; }
-.header-sub { font-family: var(--mono); font-size: 11px; color: #4a4a3a; margin-top: 16px; letter-spacing: 0.12em; }
-.header-stats { display: flex; gap: 28px; padding-bottom: 4px; }
-.stat { text-align: center; }
-.stat-num { font-family: var(--mono); font-size: 2rem; font-weight: 600; color: #c9a84c; line-height: 1; }
-.stat-lbl { font-size: 10px; color: #444; margin-top: 5px; letter-spacing: 0.06em; text-transform: uppercase; }
+  a { text-decoration: none; color: inherit; }
 
-/* ── PAGE ── */
-.page { max-width: 1100px; margin: 0 auto; padding: 44px 32px 70px; }
+  /* ── HEADER ── */
+  .site-header {
+    border-bottom: 1px solid var(--border);
+    padding: 2.8rem 1.5rem 2rem;
+    text-align: center;
+    background: linear-gradient(180deg, #0d1220 0%, var(--bg) 100%);
+    position: relative;
+    overflow: hidden;
+  }
 
-/* ── SECTION ── */
-.section { margin-bottom: 52px; }
-.section-header { display: flex; align-items: baseline; gap: 16px; margin-bottom: 22px; padding-bottom: 14px; border-bottom: 1px solid var(--border); }
-.section-num { font-family: var(--mono); font-size: 10px; font-weight: 600; letter-spacing: 0.2em; color: var(--accent); }
-.section-title { font-size: 17px; font-weight: 400; color: #ccc; }
-.section-count { font-size: 11px; color: var(--dim); margin-left: auto; font-family: var(--mono); }
+  .site-header::before {
+    content: '';
+    position: absolute;
+    top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 600px; height: 200px;
+    background: radial-gradient(ellipse, rgba(201,168,76,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
 
-/* ── GRID ── */
-.cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 14px; }
+  .header-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.22em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.8rem;
+    opacity: 0.8;
+  }
 
-/* ── CARD ── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 20px;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  transition: background 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
-  position: relative;
-  overflow: hidden;
-}
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--accent-color, var(--accent));
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-.card:hover { background: var(--surface2); border-color: var(--border2); transform: translateY(-1px); }
-.card:hover::before { opacity: 1; }
+  .site-title {
+    font-size: clamp(1.7rem, 4vw, 2.6rem);
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 0.15rem;
+  }
 
-.card-top { display: flex; align-items: center; justify-content: space-between; }
-.card-icon { font-size: 20px; line-height: 1; }
+  .site-title em {
+    font-style: normal;
+    color: var(--gold);
+  }
 
-.tag {
-  font-family: var(--mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  padding: 3px 8px;
-  border-radius: 4px;
-}
-.tag-dashboard { background: #0f3d2a; color: #4ade80; }
-.tag-simulator { background: #0c2444; color: #60a5fa; }
-.tag-stats     { background: #1e1533; color: #a78bfa; }
-.tag-strategy  { background: #3b1a0f; color: #fb923c; }
-.tag-nvidia    { background: #1a2a05; color: #86efac; }
-.tag-analysis  { background: #2a1f0a; color: #fbbf24; }
+  .site-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.72rem;
+    color: var(--muted);
+    letter-spacing: 0.14em;
+    margin-top: 0.6rem;
+  }
 
-.card-title { font-size: 14px; font-weight: 500; color: #e8e8e8; line-height: 1.35; }
-.card-desc { font-size: 12px; color: var(--muted); line-height: 1.65; flex-grow: 1; }
-.card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; padding-top: 12px; border-top: 1px solid var(--border); }
-.card-ticker { font-family: var(--mono); font-size: 10px; font-weight: 600; color: var(--dim); letter-spacing: 0.05em; }
-.card-arrow { font-size: 15px; color: var(--dim); transition: transform 0.15s ease, color 0.15s ease; }
-.card:hover .card-arrow { transform: translateX(4px); color: var(--accent); }
+  /* ── STATS BAR ── */
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 2.5rem;
+    padding: 1.2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+  }
 
-/* ── FOOTER ── */
-.footer { text-align: center; padding: 24px 32px; border-top: 1px solid var(--border); font-size: 11px; color: var(--dim); font-family: var(--mono); line-height: 2.2; }
-.footer strong { color: #444; }
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+  }
 
-@media (max-width: 600px) {
-  .header-inner { flex-direction: column; align-items: flex-start; }
-  .page { padding: 28px 20px 48px; }
-  .cards-grid { grid-template-columns: 1fr; }
-  .header h1 { font-size: 1.7rem; }
-}
+  .stat-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--gold);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  /* ── MAIN WRAPPER ── */
+  .main {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 2rem 1.2rem 0;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+    opacity: 0.85;
+  }
+
+  /* ════════════════════════════════
+     SECCIÓN 00 — SOBRE MÍ
+  ════════════════════════════════ */
+  .about-section {
+    padding: 2.2rem 2.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--gold);
+    border-radius: 4px;
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 2rem;
+    align-items: start;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.55s ease both;
+  }
+
+  .avatar-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .avatar {
+    width: 116px;
+    height: 116px;
+    border-radius: 50%;
+    border: 2px solid var(--gold);
+    background: linear-gradient(135deg, #1e2d40 0%, #0f172a 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: var(--gold);
+    letter-spacing: -2px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+  }
+
+  .avatar-name {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    text-align: center;
+    letter-spacing: 0.08em;
+  }
+
+  .badge-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: center;
+  }
+
+  .badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.55rem;
+    padding: 0.22rem 0.55rem;
+    border-radius: 2px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .badge-gold  { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+  .badge-green { background: rgba(34,197,94,0.1);  color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+
+  .about-content { padding-top: 0.15rem; }
+
+  .about-title {
+    font-size: 1.32rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 0.18rem;
+    letter-spacing: -0.02em;
+  }
+
+  .about-subtitle {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    letter-spacing: 0.08em;
+  }
+
+  .about-bio {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.75;
+    margin-bottom: 0.8rem;
+  }
+
+  .about-bio strong { color: var(--text); font-weight: 600; }
+
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold) 0%, transparent 100%);
+    margin: 1rem 0;
+    opacity: 0.35;
+  }
+
+  .credentials-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.55rem;
+  }
+
+  .cred-item {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    padding: 0.55rem 0.8rem;
+  }
+
+  .cred-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.56rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.15rem;
+  }
+
+  .cred-value {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  /* ════════════════════════════════
+     CATEGORÍAS
+  ════════════════════════════════ */
+  .category-block {
+    margin-bottom: 2rem;
+    animation: fadeUp 0.55s ease both;
+  }
+
+  .category-block:nth-child(2) { animation-delay: 0.05s; }
+  .category-block:nth-child(3) { animation-delay: 0.10s; }
+  .category-block:nth-child(4) { animation-delay: 0.15s; }
+  .category-block:nth-child(5) { animation-delay: 0.20s; }
+  .category-block:nth-child(6) { animation-delay: 0.25s; }
+
+  .category-header {
+    display: flex;
+    align-items: baseline;
+    gap: 0.8rem;
+    margin-bottom: 0.7rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .cat-number {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.65rem;
+    color: var(--gold);
+    opacity: 0.7;
+    letter-spacing: 0.1em;
+  }
+
+  .cat-title {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.01em;
+  }
+
+  .cat-count {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.58rem;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* Cards de reportes */
+  .cards-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.85rem 1rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    transition: border-color 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+
+  .card:hover {
+    border-color: var(--gold-dim);
+    background: #151f30;
+  }
+
+  .card-emoji {
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    width: 28px;
+    text-align: center;
+  }
+
+  .card-body { flex: 1; min-width: 0; }
+
+  .card-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.18rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .card-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--gold-dim);
+    flex-shrink: 0;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .card-arrow {
+    color: var(--muted);
+    font-size: 0.8rem;
+    flex-shrink: 0;
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .card:hover .card-arrow { color: var(--gold); transform: translateX(3px); }
+
+  /* ════════════════════════════════
+     SECCIÓN CTA
+  ════════════════════════════════ */
+  .cta-section {
+    padding: 2rem 2.4rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--green);
+    border-radius: 4px;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.55s ease both 0.3s;
+  }
+
+  .cta-headline {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.4rem;
+  }
+
+  .cta-sub {
+    font-size: 0.87rem;
+    color: var(--muted);
+    margin-bottom: 1.4rem;
+    line-height: 1.6;
+  }
+
+  .cta-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.68rem 1.25rem;
+    border-radius: 3px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.73rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-primary { background: var(--gold); color: #0a0e1a; }
+  .btn-primary:hover { background: #d4b560; transform: translateY(-1px); }
+
+  .btn-x { background: transparent; color: var(--text); border: 1px solid var(--border); }
+  .btn-x:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-1px); }
+
+  .btn-wa { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.25); }
+  .btn-wa:hover { background: rgba(34,197,94,0.18); transform: translateY(-1px); }
+
+  .icon { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 1.5rem 1.2rem;
+    border-top: 1px solid var(--border);
+    text-align: center;
+  }
+
+  .footer-disclaimer {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6rem;
+    color: var(--muted);
+    line-height: 1.8;
+    letter-spacing: 0.04em;
+  }
+
+  .footer-brand {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.62rem;
+    color: var(--gold);
+    margin-top: 0.6rem;
+    opacity: 0.75;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── ANIMACIÓN ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 620px) {
+    .about-section { grid-template-columns: 1fr; padding: 1.5rem; }
+    .avatar-wrap { flex-direction: row; align-items: center; gap: 1rem; }
+    .avatar { width: 72px; height: 72px; font-size: 1.4rem; }
+    .credentials-grid { grid-template-columns: 1fr; }
+    .cta-section { padding: 1.5rem; }
+    .stats-bar { gap: 1.5rem; }
+    .card { flex-wrap: wrap; }
+    .card-meta { display: none; }
+  }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-inner">
-    <div>
-      <div class="brand-line">
-        <div class="brand-dash"></div>
-        <div class="brand">MDA Investing – Financial Analysis Hub</div>
-      </div>
-      <h1>Hugo Tanos<em>Investment Advisor</em></h1>
-      <div class="header-sub">Análisis Fundamental &nbsp;·&nbsp; Valuación &nbsp;·&nbsp; Mercado de Capitales</div>
-    </div>
-    <div class="header-stats">
-      <div class="stat">
-        <div class="stat-num" id="doc-count">18</div>
-        <div class="stat-lbl">publicados</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">5</div>
-        <div class="stat-lbl">categorías</div>
-      </div>
-    </div>
+<!-- ══════ HEADER ══════ -->
+<header class="site-header">
+  <div class="header-label">MDA Investing — Financial Analysis Hub</div>
+  <h1 class="site-title">Hugo Tanos <em>Investment Advisor</em></h1>
+  <div class="site-subtitle">Análisis Fundamental · Valuación · Mercado de Capitales</div>
+</header>
+
+<!-- ══════ STATS BAR ══════ -->
+<div class="stats-bar">
+  <div class="stat-item">
+    <span class="stat-number">18</span>
+    <span class="stat-label">publicados</span>
+  </div>
+  <div class="stat-item">
+    <span class="stat-number">5</span>
+    <span class="stat-label">categorías</span>
   </div>
 </div>
 
-<div class="page">
+<!-- ══════ MAIN ══════ -->
+<main class="main">
 
-  <!-- 01 DASHBOARDS -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-num">01</span>
-      <span class="section-title">Dashboards de empresas</span>
-      <span class="section-count">5 reportes</span>
+  <!-- ── 00 · SOBRE MÍ ── -->
+  <section class="about-section">
+    <div class="avatar-wrap">
+      <div class="avatar">
+        <img src="hugo_avatar.png" alt="Hugo Tanos">
+      </div>
+      <div class="avatar-name">Hugo Tanos</div>
+      <div class="badge-row">
+        <span class="badge badge-gold">Lic. Adm.</span>
+        <span class="badge badge-green">Idóneo M. Capitales</span>
+      </div>
     </div>
-    <div class="cards-grid">
 
-      <a class="card" href="nvda_dashboard.html" style="--accent-color:#76b900;">
-        <div class="card-top"><div class="card-icon">🟢</div><span class="tag tag-dashboard">Dashboard</span></div>
-        <div class="card-title">NVIDIA Corporation</div>
-        <div class="card-desc">Dashboard corporativo con desglose de ingresos por segmento, márgenes históricos, catalizadores y análisis técnico.</div>
-        <div class="card-footer"><span class="card-ticker">NVDA · NYSE</span><span class="card-arrow">→</span></div>
-      </a>
+    <div class="about-content">
+      <div class="section-label">00 · Sobre mí</div>
+      <h2 class="about-title">Hugo Tanos</h2>
+      <div class="about-subtitle">Investment Advisor · MDA Investing</div>
 
-      <a class="card" href="vistra_vst_fundamental_dashboard.html" style="--accent-color:#F59E0B;">
-        <div class="card-top"><div class="card-icon">⚡</div><span class="tag tag-dashboard">Dashboard</span></div>
-        <div class="card-title">Vistra Corp</div>
-        <div class="card-desc">Análisis fundamental del mayor generador independiente de electricidad de EE.UU. Márgenes EBITDA, deuda y catalizadores IA.</div>
-        <div class="card-footer"><span class="card-ticker">VST · NYSE</span><span class="card-arrow">→</span></div>
-      </a>
+      <p class="about-bio">
+        Soy <strong>Licenciado en Administración</strong> e <strong>Idóneo en el Mercado de Capitales</strong>,
+        con foco en <strong>análisis fundamental, valuación de empresas y mercado de capitales</strong>.
+        Trabajo como asesor financiero independiente y lidero <strong>MDA Investing</strong>,
+        una comunidad de inversores orientada a la educación y el análisis con criterio de largo plazo.
+      </p>
+      <p class="about-bio">
+        Mi filosofía se basa en el <strong>value investing</strong> — Graham, Buffett, Lynch y Howard Marks —
+        priorizando empresas con ventajas competitivas duraderas, márgenes sólidos y generación de caja real.
+        Todo el contenido de esta página es elaborado por mí con datos de fuentes oficiales.
+      </p>
 
-      <a class="card" href="meli_correcciones_2026_1.html" style="--accent-color:#378ADD;">
-        <div class="card-top"><div class="card-icon">🛒</div><span class="tag tag-dashboard">Dashboard</span></div>
-        <div class="card-title">MercadoLibre — Correcciones 2026</div>
-        <div class="card-desc">Análisis de las correcciones históricas de MELI y contexto de valuación actual. Oportunidad vs. riesgo.</div>
-        <div class="card-footer"><span class="card-ticker">MELI · NASDAQ</span><span class="card-arrow">→</span></div>
-      </a>
+      <div class="divider"></div>
 
-      <a class="card" href="ypf_analisis_fundamental.html" style="--accent-color:#4f8ef7;">
-        <div class="card-top"><div class="card-icon">🛢️</div><span class="tag tag-dashboard">Dashboard</span></div>
-        <div class="card-title">YPF — Análisis Fundamental</div>
-        <div class="card-desc">Análisis fundamental de YPF basado en la Investor Presentation Q4 2025. Segmentos, producción Vaca Muerta y financials.</div>
-        <div class="card-footer"><span class="card-ticker">YPF · NYSE</span><span class="card-arrow">→</span></div>
-      </a>
-
-      <a class="card" href="dcf_nu_2026.html" style="--accent-color:#820AD1;">
-        <div class="card-top"><div class="card-icon">🟣</div><span class="tag tag-analysis">DCF Interactivo</span></div>
-        <div class="card-title">Nu Holdings — DCF Model</div>
-        <div class="card-desc">Modelo DCF interactivo con 3 escenarios (Bear / Base / Bull). Modificá WACC y crecimiento terminal y mirá el precio implícito actualizarse en tiempo real.</div>
-        <div class="card-footer"><span class="card-ticker">NU · NYSE · Mayo 2026</span><span class="card-arrow">→</span></div>
-      </a>
-
+      <div class="credentials-grid">
+        <div class="cred-item">
+          <span class="cred-label">Formación</span>
+          <span class="cred-value">Lic. en Administración</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">Certificación</span>
+          <span class="cred-value">Idóneo en Mercado de Capitales</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">Comunidad</span>
+          <span class="cred-value">MDA Investing</span>
+        </div>
+        <div class="cred-item">
+          <span class="cred-label">Enfoque</span>
+          <span class="cred-value">Value Investing · Largo Plazo</span>
+        </div>
+      </div>
     </div>
-  </div>
+  </section>
 
-  <!-- 02 ANÁLISIS ESTADÍSTICO HISTÓRICO -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-num">02</span>
-      <span class="section-title">Análisis estadístico histórico</span>
-      <span class="section-count">3 análisis</span>
+  <!-- ── 01 · DASHBOARDS DE EMPRESAS ── -->
+  <div class="category-block">
+    <div class="category-header">
+      <span class="cat-number">01</span>
+      <span class="cat-title">Dashboards de empresas</span>
+      <span class="cat-count">5 reportes</span>
     </div>
-    <div class="cards-grid">
+    <div class="cards-list">
 
-      <a class="card" href="brk_vs_sp500_dashboard.html" style="--accent-color:#1D9E75;">
-        <div class="card-top"><div class="card-icon">🏛️</div><span class="tag tag-stats">Histórico</span></div>
-        <div class="card-title">Berkshire vs. S&amp;P 500</div>
-        <div class="card-desc">30 años de retornos anuales (1996–2025). Diferencial año a año, dispersión por cuadrante y análisis de protección ante caídas del mercado.</div>
-        <div class="card-footer"><span class="card-ticker">BRK.B · 1996–2025</span><span class="card-arrow">→</span></div>
+      <a class="card" href="nvda_dashboard.html">
+        <div class="card-emoji">🟢</div>
+        <div class="card-body">
+          <div class="card-title">Dashboard NVIDIA Corporation</div>
+          <div class="card-desc">Dashboard corporativo con desglose de ingresos por segmento, márgenes históricos, catalizadores y análisis técnico.</div>
+        </div>
+        <div class="card-meta">NVDA · NYSE</div>
+        <div class="card-arrow">→</div>
       </a>
 
-      <a class="card" href="sp500_ventanas_moviles.html" style="--accent-color:#7c6ef5;">
-        <div class="card-top"><div class="card-icon">📊</div><span class="tag tag-stats">Histórico</span></div>
-        <div class="card-title">S&amp;P 500 — Ventanas Móviles</div>
-        <div class="card-desc">98 años de datos (1928–2025). Mejores y peores períodos para ventanas de 5, 10, 15, 20 y 30 años mediante rolling windows solapadas.</div>
-        <div class="card-footer"><span class="card-ticker">SPX · 1928–2025</span><span class="card-arrow">→</span></div>
+      <a class="card" href="vistra_vst_fundamental_dashboard.html">
+        <div class="card-emoji">⚡</div>
+        <div class="card-body">
+          <div class="card-title">Dashboard Vistra Corp</div>
+          <div class="card-desc">Análisis fundamental del mayor generador independiente de electricidad de EE.UU. Márgenes EBITDA, deuda y catalizadores IA.</div>
+        </div>
+        <div class="card-meta">VST · NYSE</div>
+        <div class="card-arrow">→</div>
       </a>
 
-      <a class="card" href="meli_ventanas_moviles.html" style="--accent-color:#378ADD;">
-        <div class="card-top"><div class="card-icon">📈</div><span class="tag tag-stats">Histórico</span></div>
-        <div class="card-title">MercadoLibre — Ventanas Móviles</div>
-        <div class="card-desc">Mejores y peores períodos de 5 y 10 años desde el IPO de MELI (2007–2025). Análisis de retornos anualizados históricos.</div>
-        <div class="card-footer"><span class="card-ticker">MELI · 2007–2025</span><span class="card-arrow">→</span></div>
+      <a class="card" href="meli_correcciones_2026_1.html">
+        <div class="card-emoji">🛒</div>
+        <div class="card-body">
+          <div class="card-title">Dashboard MercadoLibre — Correcciones 2026</div>
+          <div class="card-desc">Análisis de las correcciones históricas de MELI y contexto de valuación actual. Oportunidad vs. riesgo.</div>
+        </div>
+        <div class="card-meta">MELI · NASDAQ</div>
+        <div class="card-arrow">→</div>
       </a>
 
-    </div>
-  </div>
-
-  <!-- 03 SIMULADORES -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-num">03</span>
-      <span class="section-title">Simuladores interactivos</span>
-      <span class="section-count">3 herramientas</span>
-    </div>
-    <div class="cards-grid">
-
-      <a class="card" href="merval_ccl_vs_sp500.html" style="--accent-color:#4CAF7A;">
-        <div class="card-top"><div class="card-icon">🇦🇷</div><span class="tag tag-simulator">Simulador</span></div>
-        <div class="card-title">MERVAL CCL vs S&amp;P 500</div>
-        <div class="card-desc">Comparación histórica del MERVAL en dólares CCL versus el S&amp;P 500. Rendimientos y CAGR animados por horizonte de inversión.</div>
-        <div class="card-footer"><span class="card-ticker">MERVAL · SPX</span><span class="card-arrow">→</span></div>
+      <a class="card" href="ypf_analisis_fundamental.html">
+        <div class="card-emoji">🛢️</div>
+        <div class="card-body">
+          <div class="card-title">Dashboard YPF — Análisis Fundamental</div>
+          <div class="card-desc">Análisis fundamental basado en la Investor Presentation Q4 2025. Segmentos, producción Vaca Muerta y financials.</div>
+        </div>
+        <div class="card-meta">YPF · NYSE</div>
+        <div class="card-arrow">→</div>
       </a>
 
-      <a class="card" href="simulador-spx-ndx.html" style="--accent-color:#4A90D9;">
-        <div class="card-top"><div class="card-icon">🇺🇸</div><span class="tag tag-simulator">Simulador</span></div>
-        <div class="card-title">S&amp;P 500 vs NASDAQ 100</div>
-        <div class="card-desc">Comparación del crecimiento de una inversión en SPX vs NDX desde 1985. CAGR por horizonte de inversión seleccionable.</div>
-        <div class="card-footer"><span class="card-ticker">SPX · NDX · 1985–hoy</span><span class="card-arrow">→</span></div>
-      </a>
-
-      <a class="card" href="visa-mastercard.html" style="--accent-color:#1A56DB;">
-        <div class="card-top"><div class="card-icon">💳</div><span class="tag tag-simulator">Simulador</span></div>
-        <div class="card-title">Visa, Mastercard y CEDEARs</div>
-        <div class="card-desc">Simulador de inversión en 30+ CEDEARs con datos históricos. Proyección animada del crecimiento del capital invertido.</div>
-        <div class="card-footer"><span class="card-ticker">V · MA · CEDEARs</span><span class="card-arrow">→</span></div>
-      </a>
-
-    </div>
-  </div>
-
-  <!-- 04 NVIDIA DETALLE -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-num">04</span>
-      <span class="section-title">NVIDIA — Estados financieros interactivos</span>
-      <span class="section-count">2 reportes</span>
-    </div>
-    <div class="cards-grid">
-
-      <a class="card" href="nvidia_income_statementHugoTanos.html" style="--accent-color:#76b900;">
-        <div class="card-top"><div class="card-icon">📋</div><span class="tag tag-nvidia">NVIDIA</span></div>
-        <div class="card-title">Estado de Resultados</div>
-        <div class="card-desc">Estado de resultados interactivo de NVIDIA. Explorá cada línea del Income Statement (estado de resultados) y cómo fluye cada dólar de ingresos.</div>
-        <div class="card-footer"><span class="card-ticker">NVDA · Income Statement</span><span class="card-arrow">→</span></div>
-      </a>
-
-      <a class="card" href="nvidia_balance_sheet.html" style="--accent-color:#76b900;">
-        <div class="card-top"><div class="card-icon">🏦</div><span class="tag tag-nvidia">NVIDIA</span></div>
-        <div class="card-title">Balance General</div>
-        <div class="card-desc">Balance sheet interactivo de NVIDIA. Activos, pasivos y patrimonio neto con desglose visual por categoría.</div>
-        <div class="card-footer"><span class="card-ticker">NVDA · Balance Sheet</span><span class="card-arrow">→</span></div>
+      <a class="card" href="dcf_nu_2026.html">
+        <div class="card-emoji">🟣</div>
+        <div class="card-body">
+          <div class="card-title">DCF Interactivo Nu Holdings</div>
+          <div class="card-desc">Modelo DCF interactivo con 3 escenarios (Bear / Base / Bull). Modificá WACC y crecimiento terminal en tiempo real.</div>
+        </div>
+        <div class="card-meta">NU · NYSE · Mayo 2026</div>
+        <div class="card-arrow">→</div>
       </a>
 
     </div>
   </div>
 
-  <!-- 05 ESTRATEGIA -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-num">05</span>
-      <span class="section-title">Estrategia &amp; portafolio</span>
-      <span class="section-count">1 herramienta</span>
+  <!-- ── 02 · ANÁLISIS ESTADÍSTICO HISTÓRICO ── -->
+  <div class="category-block">
+    <div class="category-header">
+      <span class="cat-number">02</span>
+      <span class="cat-title">Análisis estadístico histórico</span>
+      <span class="cat-count">3 análisis</span>
     </div>
-    <div class="cards-grid">
+    <div class="cards-list">
 
-      <a class="card" href="cashflow_strategy_mda.html" style="--accent-color:#D85A30;">
-        <div class="card-top"><div class="card-icon">💰</div><span class="tag tag-strategy">Estrategia</span></div>
-        <div class="card-title">Estrategia Cashflow MDA</div>
-        <div class="card-desc">Portafolio orientado a generación de flujo de caja. Selección de activos, frecuencia de cobro y rendimiento esperado por perfil de inversión.</div>
-        <div class="card-footer"><span class="card-ticker">Dividendos · CEDEARs</span><span class="card-arrow">→</span></div>
+      <a class="card" href="brk_vs_sp500_dashboard.html">
+        <div class="card-emoji">🏛️</div>
+        <div class="card-body">
+          <div class="card-title">Histórico Berkshire vs. S&amp;P 500</div>
+          <div class="card-desc">30 años de retornos anuales (1996–2025). Diferencial año a año, dispersión por cuadrante y análisis de protección ante caídas.</div>
+        </div>
+        <div class="card-meta">BRK.B · 1996–2025</div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="card" href="sp500_ventanas_moviles.html">
+        <div class="card-emoji">📊</div>
+        <div class="card-body">
+          <div class="card-title">Histórico S&amp;P 500 — Ventanas Móviles</div>
+          <div class="card-desc">98 años de datos (1928–2025). Mejores y peores períodos para ventanas de 5, 10, 15, 20 y 30 años mediante rolling windows solapadas.</div>
+        </div>
+        <div class="card-meta">SPX · 1928–2025</div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="card" href="meli_ventanas_moviles.html">
+        <div class="card-emoji">📈</div>
+        <div class="card-body">
+          <div class="card-title">Histórico MercadoLibre — Ventanas Móviles</div>
+          <div class="card-desc">Mejores y peores períodos de 5 y 10 años desde el IPO de MELI (2007–2025). Análisis de retornos anualizados históricos.</div>
+        </div>
+        <div class="card-meta">MELI · 2007–2025</div>
+        <div class="card-arrow">→</div>
       </a>
 
     </div>
   </div>
 
-</div>
+  <!-- ── 03 · SIMULADORES INTERACTIVOS ── -->
+  <div class="category-block">
+    <div class="category-header">
+      <span class="cat-number">03</span>
+      <span class="cat-title">Simuladores interactivos</span>
+      <span class="cat-count">3 herramientas</span>
+    </div>
+    <div class="cards-list">
 
-<div class="footer">
-  Contenido elaborado con fines educativos e informativos · No constituye asesoramiento de inversión<br>
-  Rendimiento pasado no garantiza resultados futuros · Consulte con un asesor antes de invertir<br>
-  <strong>MDA Investing — Hugo Tanos Investment Advisor · 2025–2026</strong>
-</div>
+      <a class="card" href="merval_ccl_vs_sp500.html">
+        <div class="card-emoji">🇦🇷</div>
+        <div class="card-body">
+          <div class="card-title">Simulador MERVAL CCL vs S&amp;P 500</div>
+          <div class="card-desc">Comparación histórica del MERVAL en dólares CCL versus el S&P 500. Rendimientos y CAGR animados por horizonte de inversión.</div>
+        </div>
+        <div class="card-meta">MERVAL · SPX</div>
+        <div class="card-arrow">→</div>
+      </a>
 
-<script>
-  const target = 18;
-  const el = document.getElementById('doc-count');
-  let c = 0;
-  const step = () => { c = Math.min(c + 1, target); el.textContent = c; if (c < target) requestAnimationFrame(step); };
-  requestAnimationFrame(step);
-</script>
+      <a class="card" href="simulador-spx-ndx.html">
+        <div class="card-emoji">🇺🇸</div>
+        <div class="card-body">
+          <div class="card-title">Simulador S&amp;P 500 vs NASDAQ 100</div>
+          <div class="card-desc">Comparación del crecimiento de una inversión en SPX vs NDX desde 1985. CAGR por horizonte de inversión seleccionable.</div>
+        </div>
+        <div class="card-meta">SPX · NDX · 1985–hoy</div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="card" href="visa-mastercard.html">
+        <div class="card-emoji">💳</div>
+        <div class="card-body">
+          <div class="card-title">Simulador Visa, Mastercard y CEDEARs</div>
+          <div class="card-desc">Simulador de inversión en 30+ CEDEARs con datos históricos. Proyección animada del crecimiento del capital invertido.</div>
+        </div>
+        <div class="card-meta">V · MA · CEDEARs</div>
+        <div class="card-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ── 04 · NVIDIA ESTADOS FINANCIEROS ── -->
+  <div class="category-block">
+    <div class="category-header">
+      <span class="cat-number">04</span>
+      <span class="cat-title">NVIDIA — Estados financieros interactivos</span>
+      <span class="cat-count">2 reportes</span>
+    </div>
+    <div class="cards-list">
+
+      <a class="card" href="nvidia_income_statementHugoTanos.html">
+        <div class="card-emoji">📋</div>
+        <div class="card-body">
+          <div class="card-title">NVIDIA Estado de Resultados</div>
+          <div class="card-desc">Estado de resultados interactivo de NVIDIA. Explorá cada línea del Income Statement y cómo fluye cada dólar de ingresos.</div>
+        </div>
+        <div class="card-meta">NVDA · Income Statement</div>
+        <div class="card-arrow">→</div>
+      </a>
+
+      <a class="card" href="nvidia_balance_sheet.html">
+        <div class="card-emoji">🏦</div>
+        <div class="card-body">
+          <div class="card-title">NVIDIA Balance General</div>
+          <div class="card-desc">Balance sheet interactivo de NVIDIA. Activos, pasivos y patrimonio neto con desglose visual por categoría.</div>
+        </div>
+        <div class="card-meta">NVDA · Balance Sheet</div>
+        <div class="card-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ── 05 · ESTRATEGIA & PORTAFOLIO ── -->
+  <div class="category-block">
+    <div class="category-header">
+      <span class="cat-number">05</span>
+      <span class="cat-title">Estrategia &amp; portafolio</span>
+      <span class="cat-count">1 herramienta</span>
+    </div>
+    <div class="cards-list">
+
+      <a class="card" href="cashflow_strategy_mda.html">
+        <div class="card-emoji">💰</div>
+        <div class="card-body">
+          <div class="card-title">Estrategia Cashflow MDA</div>
+          <div class="card-desc">Portafolio orientado a generación de flujo de caja. Selección de activos, frecuencia de cobro y rendimiento esperado por perfil.</div>
+        </div>
+        <div class="card-meta">Dividendos · CEDEARs</div>
+        <div class="card-arrow">→</div>
+      </a>
+
+    </div>
+  </div>
+
+  <!-- ── 06 · CTA / CONTACTO ── -->
+  <section class="cta-section">
+    <div class="section-label">06 · Contacto &amp; comunidad</div>
+    <h3 class="cta-headline">¿Querés invertir con criterio? Hablemos.</h3>
+    <p class="cta-sub">
+      Asesoramiento personalizado, acceso a la comunidad MDA Investing y análisis de portafolio.
+      Seguime en X para contenido diario o escribime directamente.
+    </p>
+    <div class="cta-buttons">
+
+      <!-- ⚠️ Reemplazá el número de teléfono en los dos links de WhatsApp -->
+      <a class="btn btn-wa"
+         href="https://wa.me/5492901000000?text=Hola%20Hugo%2C%20vi%20tu%20p%C3%A1gina%20y%20quiero%20m%C3%A1s%20info"
+         target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        Escribime por WhatsApp
+      </a>
+
+      <!-- ⚠️ Verificá tu usuario de X -->
+      <a class="btn btn-x"
+         href="https://x.com/HugoTanos"
+         target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.63L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z"/>
+        </svg>
+        Seguime en X
+      </a>
+
+      <a class="btn btn-primary"
+         href="https://wa.me/5492901000000?text=Hola%2C%20quiero%20unirme%20a%20MDA%20Investing"
+         target="_blank" rel="noopener">
+        <svg class="icon" viewBox="0 0 24 24">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+        </svg>
+        Unite a MDA Investing
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ══════ FOOTER ══════ -->
+<footer class="site-footer">
+  <div class="footer-disclaimer">
+    Contenido elaborado con fines educativos e informativos · No constituye asesoramiento de inversión<br>
+    Rendimiento pasado no garantiza resultados futuros · Consulte con un asesor antes de invertir
+  </div>
+  <div class="footer-brand">MDA Investing — Hugo Tanos Investment Advisor · 2025–2026</div>
+</footer>
+
 </body>
 </html>
