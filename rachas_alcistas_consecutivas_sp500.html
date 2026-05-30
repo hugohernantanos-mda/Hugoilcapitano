@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Rachas alcistas históricas — S&P 500 | MDA Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0d0f0e;
+  --surface: #141714;
+  --surface2: #1a1e1a;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.13);
+  --text: #e8ede8;
+  --muted: #7a8a7a;
+  --green: #4caf6e;
+  --green-dim: rgba(76,175,110,0.12);
+  --green-bright: #6dd98a;
+  --red: #e05555;
+  --red-dim: rgba(224,85,85,0.1);
+  --accent: #c8a84b;
+  --mono: 'DM Mono', monospace;
+  --sans: 'DM Sans', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+
+header { border-bottom: 1px solid var(--border); padding: 20px 32px; display: flex; align-items: center; justify-content: space-between; }
+.brand { font-family: var(--sans); font-size: 20px; color: var(--accent); letter-spacing: 0.02em; }
+.brand span { color: var(--muted); }
+
+.hero { padding: 56px 32px 40px; max-width: 820px; }
+.hero-question { font-size: clamp(22px, 4vw, 34px); font-weight: 300; line-height: 1.25; color: var(--text); margin-bottom: 20px; }
+.hero-question em { font-style: normal; color: var(--accent); }
+.hero-intro { font-size: 15px; color: var(--muted); max-width: 560px; line-height: 1.7; }
+
+main { padding: 0 32px 64px; max-width: 1100px; }
+
+.section-label { font-family: var(--mono); font-size: 11px; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+.stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 28px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px 18px; }
+.stat-card .lbl { font-size: 11px; color: var(--muted); margin-bottom: 6px; font-family: var(--mono); }
+.stat-card .val { font-size: 26px; font-weight: 500; color: var(--text); font-family: var(--mono); }
+
+.controls { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
+select { font-family: var(--mono); font-size: 12px; background: var(--surface); color: var(--text); border: 1px solid var(--border2); border-radius: 6px; padding: 7px 12px; cursor: pointer; appearance: none; -webkit-appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%237a8a7a'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; padding-right: 28px; }
+select:focus { outline: none; border-color: var(--accent); }
+
+.table-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 48px; }
+table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 12.5px; }
+thead tr { background: var(--surface2); }
+th { padding: 10px 14px; text-align: right; font-weight: 500; font-size: 10px; color: var(--muted); border-bottom: 1px solid var(--border); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; cursor: pointer; user-select: none; }
+th:first-child, th:nth-child(2) { text-align: left; }
+th:hover { color: var(--text); }
+td { padding: 9px 14px; text-align: right; border-bottom: 1px solid var(--border); color: var(--text); font-size: 12.5px; }
+td:first-child, td:nth-child(2) { text-align: left; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--surface2); }
+.badge { display: inline-block; font-size: 10.5px; padding: 2px 8px; border-radius: 99px; font-weight: 500; }
+.badge-long { background: var(--green-dim); color: var(--green-bright); border: 1px solid rgba(76,175,110,0.25); }
+.badge-base { background: rgba(255,255,255,0.04); color: var(--muted); border: 1px solid var(--border); }
+.pos { color: var(--green); }
+.neg { color: var(--red); }
+.na  { color: var(--muted); }
+
+.analysis-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; margin-bottom: 28px; }
+.a-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 18px 20px; }
+.a-card .lbl { font-size: 11px; color: var(--muted); font-family: var(--mono); margin-bottom: 8px; }
+.a-card .main-val { font-size: 28px; font-weight: 500; font-family: var(--mono); margin-bottom: 4px; }
+.a-card .sub-val { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+.bar-section { margin-bottom: 28px; }
+.bar-row { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.bar-lbl { font-family: var(--mono); font-size: 11px; color: var(--muted); width: 60px; text-align: right; flex-shrink: 0; }
+.bar-track { flex: 1; height: 26px; background: var(--surface2); border-radius: 4px; overflow: hidden; border: 1px solid var(--border); }
+.bar-fill { height: 100%; display: flex; align-items: center; padding: 0 10px; justify-content: space-between; font-family: var(--mono); font-size: 11px; font-weight: 500; border-radius: 4px; }
+.bar-fill.gn { background: var(--green-dim); color: var(--green-bright); }
+.bar-fill.rd { background: var(--red-dim); color: var(--red); }
+
+.split-wrap { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 28px; }
+.dist-wrap  { border: 1px solid var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 28px; }
+
+.insights { display: grid; gap: 10px; margin-bottom: 48px; }
+.insight { border-left: 2px solid var(--green); padding: 12px 16px; background: var(--green-dim); border-radius: 0 8px 8px 0; font-size: 13.5px; color: var(--text); line-height: 1.6; }
+.insight.warn { border-color: #e0a040; background: rgba(224,160,64,0.08); }
+.insight strong { color: var(--accent); font-weight: 500; }
+
+footer { border-top: 1px solid var(--border); padding: 24px 32px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+.footer-brand { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+.footer-note { font-size: 11px; color: var(--muted); max-width: 520px; }
+.divider { border: none; border-top: 1px solid var(--border); margin: 48px 0; }
+.sub-heading { font-family: var(--mono); font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px; }
+
+@media (max-width: 600px) {
+  header, main, .hero { padding-left: 16px; padding-right: 16px; }
+  .stats-grid, .analysis-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><span style="color:var(--text);font-weight:500;">Hugo Tanos</span> <span style="color:var(--accent);">Investment Advisor</span></div>
+  <div style="font-family:var(--mono);font-size:11px;color:var(--muted);">S&P 500 — Análisis histórico</div>
+</header>
+
+<div class="hero">
+  <div class="hero-question">¿Qué pasó después de <em>8 o más semanas</em> consecutivas al alza en el S&P 500 a lo largo de su historia?</div>
+  <p class="hero-intro">Analizamos todos los casos desde 1880 en los que el S&P 500 registró 8 o más velas semanales consecutivas al alza. Encontramos 30 casos. Esto es lo que pasó después.</p>
+</div>
+
+<main>
+
+<div class="section-label">01 — Los 30 casos históricos</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="lbl">Total rachas</div><div class="val">30</div></div>
+  <div class="stat-card"><div class="lbl">Promedio sem.</div><div class="val">9</div></div>
+  <div class="stat-card"><div class="lbl">Racha máxima</div><div class="val">13 sem.</div></div>
+  <div class="stat-card"><div class="lbl">Período</div><div class="val">1880–2026</div></div>
+</div>
+
+<div class="controls">
+  <select id="sortCol" onchange="renderTable()">
+    <option value="0">Ordenar por: N°</option>
+    <option value="1">Ordenar por: Año</option>
+    <option value="2">Ordenar por: Semanas</option>
+    <option value="4">Ordenar por: Ret. racha</option>
+    <option value="5">Ordenar por: +4 sem.</option>
+    <option value="6">Ordenar por: +8 sem.</option>
+    <option value="7">Ordenar por: +12 sem.</option>
+  </select>
+  <select id="sortDir" onchange="renderTable()">
+    <option value="asc">Menor a mayor</option>
+    <option value="desc">Mayor a menor</option>
+  </select>
+</div>
+
+<div class="table-wrap">
+<table>
+<thead>
+<tr>
+  <th>N°</th><th>Año</th><th>Sem.</th><th>P. inicio</th>
+  <th>Ret. racha</th><th>+4 sem.</th><th>+8 sem.</th><th>+12 sem.</th>
+</tr>
+</thead>
+<tbody id="tbody"></tbody>
+</table>
+</div>
+
+<hr class="divider">
+
+<div class="section-label">02 — Análisis estadístico</div>
+<p style="font-size:13px;color:var(--muted);margin-bottom:24px;">29 casos con historia completa — se excluye 2026 por estar en curso.</p>
+
+<div class="analysis-grid" id="avg-cards"></div>
+
+<div class="bar-section">
+  <div class="sub-heading">% de casos con retorno positivo</div>
+  <div id="bars"></div>
+</div>
+
+<div class="sub-heading">Distribución de retornos a 12 semanas</div>
+<div class="dist-wrap">
+<table>
+<thead><tr>
+  <th style="text-align:left">Rango</th><th>Cantidad</th><th>% del total</th><th>Retorno prom. del grupo</th>
+</tr></thead>
+<tbody id="dist-body"></tbody>
+</table>
+</div>
+
+<div class="sub-heading">Rachas de 9+ semanas vs. 8 exactas</div>
+<div class="split-wrap">
+<table>
+<thead><tr>
+  <th style="text-align:left">Grupo</th><th>N°</th>
+  <th>Prom. +4 sem.</th><th>Prom. +8 sem.</th><th>Prom. +12 sem.</th><th>% positivos 12 sem.</th>
+</tr></thead>
+<tbody id="split-body"></tbody>
+</table>
+</div>
+
+<div class="sub-heading">Conclusiones clave</div>
+<div class="insights" id="insights"></div>
+
+<div style="font-size:11px;color:var(--muted);margin-top:-32px;">
+  * Datos extraídos del script Pine Script sobre gráfico semanal SPX (SPCFD). Los retornos posteriores (+4/+8/+12 sem.) se miden desde el cierre de la última vela de cada racha.
+</div>
+
+</main>
+
+<footer>
+  <div class="footer-brand" style="color:var(--muted);font-size:11px;">MDA Investing</div>
+  <div class="footer-note">Análisis histórico con fines educativos. No constituye asesoramiento de inversión. Rendimientos pasados no garantizan resultados futuros.</div>
+</footer>
+
+<script>
+// Datos corregidos desde el script Pine Script
+// [N°, Año, Sem., P.inicio, Ret.racha, +4sem, +8sem, +12sem]
+const data = [
+  [1,  1880, 10,   3.58,  48.04,  -2.26,  16.42,  19.81],
+  [2,  1908,  9,   6.85,  32.26,   8.17,  12.36,   7.28],
+  [3,  1926,  8,  10.61,  19.42,  -0.39,   6.47,  17.52],
+  [4,  1927, 12,  13.19,  33.89,   0.17,  -2.72,   6.34],
+  [5,  1932,  8,   4.93,  79.31,  -8.60, -19.80, -23.30],
+  [6,  1935,  8,   8.78,  14.12,   3.59,   5.59,   5.99],
+  [7,  1936,  9,  14.59,  10.21,  -0.37,   1.68,   7.15],
+  [8,  1943, 10,   9.37,  13.87,   3.56,   4.40,  10.68],
+  [9,  1945,  9,  15.05,  10.23,   2.47,   4.34,   9.28],
+  [10, 1949,  8,  13.87,  10.67,  -0.39,   1.50,   4.76],
+  [11, 1955,  8,  37.74,  12.98,  -0.19,   2.25,   2.42],
+  [12, 1957, 13,  44.06,   9.28,  -1.93,  -2.55,  -7.21],
+  [13, 1958,  9,  47.73,   7.81,   3.17,   3.42,   8.38],
+  [14, 1961,  9,  56.65,   9.83,   2.78,   4.56,   4.97],
+  [15, 1963, 10,  65.33,   7.94,  -0.16,  -0.43,  -1.73],
+  [16, 1963,  9,  68.54,   6.94,   0.03,  -1.30,   1.04],
+  [17, 1964,  9,  73.23,   5.30,   0.66,   2.35,   4.46],
+  [18, 1971,  8,  90.61,   8.63,   1.16,   3.73,   4.51],
+  [19, 1972,  8, 103.65,   4.56,   1.14,  -1.61,   1.25],
+  [20, 1976,  8,  87.83,  14.84,  -1.14,   1.97,   1.42],
+  [21, 1985, 12, 183.22,  15.13,  -1.19,   4.18,  12.14],
+  [22, 1989,  9, 324.91,   8.87,  -1.29,  -5.28,  -2.76],
+  [23, 1993,  8, 447.10,   3.27,  -0.31,  -0.47,   0.69],
+  [24, 1997,  8, 812.97,  10.55,   1.85,   0.23,   2.81],
+  [25, 1998,  8, 980.28,  12.13,   2.14,   0.87,  -0.03],
+  [26, 2004,  9,1058.00,   7.88,   0.22,  -2.79,  -0.61],
+  [27, 2013,  8,1703.20,   6.02,   1.97,  -0.86,   1.69],
+  [28, 2017,  8,2500.23,   3.50,   2.10,   3.31,  11.01],
+  [29, 2023,  9,4358.35,   9.44,   2.54,   6.69,   9.74],
+  [30, 2026,  9,6582.68,  15.15,   null,   null,   null],
+];
+
+function fmt(v) {
+  if (v === null) return '<span class="na">—</span>';
+  const s = (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+  return `<span class="${v >= 0 ? 'pos' : 'neg'}">${s}</span>`;
+}
+
+function renderTable() {
+  const col = parseInt(document.getElementById('sortCol').value);
+  const dir = document.getElementById('sortDir').value;
+  const sorted = [...data].sort((a, b) => {
+    const av = a[col] ?? (dir === 'desc' ? -Infinity : Infinity);
+    const bv = b[col] ?? (dir === 'desc' ? -Infinity : Infinity);
+    return dir === 'desc' ? bv - av : av - bv;
+  });
+  document.getElementById('tbody').innerHTML = sorted.map(r => {
+    const sem = r[2];
+    const badge = sem >= 9
+      ? `<span class="badge badge-long">${sem} sem.</span>`
+      : `<span class="badge badge-base">${sem} sem.</span>`;
+    return `<tr>
+      <td>${r[0]}</td>
+      <td>${r[1]}</td>
+      <td>${badge}</td>
+      <td>$${r[3].toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2})}</td>
+      <td>${fmt(r[4])}</td>
+      <td>${fmt(r[5])}</td>
+      <td>${fmt(r[6])}</td>
+      <td>${fmt(r[7])}</td>
+    </tr>`;
+  }).join('');
+}
+renderTable();
+
+// Análisis: 29 casos con datos completos (excluye fila 30 y fila 1 que tiene ret.racha null)
+const raw29 = data.filter(r => r[4] !== null && r[5] !== null && r[6] !== null && r[7] !== null);
+const r4  = raw29.map(r => r[5]);
+const r8  = raw29.map(r => r[6]);
+const r12 = raw29.map(r => r[7]);
+const n = raw29.length;
+
+function avg(arr) { return arr.reduce((a,b)=>a+b,0)/arr.length; }
+function pct(arr) { return arr.filter(v=>v>0).length/arr.length*100; }
+function med(arr) { const s=[...arr].sort((a,b)=>a-b); return s.length%2===0?(s[s.length/2-1]+s[s.length/2])/2:s[Math.floor(s.length/2)]; }
+
+const a4=avg(r4), a8=avg(r8), a12=avg(r12);
+const p4=pct(r4), p8=pct(r8), p12=pct(r12);
+
+const avgCards = document.getElementById('avg-cards');
+[['+4 semanas',a4,med(r4)],['+8 semanas',a8,med(r8)],['+12 semanas',a12,med(r12)]].forEach(([lbl,av,md])=>{
+  avgCards.innerHTML += `<div class="a-card">
+    <div class="lbl">${lbl} — retorno promedio</div>
+    <div class="main-val ${av>=0?'pos':'neg'}">${(av>=0?'+':'')+av.toFixed(2)}%</div>
+    <div class="sub-val">Mediana: ${(md>=0?'+':'')+md.toFixed(2)}%</div>
+  </div>`;
+});
+
+const barsEl = document.getElementById('bars');
+[['+4 sem.',p4],['+8 sem.',p8],['+12 sem.',p12]].forEach(([lbl,pv])=>{
+  const isPos = pv >= 50;
+  barsEl.innerHTML += `<div class="bar-row">
+    <div class="bar-lbl">${lbl}</div>
+    <div class="bar-track">
+      <div class="bar-fill ${isPos?'gn':'rd'}" style="width:${Math.max(pv,8).toFixed(0)}%">
+        <span>${pv.toFixed(0)}% positivos</span>
+        <span>${(100-pv).toFixed(0)}% neg.</span>
+      </div>
+    </div>
+  </div>`;
+});
+
+const ranges = [
+  ['Caída > 10%',  v=>v<-10],
+  ['Caída 5–10%', v=>v>=-10&&v<-5],
+  ['Caída 0–5%',  v=>v>=-5&&v<0],
+  ['Suba 0–5%',   v=>v>=0&&v<5],
+  ['Suba 5–10%',  v=>v>=5&&v<10],
+  ['Suba > 10%',  v=>v>=10],
+];
+const distBody = document.getElementById('dist-body');
+ranges.forEach(([lbl,fn])=>{
+  const g=r12.filter(fn);
+  if(!g.length) return;
+  distBody.innerHTML+=`<tr>
+    <td style="text-align:left">${lbl}</td>
+    <td>${g.length}</td>
+    <td>${(g.length/n*100).toFixed(0)}%</td>
+    <td>${fmt(avg(g))}</td>
+  </tr>`;
+});
+
+const long=raw29.filter(r=>r[2]>=9);
+const base=raw29.filter(r=>r[2]===8);
+const splitBody=document.getElementById('split-body');
+[[`9+ semanas (${long.length} casos)`,long],[`8 semanas exactas (${base.length} casos)`,base]].forEach(([lbl,g])=>{
+  const g4=g.map(r=>r[5]),g8=g.map(r=>r[6]),g12=g.map(r=>r[7]);
+  splitBody.innerHTML+=`<tr>
+    <td style="text-align:left">${lbl}</td>
+    <td>${g.length}</td>
+    <td>${fmt(avg(g4))}</td>
+    <td>${fmt(avg(g8))}</td>
+    <td>${fmt(avg(g12))}</td>
+    <td>${pct(g12).toFixed(0)}%</td>
+  </tr>`;
+});
+
+document.getElementById('insights').innerHTML = `
+  <div class="insight">El mercado sube en el <strong>${p4.toFixed(0)}%</strong> de los casos en las 4 semanas siguientes a una racha larga, con un retorno promedio de <strong>${(a4>=0?'+':'')+a4.toFixed(2)}%</strong>. La inercia alcista tiende a continuar en el corto plazo.</div>
+  <div class="insight">A 12 semanas, el <strong>${p12.toFixed(0)}%</strong> de los casos termina en positivo con una ganancia promedio de <strong>${(a12>=0?'+':'')+a12.toFixed(2)}%</strong> — la probabilidad histórica favorece al comprador.</div>
+  <div class="insight warn">El caso 1932 distorsiona el promedio: una racha de 8 semanas con +79% fue seguida de una caída de −23% a los 3 meses. Los promedios esconden dispersión. La mediana a 12 semanas es <strong>${(med(r12)>=0?'+':'')+med(r12).toFixed(2)}%</strong>, más representativa.</div>
+  <div class="insight">Las rachas de <strong>9+ semanas</strong> muestran retornos posteriores ligeramente mejores que las de exactamente 8 semanas, sugiriendo que más momentum no implica mayor reversión.</div>
+`;
+</script>
+</body>
+</html>
