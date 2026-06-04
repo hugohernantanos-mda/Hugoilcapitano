@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sector IA — Estrategia Competitiva · MDA Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0a;
+  --bg1:#111111;
+  --bg2:#181818;
+  --gold:#c9a84c;
+  --goldf:rgba(201,168,76,0.09);
+  --goldb:rgba(201,168,76,0.28);
+  --text:#ede9e0;
+  --muted:#8a8580;
+  --dim:#4a4845;
+  --border:rgba(255,255,255,0.07);
+  --green:#3d9e6b;
+  --green-bg:rgba(61,158,107,0.10);
+  --red:#c85050;
+  --red-bg:rgba(200,80,80,0.10);
+  --amber:#c98a30;
+  --amber-bg:rgba(201,138,48,0.10);
+  --blue:#3a7bc8;
+  --blue-bg:rgba(58,123,200,0.10);
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.65}
+
+/* COVER */
+.cover{padding:44px 52px 38px;border-bottom:1.5px solid var(--goldb);background:var(--bg1)}
+.cover-firm{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.cover-title{font-family:'Playfair Display',serif;font-size:34px;color:var(--text);margin-bottom:8px;line-height:1.2}
+.cover-sub{font-size:13px;color:var(--muted)}
+.cover-meta{display:flex;gap:28px;margin-top:22px;flex-wrap:wrap}
+.meta-item{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)}
+.meta-item span{color:var(--text);font-weight:500}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.96);border-bottom:0.5px solid var(--border);padding:0 52px;display:flex;gap:0;overflow-x:auto}
+.nav a{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:13px 14px;border-bottom:2px solid transparent;white-space:nowrap;text-decoration:none;transition:color 0.2s}
+.nav a:hover{color:var(--text)}
+.nav a.active{color:var(--gold);border-bottom-color:var(--gold)}
+
+/* SECTIONS */
+.section{padding:40px 52px;border-bottom:0.5px solid var(--border)}
+.section:last-of-type{border-bottom:none}
+.sec-num{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.sec-title{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:6px}
+.sec-sub{font-size:12px;color:var(--muted);margin-bottom:22px;line-height:1.6;max-width:820px}
+
+/* METRIC CARDS */
+.mcards{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:26px}
+.mcard{background:var(--bg1);border:0.5px solid var(--border);border-radius:8px;padding:16px 18px}
+.mcard-l{font-size:10px;color:var(--muted);margin-bottom:5px;font-family:'IBM Plex Mono',monospace;letter-spacing:0.5px}
+.mcard-v{font-size:21px;font-weight:500;font-family:'IBM Plex Mono',monospace;color:var(--text)}
+
+/* TABLES */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px;min-width:600px}
+thead th{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:8px 10px;border-bottom:0.5px solid var(--dim);text-align:left;white-space:nowrap}
+tbody td{padding:9px 10px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+tbody tr.hl td{background:var(--goldf)}
+tbody tr:hover td{background:rgba(255,255,255,0.02)}
+.mono{font-family:'IBM Plex Mono',monospace}
+
+/* PILLS */
+.pill{display:inline-block;padding:2px 7px;border-radius:3px;font-size:10.5px;font-weight:500;font-family:'IBM Plex Mono',monospace}
+.pu{background:var(--green-bg);color:var(--green)}
+.pd{background:var(--red-bg);color:var(--red)}
+.pn{background:rgba(255,255,255,0.05);color:var(--muted)}
+.pg{background:var(--green-bg);color:var(--green)}
+.pb{background:var(--amber-bg);color:var(--amber)}
+
+/* DOTS */
+.dots{display:flex;gap:4px;align-items:center}
+.dot-f{width:9px;height:9px;border-radius:50%;background:var(--gold);display:inline-block;flex-shrink:0}
+.dot-e{width:9px;height:9px;border-radius:50%;background:var(--dim);display:inline-block;flex-shrink:0}
+
+/* CHART WRAP */
+.chart-wrap{position:relative;width:100%;margin-bottom:26px}
+
+/* THREAT GRID */
+.threat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.threat-card{background:var(--bg1);border:0.5px solid var(--border);border-radius:10px;padding:18px}
+.threat-label{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;font-weight:500}
+.threat-card ul{padding-left:15px;color:var(--muted);line-height:1.85;font-size:12.5px}
+.threat-card li{margin-bottom:3px}
+
+/* SWOT */
+.swot-container{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.swot-co{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--gold);margin-bottom:10px;letter-spacing:1px}
+.swot-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.swot-cell{border-radius:8px;padding:13px 14px}
+.swot-lbl{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:7px}
+.swot-cell ul{padding-left:14px;line-height:1.75;font-size:11.5px}
+
+/* PICK */
+.pick-box{border:1.5px solid var(--goldb);border-radius:12px;padding:26px;margin-bottom:18px;background:var(--goldf)}
+.pick-ticker{font-family:'Playfair Display',serif;font-size:38px;color:var(--gold);margin:0;line-height:1}
+.pick-name{font-size:12px;color:var(--muted);margin:3px 0 0}
+.pick-text{font-size:13px;line-height:1.85;color:var(--text)}
+.alt-box{border:0.5px solid var(--border);border-radius:10px;padding:20px 22px;margin-bottom:22px;background:var(--bg1)}
+.alt-ticker{font-family:'IBM Plex Mono',monospace;font-size:17px;color:var(--text);margin-bottom:5px}
+
+/* GLOSSARY */
+.glos-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:0 40px}
+.glos-item{padding:13px 0;border-bottom:0.5px solid var(--border)}
+.glos-term{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--gold);margin-bottom:4px;font-weight:500}
+.glos-def{font-size:12.5px;color:var(--muted);line-height:1.65}
+
+/* FOOTER */
+footer{background:var(--bg1);border-top:0.5px solid var(--border);padding:30px 52px}
+.footer-logo{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:12px}
+.footer-text{font-size:11px;color:var(--dim);line-height:1.75;max-width:740px}
+
+/* RESPONSIVE */
+@media(max-width:860px){
+  .cover,.section,.nav,footer{padding-left:22px;padding-right:22px}
+  .cover-title{font-size:26px}
+  .threat-grid{grid-template-columns:1fr}
+  .swot-container{grid-template-columns:1fr}
+  .mcards{grid-template-columns:1fr 1fr}
+  .glos-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- COVER -->
+<header class="cover">
+  <div class="cover-firm">Bain &amp; Company · MDA Investing — Comunidad Platino</div>
+  <h1 class="cover-title">Sector IA — Análisis de Estrategia Competitiva</h1>
+  <p class="cover-sub">Infraestructura &amp; Plataformas de Inteligencia Artificial · Universo: acciones con CEDEAR disponible en Argentina</p>
+  <div class="cover-meta">
+    <div class="meta-item">Fecha <span>Junio 2026</span></div>
+    <div class="meta-item">Empresas analizadas <span>7</span></div>
+    <div class="meta-item">Selección principal <span>NVDA</span></div>
+    <div class="meta-item">Clasificación <span>Confidencial · Solo para inversores</span></div>
+  </div>
+</header>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#s01">01 Mercado</a>
+  <a href="#s02">02 Financials</a>
+  <a href="#s03">03 Moat</a>
+  <a href="#s04">04 Market Share</a>
+  <a href="#s05">05 Gerencia</a>
+  <a href="#s06">06 I+D</a>
+  <a href="#s07">07 Amenazas</a>
+  <a href="#s08">08 FODA</a>
+  <a href="#s09">09 Selección</a>
+  <a href="#glosario">Glosario</a>
+</nav>
+
+<!-- 01 MERCADO -->
+<section id="s01" class="section">
+  <div class="sec-num">01 · Panorama de mercado</div>
+  <h2 class="sec-title">Competidores principales — Capitalización bursátil</h2>
+  <p class="sec-sub">Las 7 empresas seleccionadas son las más relevantes del ecosistema de inteligencia artificial con CEDEAR disponible en Argentina. Datos de mercado a Junio 2026.</p>
+
+  <div class="mcards">
+    <div class="mcard"><div class="mcard-l">CapEx AI estimado 2026</div><div class="mcard-v">$571B</div></div>
+    <div class="mcard"><div class="mcard-l">Market cap combinado</div><div class="mcard-v">~$21T</div></div>
+    <div class="mcard"><div class="mcard-l">Líder GPU AI (market share)</div><div class="mcard-v">NVDA ~90%</div></div>
+    <div class="mcard"><div class="mcard-l">Mayor crecimiento revenue</div><div class="mcard-v">NVDA +114%</div></div>
+  </div>
+
+  <div class="chart-wrap" style="height:240px">
+    <canvas id="mcapChart" role="img" aria-label="Capitalización bursátil en trillones USD de las 7 empresas del sector IA. NVDA lidera con 5.3T.">NVDA 5.3T · GOOGL 3.2T · MSFT 3.2T · AMZN 2.7T · AVGO 2.3T · TSM 2.3T · META 1.7T</canvas>
+  </div>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Empresa</th><th>Ticker</th><th>Market Cap</th><th>Precio (USD)</th><th>Rol en el ecosistema IA</th><th>P/E Fwd</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td><strong>NVIDIA</strong></td><td class="mono">NVDA</td><td class="mono"><strong>$5.3T</strong></td><td class="mono">$216</td><td>GPUs · Infraestructura de entrenamiento e inferencia IA</td><td class="mono">28x</td></tr>
+      <tr><td>Alphabet</td><td class="mono">GOOGL</td><td class="mono">$3.2T</td><td class="mono">$361</td><td>GCP Cloud · Búsqueda · TPUs propios · Gemini</td><td class="mono">19x</td></tr>
+      <tr><td>Microsoft</td><td class="mono">MSFT</td><td class="mono">$3.2T</td><td class="mono">$432</td><td>Azure · Copilot 365 · OpenAI partnership · Enterprise AI</td><td class="mono">30x</td></tr>
+      <tr><td>Amazon</td><td class="mono">AMZN</td><td class="mono">$2.7T</td><td class="mono">$255</td><td>AWS · Trainium chips · Bedrock · Anthropic</td><td class="mono">31x</td></tr>
+      <tr><td>Broadcom</td><td class="mono">AVGO</td><td class="mono">$2.3T</td><td class="mono">$479</td><td>Custom XPUs · Networking AI · VMware enterprise software</td><td class="mono">26x</td></tr>
+      <tr><td>TSMC</td><td class="mono">TSM</td><td class="mono">$2.3T</td><td class="mono">$440</td><td>Foundry 2nm/3nm · Manufactura de chips de IA</td><td class="mono">22x</td></tr>
+      <tr><td>Meta Platforms</td><td class="mono">META</td><td class="mono">$1.7T</td><td class="mono">$662</td><td>IA en publicidad · Llama open-source · Infraestructura propia</td><td class="mono">22x</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 02 FINANCIALS -->
+<section id="s02" class="section">
+  <div class="sec-num">02 · Comparación financiera</div>
+  <h2 class="sec-title">Ingresos y márgenes de ganancia</h2>
+  <p class="sec-sub">Año fiscal más reciente. Para AMZN se muestra el revenue (ingresos) total ($638B) y entre paréntesis el de AWS (el segmento de nube relevante para IA, ~$108B). Fuentes: reportes 10-K, 10-Q y earnings releases oficiales de cada empresa.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Empresa</th><th>Revenue</th><th>Crec. YoY</th><th>Gross Margin</th><th>Op. Margin</th><th>Net Margin</th><th>I+D % Rev</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td><strong>NVDA</strong></td><td class="mono"><strong>$130.5B</strong></td><td><span class="pill pu">+114%</span></td><td class="mono">75.0%</td><td class="mono"><strong>62.4%</strong></td><td class="mono">55.9%</td><td class="mono">10%</td></tr>
+      <tr><td>MSFT</td><td class="mono">$281.7B</td><td><span class="pill pu">+15%</span></td><td class="mono">70.4%</td><td class="mono">45.1%</td><td class="mono">35.6%</td><td class="mono">13%</td></tr>
+      <tr><td>GOOGL</td><td class="mono">$350B*</td><td><span class="pill pu">+14%</span></td><td class="mono">57.5%</td><td class="mono">32.0%</td><td class="mono">28.0%</td><td class="mono">12%</td></tr>
+      <tr><td>AMZN</td><td class="mono">$638B (AWS $108B)</td><td><span class="pill pu">+11%</span></td><td class="mono">49.0%</td><td class="mono">11.0%</td><td class="mono">8.5%</td><td class="mono">14%</td></tr>
+      <tr><td>AVGO</td><td class="mono">$64B</td><td><span class="pill pu">+44%</span></td><td class="mono">66.0%</td><td class="mono">39.2%</td><td class="mono">29.0%</td><td class="mono">19%</td></tr>
+      <tr><td>TSM</td><td class="mono">$90B</td><td><span class="pill pu">+34%</span></td><td class="mono">57.0%</td><td class="mono">45.0%</td><td class="mono">38.0%</td><td class="mono">9%</td></tr>
+      <tr><td>META</td><td class="mono">$165B</td><td><span class="pill pu">+22%</span></td><td class="mono">81.2%</td><td class="mono">43.0%</td><td class="mono">36.0%</td><td class="mono">28%</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="chart-wrap" style="height:220px;margin-top:22px">
+    <canvas id="marginChart" role="img" aria-label="Comparación de márgenes brutos y operativos. NVDA lidera en margen operativo con 62.4%.">Gross Margin: META 81%, NVDA 75%, MSFT 70%, AVGO 66%, TSM/GOOGL 57%, AMZN 49%. Op Margin: NVDA 62%, MSFT/TSM 45%, META 43%, AVGO 39%, GOOGL 32%, AMZN 11%</canvas>
+  </div>
+</section>
+
+<!-- 03 MOAT -->
+<section id="s03" class="section">
+  <div class="sec-num">03 · Análisis de moat competitivo</div>
+  <h2 class="sec-title">Fortaleza competitiva por dimensión</h2>
+  <p class="sec-sub">Escala 1 a 5 por dimensión (5 = ventaja excepcional). Los puntos dorados indican puntos ganados. Evaluación basada en pricing power (poder de fijación de precios), switching costs, network effects y brand equity.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Empresa</th><th>Marca</th><th>Costos / Escala</th><th>Red (network)</th><th>Switching costs</th><th>Score /20</th><th>Veredicto</th></tr></thead>
+    <tbody>
+      <tr class="hl">
+        <td><strong>NVDA</strong></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td class="mono"><strong>15/20</strong></td>
+        <td><span class="pill pg">Fuerte · CUDA irreemplazable</span></td>
+      </tr>
+      <tr>
+        <td>MSFT</td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td class="mono"><strong>19/20</strong></td>
+        <td><span class="pill pg">Excepcional · Enterprise lock-in</span></td>
+      </tr>
+      <tr>
+        <td>GOOGL</td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td class="mono"><strong>18/20</strong></td>
+        <td><span class="pill pg">Excepcional · Búsqueda + Cloud</span></td>
+      </tr>
+      <tr>
+        <td>AMZN</td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td class="mono"><strong>19/20</strong></td>
+        <td><span class="pill pg">Excepcional · AWS escala insuperable</span></td>
+      </tr>
+      <tr>
+        <td>AVGO</td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td class="mono"><strong>14/20</strong></td>
+        <td><span class="pill pg">Fuerte · VMware + custom silicon</span></td>
+      </tr>
+      <tr>
+        <td>TSM</td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span><span class="dot-e"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td class="mono"><strong>15/20</strong></td>
+        <td><span class="pill pg">Fuerte · Foundry irremplazable</span></td>
+      </tr>
+      <tr>
+        <td>META</td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span><span class="dot-e"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span></div></td>
+        <td><div class="dots"><span class="dot-f"></span><span class="dot-f"></span><span class="dot-f"></span><span class="dot-e"></span><span class="dot-e"></span></div></td>
+        <td class="mono"><strong>14/20</strong></td>
+        <td><span class="pill pg">Fuerte · Network 3B+ usuarios</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 04 MARKET SHARE -->
+<section id="s04" class="section">
+  <div class="sec-num">04 · Participación de mercado</div>
+  <h2 class="sec-title">Tendencias 2023–2025 en el segmento IA relevante</h2>
+  <p class="sec-sub">Cada empresa se mide en el segmento de mayor exposición a la IA. Estimaciones de consenso de analistas de mercado.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Empresa</th><th>Segmento IA medido</th><th>2023</th><th>2024</th><th>2025E</th><th>Tendencia</th></tr></thead>
+    <tbody>
+      <tr class="hl"><td><strong>NVDA</strong></td><td>GPU AI para data centers (global)</td><td class="mono">70%</td><td class="mono">85%</td><td class="mono">~90%</td><td><span class="pill pu">▲ Ganando aceleradamente</span></td></tr>
+      <tr><td>AVGO</td><td>Custom ASIC + AI networking</td><td class="mono">8%</td><td class="mono">12%</td><td class="mono">~15%</td><td><span class="pill pu">▲ Ganando fuertemente</span></td></tr>
+      <tr><td>MSFT</td><td>Cloud AI — Azure market share</td><td class="mono">22%</td><td class="mono">24%</td><td class="mono">~25%</td><td><span class="pill pu">▲ Ganando</span></td></tr>
+      <tr><td>GOOGL</td><td>Cloud pública global (GCP)</td><td class="mono">10%</td><td class="mono">12%</td><td class="mono">~13%</td><td><span class="pill pu">▲ Acelerando (Cloud +63%)</span></td></tr>
+      <tr><td>AMZN</td><td>Cloud pública global (AWS)</td><td class="mono">33%</td><td class="mono">31%</td><td class="mono">~30%</td><td><span class="pill pn">→ Estable (sigue siendo líder absoluto)</span></td></tr>
+      <tr><td>META</td><td>IA en publicidad digital global</td><td class="mono">21%</td><td class="mono">22%</td><td class="mono">~23%</td><td><span class="pill pu">▲ Creciendo con AI ads</span></td></tr>
+      <tr><td>TSM</td><td>Foundry avanzado ≤5nm (global)</td><td class="mono">60%</td><td class="mono">65%</td><td class="mono">~68%</td><td><span class="pill pu">▲ Consolidando liderazgo</span></td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 05 GERENCIA -->
+<section id="s05" class="section">
+  <div class="sec-num">05 · Calidad de la gerencia</div>
+  <h2 class="sec-title">Historial de asignación de capital</h2>
+  <p class="sec-sub">Evaluación basada en ROIC (Return on Invested Capital — Retorno sobre el Capital Invertido: mide qué tan eficientemente la empresa genera ganancias con el capital que invierte), M&A (Mergers &amp; Acquisitions — Fusiones y Adquisiciones), buybacks (recompras de acciones propias en el mercado) y capacidad de ejecución estratégica.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>CEO · Empresa</th><th>Rating</th><th>ROIC</th><th>Retorno accionista</th><th>Decisión M&A clave</th><th>Nota analista</th></tr></thead>
+    <tbody>
+      <tr class="hl">
+        <td><strong>Jensen Huang · NVDA</strong></td>
+        <td><span class="pill pg">A+</span></td><td class="mono">~120%</td>
+        <td>Buybacks $25B+ anuales</td>
+        <td>Mellanox 2020 · Groq $20B 2026</td>
+        <td>Visionario; construyó hardware Y ecosistema software (CUDA). Arquitecto de plataforma, no solo de producto.</td>
+      </tr>
+      <tr>
+        <td>Hock Tan · AVGO</td>
+        <td><span class="pill pg">A+</span></td><td class="mono">~35%</td>
+        <td>Dividendo creciente + recompras</td>
+        <td>VMware $69B (2023)</td>
+        <td>Maestro del M&A. Compra, optimiza márgenes, expande. Track record excepcional y consistente.</td>
+      </tr>
+      <tr>
+        <td>Satya Nadella · MSFT</td>
+        <td><span class="pill pg">A+</span></td><td class="mono">~35%</td>
+        <td>Div. $0.83/qtr + recompras $60B</td>
+        <td>OpenAI $13B · Activision $69B</td>
+        <td>Transformó MSFT de empresa legacy a líder cloud+IA. Capital allocation ejemplar y consistente.</td>
+      </tr>
+      <tr>
+        <td>Mark Zuckerberg · META</td>
+        <td><span class="pill pg">A</span></td><td class="mono">~30%</td>
+        <td>Recompras $50B+ anuales</td>
+        <td>Pivot IA 2023 post Year of Efficiency</td>
+        <td>Mejoró la disciplina fiscal drásticamente. Apuesta Llama open-source: jugada audaz y correcta.</td>
+      </tr>
+      <tr>
+        <td>Andy Jassy · AMZN</td>
+        <td><span class="pill pg">A</span></td><td class="mono">~25%</td>
+        <td>Sin dividendo; capex intensivo</td>
+        <td>Anthropic $4B · Trainium chips</td>
+        <td>AWS reaceleró a +28% YoY. Chips propios (Trainium) como diferenciador estratégico de largo plazo.</td>
+      </tr>
+      <tr>
+        <td>Sundar Pichai · GOOGL</td>
+        <td><span class="pill pb">B+</span></td><td class="mono">~25%</td>
+        <td>Buybacks $70B+ anual</td>
+        <td>TPUs internos · DeepMind integración</td>
+        <td>Sólido ejecutor. Tardó en pivotar a IA frente a MSFT. Gemini 3 y Cloud +63% son señales positivas.</td>
+      </tr>
+      <tr>
+        <td>C.C. Wei · TSM</td>
+        <td><span class="pill pg">A</span></td><td class="mono">~30%</td>
+        <td>Dividendo estable $0.5/ADS</td>
+        <td>Expansión EEUU / Japón / Alemania</td>
+        <td>Ejecuta con precisión. Navega presión geopolítica manteniendo liderazgo tecnológico 2nm.</td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 06 I+D -->
+<section id="s06" class="section">
+  <div class="sec-num">06 · Pipeline de innovación &amp; I+D</div>
+  <h2 class="sec-title">Gasto en I+D y catalizadores tecnológicos</h2>
+  <p class="sec-sub">El CapEx AI corresponde a los hyperscalers (empresas que operan centros de datos a escala masiva: Amazon, Google, Microsoft, Meta). Para NVDA y AVGO, el I+D propio es su ventaja central; el capex de sus clientes fluye directamente hacia sus ingresos como proveedores de infraestructura.</p>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Empresa</th><th>I+D % Revenue</th><th>CapEx AI 2026E</th><th>Iniciativa tecnológica clave</th><th>Horizonte</th></tr></thead>
+    <tbody>
+      <tr><td>META</td><td class="mono">28%</td><td class="mono">$125–145B</td><td>Llama 4 · Silicon propio · Reality Labs AI</td><td>2026–2028</td></tr>
+      <tr><td>AMZN</td><td class="mono">14%</td><td class="mono">$100B</td><td>Trainium 2 · Bedrock · Nova models · Rufus AI</td><td>2026–2027</td></tr>
+      <tr><td>MSFT</td><td class="mono">13%</td><td class="mono">$80B</td><td>Copilot 365 · Azure AI Foundry · MAI-1 model</td><td>2025–2026</td></tr>
+      <tr><td>GOOGL</td><td class="mono">12%</td><td class="mono">$75–92B</td><td>Gemini 3 · TPU v6 Trillium · AI Mode en Search</td><td>2026</td></tr>
+      <tr><td>AVGO</td><td class="mono">19%</td><td class="mono">n/a (proveedor)</td><td>XPU 3ra generación · Tomahawk 6 · Jericho 4 networking</td><td>2026–2027</td></tr>
+      <tr class="hl"><td><strong>NVDA</strong></td><td class="mono">10%</td><td class="mono">n/a (proveedor)</td><td><strong>Blackwell Ultra · Rubin architecture · Physical AI · NIM software platform</strong></td><td>2026–2027</td></tr>
+      <tr><td>TSM</td><td class="mono">9%</td><td class="mono">$40B+ (fab expansion)</td><td>2nm process · CoWoS advanced packaging · TSMC fab en EEUU</td><td>2026–2028</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- 07 AMENAZAS -->
+<section id="s07" class="section">
+  <div class="sec-num">07 · Amenazas del sector</div>
+  <h2 class="sec-title">Principales riesgos — Regulación, disrupción y macro</h2>
+
+  <div class="threat-grid">
+    <div class="threat-card">
+      <div class="threat-label" style="color:var(--red)">Regulación</div>
+      <ul>
+        <li>Export controls EEUU–China: chips Hopper H20 y Blackwell restringidos para exportar</li>
+        <li>EU AI Act (Ley de IA Europea): compliance obligatorio para modelos frontier en 2026</li>
+        <li>Antimonopolio: dominancia de NVDA en GPUs bajo escrutinio en EEUU y UE</li>
+        <li>Regulación de datos de usuario: Meta y Google en la mira de organismos de privacidad</li>
+      </ul>
+    </div>
+    <div class="threat-card">
+      <div class="threat-label" style="color:var(--amber)">Disrupción tecnológica</div>
+      <ul>
+        <li>Modelos eficientes (DeepSeek R2 y similares): menos compute necesario por tarea de IA</li>
+        <li>Custom chips (TPU, Trainium, AVGO XPU) sustituyen GPUs NVDA en ciertos workloads</li>
+        <li>AMD MI400 e Intel Gaudi 3 como alternativa emergente a menor costo</li>
+        <li>Riesgo de sobre-inversión: CapEx $571B sin ROI (Retorno sobre la Inversión) claro en el corto plazo</li>
+      </ul>
+    </div>
+    <div class="threat-card">
+      <div class="threat-label" style="color:var(--blue)">Macro &amp; Geopolítica</div>
+      <ul>
+        <li>Riesgo Taiwan: el 68% del foundry avanzado mundial está concentrado en una sola isla</li>
+        <li>Tarifas arancelarias EEUU afectan la cadena de suministro de semiconductores</li>
+        <li>Suba de tasas o recesión comprimen los múltiplos de valuación de acciones growth</li>
+        <li>Desaceleración de capex corporativo si la IA no muestra ROI visible para las empresas que la contratan</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 08 FODA -->
+<section id="s08" class="section">
+  <div class="sec-num">08 · Análisis FODA</div>
+  <h2 class="sec-title">Las 2 empresas mejor posicionadas</h2>
+  <p class="sec-sub">FODA = Fortalezas, Oportunidades, Debilidades, Amenazas. En inglés: SWOT. Herramienta de análisis estratégico para evaluar la posición competitiva de una empresa.</p>
+
+  <div class="swot-container">
+    <div>
+      <div class="swot-co">NVDA — NVIDIA Corporation</div>
+      <div class="swot-grid">
+        <div class="swot-cell" style="background:rgba(61,158,107,0.08)">
+          <div class="swot-lbl" style="color:var(--green)">Fortalezas</div>
+          <ul style="color:rgba(100,200,150,0.9)">
+            <li>~90% de market share en GPUs para IA</li>
+            <li>CUDA: ecosistema de software inigualable e irreemplazable</li>
+            <li>Margen operativo del 62%: extraordinario para hardware</li>
+            <li>Pipeline Blackwell Ultra → Rubin muy sólido</li>
+            <li>Physical AI (robótica): próximo mercado masivo emergente</li>
+          </ul>
+        </div>
+        <div class="swot-cell" style="background:rgba(200,80,80,0.08)">
+          <div class="swot-lbl" style="color:var(--red)">Debilidades</div>
+          <ul style="color:rgba(200,100,100,0.9)">
+            <li>Top 5 clientes representan ~40% del revenue total</li>
+            <li>Export controls en China erosionan un mercado clave</li>
+            <li>Valuación exigente (P/E Fwd 28x para sector cíclico)</li>
+            <li>Margen muy dependiente del ciclo de Data Centers</li>
+          </ul>
+        </div>
+        <div class="swot-cell" style="background:rgba(58,123,200,0.08)">
+          <div class="swot-lbl" style="color:var(--blue)">Oportunidades</div>
+          <ul style="color:rgba(90,150,220,0.9)">
+            <li>CapEx hyperscalers de $571B en 2026 fluye hacia NVDA</li>
+            <li>Sovereign AI: gobiernos comprando GPUs propios</li>
+            <li>NIM software: monetización creciente de la inferencia</li>
+            <li>Inferencia en el edge (nuevos mercados masivos)</li>
+          </ul>
+        </div>
+        <div class="swot-cell" style="background:rgba(201,138,48,0.08)">
+          <div class="swot-lbl" style="color:var(--amber)">Amenazas</div>
+          <ul style="color:rgba(210,160,70,0.9)">
+            <li>Modelos eficientes reducen la demanda de GPUs por tarea</li>
+            <li>AVGO y AMD ganan terreno en custom silicon</li>
+            <li>Regulación antimonopolio por dominancia de mercado</li>
+            <li>El ciclo de capex puede revertir abruptamente</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="swot-co">AVGO — Broadcom Inc.</div>
+      <div class="swot-grid">
+        <div class="swot-cell" style="background:rgba(61,158,107,0.08)">
+          <div class="swot-lbl" style="color:var(--green)">Fortalezas</div>
+          <ul style="color:rgba(100,200,150,0.9)">
+            <li>AI revenue +106% YoY en Q1 FY26</li>
+            <li>Modelo dual: semiconductores + software enterprise</li>
+            <li>VMware: switching costs altísimos en grandes empresas</li>
+            <li>Partnerships con Meta, Google, Apple, OpenAI</li>
+            <li>Dividendo creciente + buybacks consistentes</li>
+          </ul>
+        </div>
+        <div class="swot-cell" style="background:rgba(200,80,80,0.08)">
+          <div class="swot-lbl" style="color:var(--red)">Debilidades</div>
+          <ul style="color:rgba(200,100,100,0.9)">
+            <li>Menor visibilidad de marca vs NVDA en el mercado</li>
+            <li>Deuda elevada post-adquisición de VMware ($40B+)</li>
+            <li>Crecimiento de semiconductores históricamente volátil</li>
+            <li>Dependencia de solo 3 clientes hyperscalers clave</li>
+          </ul>
+        </div>
+        <div class="swot-cell" style="background:rgba(58,123,200,0.08)">
+          <div class="swot-lbl" style="color:var(--blue)">Oportunidades</div>
+          <ul style="color:rgba(90,150,220,0.9)">
+            <li>Hyperscalers diversificando de NVDA → XPUs de AVGO</li>
+            <li>AI revenue proyectado: $60B+ para FY2027</li>
+            <li>VMware cross-sell en nube privada de grandes empresas</li>
+            <li>Nuevos clientes: OpenAI, ByteDance, Microsoft</li>
+          </ul>
+        </div>
+        <div class="swot-cell" style="background:rgba(201,138,48,0.08)">
+          <div class="swot-lbl" style="color:var(--amber)">Amenazas</div>
+          <ul style="color:rgba(210,160,70,0.9)">
+            <li>Los clientes pueden internalizar el diseño de sus chips</li>
+            <li>Marvell y Alchip compiten en custom ASIC</li>
+            <li>Migración de VMware hacia alternativas open-source</li>
+            <li>Ciclo semiconductor bajista inevitable a largo plazo</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 09 SELECCIÓN -->
+<section id="s09" class="section">
+  <div class="sec-num">09 · Selección del analista</div>
+  <h2 class="sec-title">Acción ganadora y catalizadores — Próximos 12 meses</h2>
+
+  <div class="pick-box">
+    <div style="display:flex;align-items:flex-start;gap:28px;flex-wrap:wrap">
+      <div style="min-width:115px">
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:5px">Selección principal</div>
+        <div class="pick-ticker">NVDA</div>
+        <div class="pick-name">NVIDIA Corporation</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);margin-top:8px">Precio ref.: <span style="color:var(--text)">$216</span></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">P/E Fwd: <span style="color:var(--text)">28x</span></div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted)">Market Cap: <span style="color:var(--text)">$5.3T</span></div>
+      </div>
+      <div style="flex:1;min-width:240px">
+        <p class="pick-text">NVIDIA es el <strong>"armero"</strong> de la guerra de la inteligencia artificial. Con ~90% de market share (participación de mercado) en GPUs (Graphics Processing Units — Unidades de Procesamiento Gráfico, chips especializados en cálculos paralelos masivos esenciales para la IA) de entrenamiento e inferencia, cada dólar de los $571B que los hyperscalers (empresas que operan centros de datos a escala masiva: Amazon, Google, Microsoft, Meta) invierten en CapEx (Capital Expenditure — inversión en infraestructura física como servidores y centros de datos) AI en 2026 fluye en alguna proporción hacia sus resultados.</p>
+        <br>
+        <p class="pick-text">Su moat (ventaja competitiva duradera, como el foso que protege un castillo) más profundo no es el chip: es <strong>CUDA</strong> (el lenguaje y las herramientas que creó NVIDIA para que los programadores puedan "hablar" con sus GPUs), el ecosistema que llevó dos décadas construir y que hace prohibitivamente costoso migrar a competidores. Hoy, todos los ingenieros de IA del mundo saben CUDA. Ese es el switching cost (costo de cambio de proveedor) más poderoso del sector tecnológico.</p>
+        <br>
+        <p class="pick-text">Con márgenes operativos del 62% y el superciclo de Blackwell Ultra apenas comenzando, la tesis estructural de largo plazo permanece intacta. El riesgo principal: modelos de IA más eficientes que requieran menos GPUs por tarea, o una desaceleración del CapEx de los hyperscalers.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="alt-box">
+    <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:7px">Selección alternativa — Perfil moderado / conservador</div>
+    <div class="alt-ticker">AVGO — Broadcom Inc.</div>
+    <p style="font-size:13px;color:var(--muted);line-height:1.85;margin-top:10px">Para inversores con menor tolerancia al riesgo: AVGO ofrece exposición al mismo ciclo de IA con un modelo de negocio más diversificado (semiconductores + software enterprise). Su AI revenue (ingresos provenientes de inteligencia artificial) creció +106% YoY (Year over Year — año contra año). Dividendo creciente. Su rol como proveedor de custom XPUs (chips de IA personalizados diseñados por Broadcom para cada cliente) para Meta, Google y Apple lo posiciona como beneficiario estructural sin la concentración de riesgo de NVDA. <strong style="color:var(--text)">P/E Fwd 26x</strong>, con menor volatilidad histórica y flujo de caja predecible vía VMware (software empresarial con altísimos switching costs).</p>
+  </div>
+
+  <h3 style="font-size:14px;font-weight:500;margin-bottom:16px;color:var(--text)">Catalizadores para NVDA en los próximos 12 meses</h3>
+
+  <div class="tbl-wrap">
+  <table>
+    <thead><tr><th>Catalizador</th><th>Timing</th><th>Impacto precio estimado</th><th>Probabilidad</th></tr></thead>
+    <tbody>
+      <tr><td>Blackwell Ultra: confirmación de demanda masiva en guidance Q2/Q3 FY26</td><td class="mono">Q3 2026</td><td><span class="pill pu">+15% a +25%</span></td><td class="mono">Alta (85%)</td></tr>
+      <tr><td>Sovereign AI: nuevos contratos con gobiernos (India, Arabia Saudita, Europa)</td><td class="mono">6–12 meses</td><td><span class="pill pu">+10% a +15%</span></td><td class="mono">Alta (80%)</td></tr>
+      <tr><td>Anuncio arquitectura Rubin (post-Blackwell) en GTC Conference 2026</td><td class="mono">GTC Q4 2026</td><td><span class="pill pu">+10% a +20%</span></td><td class="mono">Alta (90%)</td></tr>
+      <tr><td>Earnings Q2 FY27: guidance de revenue superior a $45B (beat vs consenso analistas)</td><td class="mono">Ago 2026</td><td><span class="pill pu">+8% a +15%</span></td><td class="mono">Media (70%)</td></tr>
+      <tr><td>NVIDIA NIM (plataforma de software de inferencia): se convierte en línea de negocio visible</td><td class="mono">2026</td><td><span class="pill pu">+8% a +12%</span></td><td class="mono">Media (65%)</td></tr>
+      <tr><td>Physical AI / Robotics: primeras ventas masivas de plataforma Isaac + Jetson</td><td class="mono">2026–2027</td><td><span class="pill pu">+15% a +30%</span></td><td class="mono">Media (60%)</td></tr>
+      <tr><td>Flexibilización de export controls en China (escenario optimista bajo nuevo marco)</td><td class="mono">2026</td><td><span class="pill pu">+20% a +35%</span></td><td class="mono">Baja (30%)</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<!-- GLOSARIO -->
+<section id="glosario" class="section">
+  <div class="sec-num">Glosario</div>
+  <h2 class="sec-title">Términos técnicos del análisis</h2>
+  <p class="sec-sub">Definiciones de todos los términos especializados usados en este informe, en orden alfabético.</p>
+
+  <div class="glos-grid">
+    <div class="glos-item">
+      <div class="glos-term">ASIC — Application-Specific Integrated Circuit</div>
+      <div class="glos-def">Circuito Integrado de Aplicación Específica. Chip diseñado para una tarea muy concreta en lugar de ser de uso general. Los XPUs de Broadcom para Meta y Google son ejemplos de ASICs para inteligencia artificial.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Buyback — Recompra de acciones</div>
+      <div class="glos-def">Cuando una empresa compra sus propias acciones en el mercado. Al haber menos acciones disponibles, cada una vale más. Es una forma de devolver dinero a los accionistas, similar a un dividendo pero en forma de mayor valor por acción.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">CapEx — Capital Expenditure</div>
+      <div class="glos-def">Gasto de Capital. Inversión en activos físicos de largo plazo como servidores, centros de datos, maquinaria o terrenos. No es un gasto ordinario del año; se deprecia (amortiza) a lo largo del tiempo. Los hyperscalers planean gastar $571B en CapEx AI en 2026.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">CUDA — Compute Unified Device Architecture</div>
+      <div class="glos-def">El lenguaje y las herramientas que creó NVIDIA en 2006 para que los programadores puedan "hablar" con sus GPUs. Es el estándar de la industria para desarrollar modelos de IA. Su adopción masiva durante 20 años lo hace prácticamente imposible de reemplazar.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">FODA (en inglés: SWOT)</div>
+      <div class="glos-def">Fortalezas, Oportunidades, Debilidades, Amenazas. Herramienta de análisis estratégico usada en consultoría para evaluar la posición competitiva de una empresa desde cuatro dimensiones clave.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Foundry</div>
+      <div class="glos-def">Empresa que fabrica chips diseñados por otros. No diseña sus propios chips: los produce por encargo. TSMC (Taiwan Semiconductor Manufacturing Company) es el foundry más avanzado del mundo: fabrica los chips de NVIDIA, Apple, AMD y muchos más.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">GPU — Graphics Processing Unit</div>
+      <div class="glos-def">Unidad de Procesamiento Gráfico. Chip especializado en realizar miles de cálculos matemáticos en paralelo (al mismo tiempo). Originalmente creado para videojuegos, hoy es el motor principal del entrenamiento de modelos de inteligencia artificial.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Gross Margin — Margen Bruto</div>
+      <div class="glos-def">Porcentaje de los ingresos que queda después de descontar el costo directo de fabricar el producto (materiales, manufactura). Un gross margin del 75% (NVDA) significa que de cada $100 vendidos, $75 quedan antes de pagar gastos operativos.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Hyperscaler</div>
+      <div class="glos-def">Empresa que opera centros de datos a escala masiva para proveer servicios en la nube (cloud). Los principales son Amazon (AWS), Microsoft (Azure), Google (GCP) y Meta. Son los principales compradores de GPUs de NVIDIA en el mundo.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">M&amp;A — Mergers &amp; Acquisitions</div>
+      <div class="glos-def">Fusiones y Adquisiciones. Cuando una empresa compra a otra (adquisición) o dos empresas se unen en una (fusión). Ejemplo clave en este análisis: Broadcom compró VMware por $69.000 millones en 2023.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Market Cap — Capitalización Bursátil</div>
+      <div class="glos-def">Valor total que el mercado le asigna a una empresa. Se calcula multiplicando el precio de la acción por la cantidad total de acciones en circulación. Si NVDA cotiza a $216 y hay 24.400 millones de acciones, su market cap es aproximadamente $5,3 billones.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Moat — Foso Competitivo</div>
+      <div class="glos-def">Ventaja competitiva duradera que protege a una empresa de sus competidores, como el foso de agua que protege un castillo. Puede ser una marca fuerte, costos de producción bajos, red de millones de usuarios o altos costos de cambio. Concepto popularizado por Warren Buffett.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">NIM — NVIDIA Inference Microservices</div>
+      <div class="glos-def">Plataforma de software de NVIDIA que permite a empresas implementar modelos de IA en producción de manera optimizada y eficiente sobre sus GPUs. Representa la apuesta de NVIDIA por monetizar software además del hardware.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Op. Margin — Margen Operativo</div>
+      <div class="glos-def">Porcentaje de los ingresos que queda como ganancia después de descontar todos los gastos operativos: sueldos, I+D (Investigación y Desarrollo), ventas, alquiler, etc. El margen operativo del 62% de NVDA significa que de cada $100 en ventas, $62 son ganancia operativa.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">P/E Fwd — Price to Earnings Forward</div>
+      <div class="glos-def">Relación Precio / Ganancias Proyectadas. Cuántas veces el precio de la acción multiplica la ganancia esperada para los próximos 12 meses. Un P/E Fwd de 28x significa que el mercado paga $28 por cada $1 de ganancia futura proyectada. Sirve para comparar valuaciones entre empresas.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Physical AI — IA Física</div>
+      <div class="glos-def">Aplicación de la inteligencia artificial al mundo físico: robótica industrial, vehículos autónomos, manufactura automatizada y sistemas embebidos. NVIDIA ve esto como su próximo gran mercado de crecimiento, después del boom de los data centers.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Revenue — Ingresos</div>
+      <div class="glos-def">El total de dinero que genera una empresa por sus ventas de productos o servicios, antes de descontar cualquier gasto. También llamado "ventas" o "facturación". Es la primera línea del estado de resultados, por eso se dice que es el "top line" (línea superior).</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">ROIC — Return on Invested Capital</div>
+      <div class="glos-def">Retorno sobre el Capital Invertido. Mide qué tan eficientemente una empresa genera ganancias con el capital que invierte en su negocio. Un ROIC del 120% de NVDA significa que por cada $100 invertidos en el negocio, genera $120 de retorno. Es una de las métricas favoritas de los inversores value.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Sovereign AI — IA Soberana</div>
+      <div class="glos-def">Iniciativas de gobiernos nacionales para construir su propia infraestructura de inteligencia artificial: comprar GPUs, construir centros de datos propios y desarrollar modelos de IA nacionales. India, Arabia Saudita, Francia y varios países europeos son ejemplos activos en 2026.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">Switching Cost — Costo de Cambio</div>
+      <div class="glos-def">El costo en tiempo, dinero y riesgo que enfrenta una empresa o persona al decidir cambiar de proveedor o tecnología. CUDA tiene switching costs altísimos: cambiar de NVIDIA a otro proveedor implicaría reescribir años de código, reentrenar equipos y arriesgar fallos en producción.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">TPU — Tensor Processing Unit</div>
+      <div class="glos-def">Chips de IA diseñados internamente por Google para acelerar el entrenamiento e inferencia de sus modelos de machine learning (aprendizaje automático). Son la alternativa interna de Google a los GPUs de NVIDIA, usados principalmente en sus propios servicios y en Google Cloud.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">XPU — Custom Processing Unit</div>
+      <div class="glos-def">Término genérico para chips de IA personalizados que diseña Broadcom para cada uno de sus clientes hyperscalers (Meta, Google, Apple, etc.). A diferencia de los GPUs de NVIDIA que son estándar para todos, cada XPU está optimizado para las necesidades específicas de IA del cliente.</div>
+    </div>
+    <div class="glos-item">
+      <div class="glos-term">YoY — Year over Year</div>
+      <div class="glos-def">Año contra Año. Comparación del resultado de un período con el mismo período del año anterior. Si NVDA creció +114% YoY, significa que sus ingresos son 114% mayores que los del mismo período del año pasado, es decir, más que se duplicaron.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">MDA Investing · Comunidad Platino</div>
+  <p class="footer-text">Este análisis fue preparado con fines exclusivamente educativos e informativos para los miembros de Comunidad Platino de MDA Investing. No constituye asesoramiento de inversión personalizado ni oferta de compra o venta de valores mobiliarios. Todo inversor debe evaluar su propio perfil de riesgo antes de tomar decisiones de inversión. Los precios de referencia corresponden a Junio de 2026. La información financiera está basada en reportes oficiales (10-K, 10-Q, earnings releases) y fuentes de mercado públicas. Las proyecciones son estimaciones de consenso de analistas y pueden diferir de los resultados reales. Rentabilidades pasadas no garantizan resultados futuros.</p>
+  <p style="font-size:10px;color:var(--dim);margin-top:12px">Hugo Tanos Investment Advisor · MDA Investing · Comunidad Platino · Junio 2026</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const gc='rgba(255,255,255,0.05)';
+const lc='#5a5754';
+const mf="'IBM Plex Mono', monospace";
+
+new Chart(document.getElementById('mcapChart'),{
+  type:'bar',
+  data:{
+    labels:['NVDA','GOOGL','MSFT','AMZN','AVGO','TSM','META'],
+    datasets:[{
+      label:'Market Cap (USD Trillones)',
+      data:[5.3,3.2,3.2,2.7,2.3,2.3,1.7],
+      backgroundColor:['#c9a84c','#3a7bc8','#3a7bc8','#c98a30','#3d9e6b','#6a6560','#8b6fd4'],
+      borderRadius:4
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`$${c.parsed.y.toFixed(1)}T`}}},
+    scales:{
+      x:{grid:{color:gc},ticks:{color:lc,font:{family:mf,size:11}}},
+      y:{grid:{color:gc},ticks:{color:lc,font:{size:11},callback:v=>`$${v}T`},beginAtZero:true}
+    }
+  }
+});
+
+new Chart(document.getElementById('marginChart'),{
+  type:'bar',
+  data:{
+    labels:['META','NVDA','MSFT','AVGO','TSM','GOOGL','AMZN'],
+    datasets:[
+      {label:'Gross Margin %',data:[81.2,75,70.4,66,57,57.5,49],backgroundColor:'rgba(201,168,76,0.18)',borderColor:'#c9a84c',borderWidth:1.5,borderRadius:3},
+      {label:'Op. Margin %',data:[43,62.4,45.1,39.2,45,32,11],backgroundColor:'rgba(201,168,76,0.72)',borderRadius:3}
+    ]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{
+      legend:{display:true,labels:{color:'#8a8580',font:{family:mf,size:10},boxWidth:10,padding:14}},
+      tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(1)}%`}}
+    },
+    scales:{
+      x:{grid:{color:gc},ticks:{color:lc,font:{family:mf,size:11}}},
+      y:{grid:{color:gc},ticks:{color:lc,font:{size:11},callback:v=>`${v}%`},beginAtZero:true,max:90}
+    }
+  }
+});
+
+// Nav active highlight on scroll
+const secs=document.querySelectorAll('section[id]');
+const links=document.querySelectorAll('.nav a');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  secs.forEach(s=>{if(window.scrollY>=s.offsetTop-90)cur=s.id;});
+  links.forEach(a=>{
+    a.classList.remove('active');
+    if(a.getAttribute('href')==='#'+cur)a.classList.add('active');
+  });
+},{passive:true});
+</script>
+</body>
+</html>
