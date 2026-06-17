@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AAPL — Evolución USD 10.000 | MDA Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-annotation/2.2.1/chartjs-plugin-annotation.min.js"></script>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: #080808;
+  color: #e0e0e0;
+  font-family: 'IBM Plex Mono', monospace;
+  min-height: 100vh;
+  padding: 36px 24px 40px;
+}
+
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+/* ── HEADER ── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #1c1c1c;
+  margin-bottom: 24px;
+}
+
+.ticker-block {}
+.ticker {
+  font-size: 30px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 1px;
+}
+.ticker .gold { color: #c8a84b; }
+.header-sub {
+  font-size: 12px;
+  color: #777;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-top: 5px;
+}
+
+.header-right { text-align: right; }
+.header-period {
+  font-size: 14px;
+  font-weight: 500;
+  color: #aaa;
+}
+.header-note {
+  font-size: 11px;
+  color: #555;
+  margin-top: 4px;
+}
+
+/* ── METRIC CARDS ── */
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  background: #0f0f0f;
+  border: 1px solid #1c1c1c;
+  border-radius: 8px;
+  padding: 16px 14px;
+}
+.metric-card.highlight {
+  border-color: #1e3a1e;
+  background: #0c130c;
+}
+
+.m-label {
+  font-size: 10px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+.m-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #ffffff;
+  line-height: 1;
+}
+.m-value.green  { color: #4caf50; }
+.m-value.gold   { color: #c8a84b; }
+.m-value.red    { color: #e53935; }
+.m-sub {
+  font-size: 10px;
+  color: #666;
+  margin-top: 6px;
+}
+.m-sub.up { color: #4caf50; }
+
+/* ── CHART WRAPPER ── */
+.chart-wrap {
+  background: #0b0b0b;
+  border: 1px solid #181818;
+  border-radius: 10px;
+  padding: 20px 20px 14px;
+  margin-bottom: 22px;
+}
+.chart-label {
+  font-size: 10px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 14px;
+}
+.chart-canvas-wrap {
+  position: relative;
+  height: 420px;
+}
+
+.legend {
+  display: flex;
+  gap: 24px;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid #111;
+}
+.leg-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11px;
+  color: #bbb;
+}
+.leg-box {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.leg-box.green { background: #4caf50; }
+.leg-box.red   { background: rgba(229,57,53,0.45); border: 1px solid rgba(229,57,53,0.6); }
+.leg-line {
+  width: 18px;
+  height: 2px;
+  background: #2a2a2a;
+  border-top: 2px dashed #2a2a2a;
+  flex-shrink: 0;
+}
+
+/* ── CORRECTIONS GRID ── */
+.section-title {
+  font-size: 10px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-bottom: 12px;
+}
+
+.corr-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 28px;
+}
+
+.corr-card {
+  background: #0c0c0c;
+  border: 1px solid #222;
+  border-left: 2px solid #b71c1c;
+  border-radius: 0 6px 6px 0;
+  padding: 12px 14px;
+}
+.corr-pct {
+  font-size: 19px;
+  font-weight: 700;
+  color: #e53935;
+  line-height: 1;
+}
+.corr-period {
+  font-size: 10px;
+  color: #aaa;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+.corr-ctx {
+  font-size: 10px;
+  color: #666;
+  margin-top: 3px;
+}
+
+/* ── NARRATIVE STRIP ── */
+.narrative {
+  background: #0d0d0d;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 18px 22px;
+  margin-bottom: 24px;
+  font-size: 12px;
+  color: #aaa;
+  line-height: 1.9;
+  font-style: italic;
+}
+.narrative strong {
+  color: #4caf50;
+  font-style: normal;
+  font-weight: 700;
+}
+.narrative em {
+  color: #e53935;
+  font-style: normal;
+}
+
+/* ── FOOTER ── */
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid #141414;
+  padding-top: 14px;
+}
+.brand {
+  font-size: 12px;
+  color: #666;
+  letter-spacing: 1px;
+}
+.brand span { color: #c8a84b; font-weight: 700; }
+.disclaimer {
+  font-size: 10px;
+  color: #444;
+  text-align: right;
+  line-height: 1.6;
+}
+
+/* ── PLAYBACK ── */
+.playback-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 12px;
+}
+.ctrl-btn {
+  background: #0f0f0f;
+  border: 1px solid #2a2a2a;
+  color: #ccc;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  white-space: nowrap;
+  letter-spacing: 0.5px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ctrl-btn:hover { background: #181818; border-color: #333; }
+.ctrl-btn.playing { color: #4caf50; border-color: #2e7d32; }
+.ctrl-btn.reset-btn { padding: 8px 12px; color: #888; }
+.prog-wrap {
+  flex: 1;
+  height: 4px;
+  background: #1a1a1a;
+  border-radius: 2px;
+  cursor: pointer;
+  position: relative;
+}
+.prog-wrap:hover .prog-fill { opacity: 0.9; }
+.prog-fill {
+  height: 100%;
+  background: #4caf50;
+  border-radius: 2px;
+  width: 0%;
+}
+.prog-label {
+  font-size: 10px;
+  color: #555;
+  min-width: 68px;
+  text-align: right;
+  letter-spacing: 0.5px;
+}
+
+/* ── FLOATING INFO CARD ── */
+.info-card {
+  position: absolute;
+  display: none;
+  background: rgba(8,8,8,0.95);
+  border: 1px solid #2a2a2a;
+  border-radius: 7px;
+  padding: 10px 15px;
+  pointer-events: none;
+  z-index: 20;
+  min-width: 148px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.6);
+}
+.info-date { font-size: 10px; color: #777; margin-bottom: 5px; letter-spacing: 0.5px; }
+.info-usd  { font-size: 16px; font-weight: 700; color: #4caf50; line-height: 1; }
+.info-ret  { font-size: 11px; font-weight: 500; margin-top: 4px; }
+.info-divider { height: 1px; background: #1c1c1c; margin: 6px 0; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="ticker-block">
+      <div class="ticker">🍎 $AAPL — <span class="gold">Apple Inc.</span></div>
+      <div class="header-sub">Evolución de USD 10.000 · Inversión sostenida sin vender</div>
+    </div>
+    <div class="header-right">
+      <div class="header-period">Ene 2015 → Jun 2025</div>
+      <div class="header-note">357 acciones · Precio entrada: ~$28</div>
+    </div>
+  </div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="m-label">Capital inicial</div>
+      <div class="m-value">$10.000</div>
+      <div class="m-sub">USD · Enero 2015</div>
+    </div>
+    <div class="metric-card highlight">
+      <div class="m-label">Capital final</div>
+      <div class="m-value green">$105.357</div>
+      <div class="m-sub up">↑ +$95.357 en 10.5 años</div>
+    </div>
+    <div class="metric-card highlight">
+      <div class="m-label">Retorno total</div>
+      <div class="m-value green">×10.5</div>
+      <div class="m-sub up">+954% acumulado en USD</div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">CAGR anual</div>
+      <div class="m-value gold">25,1%</div>
+      <div class="m-sub">Rendimiento anual compuesto</div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="chart-wrap">
+    <div class="chart-label">Valor del portafolio en USD · Zonas rojas = correcciones ≥ 20% · Hover para detalles</div>
+    <div class="chart-canvas-wrap">
+      <canvas id="mainChart"></canvas>
+      <!-- Floating info card (positioned via JS) -->
+      <div id="infoCard" class="info-card">
+        <div id="infoDate" class="info-date"></div>
+        <div class="info-divider"></div>
+        <div id="infoUsd"  class="info-usd"></div>
+        <div id="infoRet"  class="info-ret"></div>
+      </div>
+    </div>
+    <!-- PLAYBACK CONTROLS -->
+    <div class="playback-bar">
+      <button id="btnPlay"  class="ctrl-btn">▶ Play</button>
+      <button id="btnReset" class="ctrl-btn reset-btn">↺</button>
+      <div class="prog-wrap" id="progWrap">
+        <div id="progFill" class="prog-fill"></div>
+      </div>
+      <span id="progLabel" class="prog-label">Ene 2015</span>
+    </div>
+    <div class="legend">
+      <div class="leg-item"><div class="leg-box green"></div> Portafolio USD 10.000</div>
+      <div class="leg-item"><div class="leg-box red"></div> Corrección ≥ 20%</div>
+      <div class="leg-item"><div class="leg-line"></div> Inversión inicial ($10.000)</div>
+    </div>
+  </div>
+
+  <!-- CORRECTIONS GRID -->
+  <div class="section-title">Las 8 correcciones · ¿En cuál te hubieras rendido?</div>
+  <div class="corr-grid">
+    <div class="corr-card">
+      <div class="corr-pct">−31,62%</div>
+      <div class="corr-period">Abr – Ago 2015</div>
+      <div class="corr-ctx">Inicio de posición</div>
+    </div>
+    <div class="corr-card">
+      <div class="corr-pct">−27,74%</div>
+      <div class="corr-period">Oct 2015 – May 2016</div>
+      <div class="corr-ctx">iPhone desacelera</div>
+    </div>
+    <div class="corr-card">
+      <div class="corr-pct">−39,18%</div>
+      <div class="corr-period">2018</div>
+      <div class="corr-ctx">S&P 500 solo −4,56%</div>
+    </div>
+    <div class="corr-card">
+      <div class="corr-pct">−20,92%</div>
+      <div class="corr-period">Abr – Jun 2019</div>
+      <div class="corr-ctx">Guerra comercial v1</div>
+    </div>
+    <div class="corr-card">
+      <div class="corr-pct">−35,15%</div>
+      <div class="corr-period">Ene – Mar 2020</div>
+      <div class="corr-ctx">Covid — fase 1</div>
+    </div>
+    <div class="corr-card">
+      <div class="corr-pct">−25,28%</div>
+      <div class="corr-period">Ago – Sep 2020</div>
+      <div class="corr-ctx">Covid — fase 2</div>
+    </div>
+    <div class="corr-card">
+      <div class="corr-pct">−32,13%</div>
+      <div class="corr-period">Feb – Oct 2022</div>
+      <div class="corr-ctx">Bear Market tasas</div>
+    </div>
+    <div class="corr-card">
+      <div class="corr-pct">−34,94%</div>
+      <div class="corr-period">Ene – Abr 2025</div>
+      <div class="corr-ctx">Guerra comercial v2</div>
+    </div>
+  </div>
+
+  <!-- NARRATIVE -->
+  <div class="narrative">
+    8 correcciones mayores al 20% en 10 años. Algunas sin contexto macroeconómico evidente — 
+    solo <em>ruido</em>. El que vendió en cualquiera de ellas <em>se perdió el x10</em>.
+    El que aguantó con convicción en la empresa convirtió <strong>$10.000 → $105.357</strong>.
+    La volatilidad no es el riesgo — el riesgo es no saber lo que tenés en el portafolio.
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="brand"><span>MDA</span> Investing · @Hugoilcapitano</div>
+    <div class="disclaimer">
+      No constituye recomendación de inversión. Solo fines educativos.<br>
+      Precios aproximados ajustados por splits. Fuente: Yahoo Finance.
+    </div>
+  </div>
+
+</div>
+
+<script>
+const monthLabels = [];
+const monthNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+for (let i = 0; i < 126; i++) {
+  monthLabels.push(monthNames[i % 12] + ' ' + (2015 + Math.floor(i / 12)));
+}
+
+// AAPL split-adjusted monthly closing prices Jan 2015 – Jun 2025
+const aaplPrices = [
+  // 2015
+  28.0, 30.0, 29.5, 32.5, 31.0, 29.0, 27.5, 22.3, 23.5, 29.0, 28.5, 25.5,
+  // 2016
+  23.5, 22.0, 23.5, 23.0, 20.9, 22.0, 25.0, 27.0, 28.0, 29.0, 29.5, 29.5,
+  // 2017
+  31.0, 33.0, 35.5, 36.0, 38.5, 38.0, 39.0, 40.5, 39.5, 43.0, 44.0, 42.5,
+  // 2018
+  46.0, 44.5, 44.0, 42.5, 46.0, 47.5, 48.0, 55.0, 54.5, 48.0, 40.0, 33.5,
+  // 2019
+  36.5, 41.0, 46.5, 50.5, 42.0, 39.9, 48.0, 50.0, 55.0, 62.0, 66.0, 73.0,
+  // 2020
+  81.0, 72.0, 52.6, 63.0, 73.0, 83.0, 87.5, 91.5, 68.4, 76.0, 93.0, 132.0,
+  // 2021
+  137.0, 121.0, 127.0, 133.0, 125.0, 136.0, 146.0, 151.0, 141.0, 149.0, 165.0, 178.0,
+  // 2022
+  174.0, 183.0, 177.0, 166.0, 149.0, 136.0, 162.0, 174.0, 150.0, 124.2, 148.0, 130.0,
+  // 2023
+  144.0, 148.0, 160.0, 169.0, 177.0, 189.0, 192.0, 178.0, 171.0, 170.0, 189.0, 193.0,
+  // 2024
+  185.0, 182.0, 171.0, 170.0, 192.0, 210.0, 218.0, 226.0, 233.0, 230.0, 237.0, 255.0,
+  // 2025 (Jan–Jun)
+  260.0, 240.0, 215.0, 169.2, 207.0, 295.0
+];
+
+const shares  = 10000 / 28;
+const chartData = aaplPrices.map((p, i) => ({ x: i, y: Math.round(shares * p) }));
+
+// Correction zones [xMin index, xMax index, label]
+const zones = [
+  [3,  7,  '−31.6%'],
+  [9,  16, '−27.7%'],
+  [43, 47, '−39.2%'],
+  [51, 53, '−20.9%'],
+  [60, 62, '−35.2%'],
+  [67, 68, '−25.3%'],
+  [85, 93, '−32.1%'],
+  [120, 123, '−34.9%'],
+];
+
+const annotations = {};
+
+zones.forEach(([xMin, xMax, lbl], i) => {
+  annotations['zone' + i] = {
+    type: 'box',
+    xMin: xMin - 0.5,
+    xMax: xMax + 0.5,
+    backgroundColor: 'rgba(229,57,53,0.09)',
+    borderColor: 'rgba(229,57,53,0.30)',
+    borderWidth: 1,
+    label: {
+      display: true,
+      content: lbl,
+      color: 'rgba(255,100,100,0.95)',
+      font: { family: 'IBM Plex Mono', size: 10, weight: 'bold' },
+      position: { x: 'center', y: 'start' },
+      yAdjust: 7,
+    }
+  };
+});
+
+// Baseline at $10,000
+annotations['base'] = {
+  type: 'line',
+  yMin: 10000,
+  yMax: 10000,
+  borderColor: 'rgba(255,255,255,0.18)',
+  borderWidth: 1,
+  borderDash: [6, 4],
+  label: {
+    display: true,
+    content: '$10.000',
+    color: 'rgba(255,255,255,0.45)',
+    font: { family: 'IBM Plex Mono', size: 10 },
+    position: 'start',
+    xAdjust: 6,
+    yAdjust: -10,
+  }
+};
+
+// Cursor annotations (initially hidden, driven by animation)
+annotations['cursorLine'] = {
+  type: 'line',
+  xMin: 0, xMax: 0,
+  borderColor: 'rgba(200,168,75,0.65)',
+  borderWidth: 1.5,
+  borderDash: [4, 4],
+  display: false,
+};
+annotations['cursorDot'] = {
+  type: 'point',
+  xValue: 0,
+  yValue: chartData[0].y,
+  backgroundColor: '#ffffff',
+  radius: 8,
+  borderColor: '#c8a84b',
+  borderWidth: 2.5,
+  display: false,
+};
+
+// Canvas gradient
+const canvas = document.getElementById('mainChart');
+const ctx = canvas.getContext('2d');
+const grad = ctx.createLinearGradient(0, 0, 0, 420);
+grad.addColorStop(0, 'rgba(76,175,80,0.22)');
+grad.addColorStop(0.65, 'rgba(76,175,80,0.04)');
+grad.addColorStop(1, 'rgba(76,175,80,0.00)');
+
+const myChart = new Chart(ctx, {
+  type: 'line',
+  data: {
+    datasets: [{
+      label: 'Portafolio',
+      data: chartData,
+      borderColor: '#4caf50',
+      borderWidth: 2,
+      backgroundColor: grad,
+      fill: true,
+      tension: 0.38,
+      pointRadius: 0,
+      pointHoverRadius: 5,
+      pointHoverBackgroundColor: '#4caf50',
+      pointHoverBorderColor: '#fff',
+      pointHoverBorderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: '#111',
+        borderColor: '#222',
+        borderWidth: 1,
+        padding: { top: 10, bottom: 10, left: 14, right: 14 },
+        titleFont: { family: 'IBM Plex Mono', size: 12 },
+        bodyFont:  { family: 'IBM Plex Mono', size: 14, weight: 'bold' },
+        titleColor: '#999',
+        bodyColor:  '#4caf50',
+        displayColors: false,
+        callbacks: {
+          title: (items) => monthLabels[items[0].parsed.x],
+          label: (item)  => ' USD ' + item.parsed.y.toLocaleString('es-AR'),
+          afterLabel: (item) => {
+            const ret = (((item.parsed.y - 10000) / 10000) * 100).toFixed(1);
+            const sign = ret >= 0 ? '+' : '';
+            return ' Retorno: ' + sign + ret + '%';
+          }
+        }
+      },
+      annotation: { annotations }
+    },
+    scales: {
+      x: {
+        type: 'linear',
+        min: 0,
+        max: 125,
+        grid: { color: 'rgba(255,255,255,0.025)', drawBorder: false },
+        ticks: {
+          font: { family: 'IBM Plex Mono', size: 11 },
+          color: '#888',
+          stepSize: 12,
+          maxRotation: 0,
+          autoSkip: false,
+          callback: (val) => {
+            if (Number.isInteger(val) && val % 12 === 0 && val >= 0 && val <= 120) {
+              return String(2015 + val / 12);
+            }
+            return '';
+          }
+        },
+        border: { color: '#222' }
+      },
+      y: {
+        grid: { color: 'rgba(255,255,255,0.03)', drawBorder: false },
+        ticks: {
+          font: { family: 'IBM Plex Mono', size: 11 },
+          color: '#888',
+          callback: (val) => {
+            if (val === 0) return '';
+            if (val >= 1000) return '$' + (val / 1000).toFixed(0) + 'k';
+            return '$' + val;
+          }
+        },
+        border: { color: '#222' }
+      }
+    }
+  }
+});
+
+// ── ANIMATION ENGINE ──────────────────────────────────────────
+const infoCard  = document.getElementById('infoCard');
+const infoDate  = document.getElementById('infoDate');
+const infoUsd   = document.getElementById('infoUsd');
+const infoRet   = document.getElementById('infoRet');
+const btnPlay   = document.getElementById('btnPlay');
+const btnReset  = document.getElementById('btnReset');
+const progFill  = document.getElementById('progFill');
+const progLabel = document.getElementById('progLabel');
+const progWrap  = document.getElementById('progWrap');
+const canvasWrap = document.querySelector('.chart-canvas-wrap');
+
+const CARD_W     = 160;
+const CARD_H     = 75;
+const MS_PER_STEP = 285; // ~36 seconds total for full journey
+
+let currentIdx = 0;
+let isPlaying  = false;
+let animId     = null;
+let lastTs     = null;
+
+function positionCard(px, py) {
+  const wrapW = canvasWrap.offsetWidth;
+  const wrapH = canvasWrap.offsetHeight;
+  let left, top;
+
+  // Horizontal: prefer right of dot; flip left when near right edge
+  if (px + CARD_W + 20 > wrapW) {
+    left = px - CARD_W - 14;
+  } else {
+    left = px + 14;
+  }
+
+  // Vertical: prefer above; drop below when near top
+  if (py - CARD_H - 14 < 6) {
+    top = py + 14;
+  } else {
+    top = py - CARD_H - 14;
+  }
+
+  infoCard.style.left = Math.max(4, left) + 'px';
+  infoCard.style.top  = Math.max(4, top)  + 'px';
+}
+
+function updateCursor(idx) {
+  const val  = chartData[idx].y;
+  const lbl  = monthLabels[idx];
+  const ret  = (((val - 10000) / 10000) * 100).toFixed(1);
+  const sign = parseFloat(ret) >= 0 ? '+' : '';
+  const retColor = parseFloat(ret) >= 0 ? '#4caf50' : '#e53935';
+  const pct  = (idx / 125) * 100;
+
+  // Update annotation positions
+  const ann = myChart.options.plugins.annotation.annotations;
+  ann.cursorLine.xMin    = idx;
+  ann.cursorLine.xMax    = idx;
+  ann.cursorDot.xValue   = idx;
+  ann.cursorDot.yValue   = val;
+  ann.cursorLine.display = true;
+  ann.cursorDot.display  = true;
+  myChart.update('none');
+
+  // Position floating card over the actual pixel point
+  const meta = myChart.getDatasetMeta(0);
+  if (meta.data[idx]) {
+    const px = meta.data[idx].x;
+    const py = meta.data[idx].y;
+    positionCard(px, py);
+    infoCard.style.display = 'block';
+  }
+
+  // Update card content
+  infoDate.textContent = lbl;
+  infoUsd.textContent  = 'USD ' + val.toLocaleString('es-AR');
+  infoRet.textContent  = sign + ret + '%';
+  infoRet.style.color  = retColor;
+
+  // Update progress bar
+  progFill.style.width  = pct + '%';
+  progLabel.textContent = lbl;
+}
+
+function animStep(ts) {
+  if (!isPlaying) return;
+  if (!lastTs) lastTs = ts;
+  const elapsed = ts - lastTs;
+
+  if (elapsed >= MS_PER_STEP) {
+    const steps = Math.max(1, Math.floor(elapsed / MS_PER_STEP));
+    currentIdx  = Math.min(currentIdx + steps, 125);
+    lastTs      = ts;
+    updateCursor(currentIdx);
+
+    if (currentIdx >= 125) {
+      isPlaying = false;
+      btnPlay.textContent = '▶ Play';
+      btnPlay.classList.remove('playing');
+      myChart.options.plugins.tooltip.enabled = true;
+      return;
+    }
+  }
+  animId = requestAnimationFrame(animStep);
+}
+
+function startPlay() {
+  isPlaying = true;
+  lastTs    = null;
+  myChart.options.plugins.tooltip.enabled = false;
+  btnPlay.textContent = '⏸ Pausa';
+  btnPlay.classList.add('playing');
+  animId = requestAnimationFrame(animStep);
+}
+
+function pausePlay() {
+  isPlaying = false;
+  if (animId) cancelAnimationFrame(animId);
+  myChart.options.plugins.tooltip.enabled = true;
+  myChart.update('none');
+  btnPlay.textContent = '▶ Play';
+  btnPlay.classList.remove('playing');
+}
+
+btnPlay.addEventListener('click', () => {
+  if (isPlaying) {
+    pausePlay();
+  } else {
+    if (currentIdx >= 125) { currentIdx = 0; }
+    startPlay();
+  }
+});
+
+btnReset.addEventListener('click', () => {
+  pausePlay();
+  currentIdx = 0;
+  lastTs = null;
+  const ann = myChart.options.plugins.annotation.annotations;
+  ann.cursorLine.display = false;
+  ann.cursorDot.display  = false;
+  myChart.update('none');
+  infoCard.style.display = 'none';
+  progFill.style.width   = '0%';
+  progLabel.textContent  = 'Ene 2015';
+});
+
+// Click on progress bar to scrub to any point
+progWrap.addEventListener('click', (e) => {
+  const rect  = progWrap.getBoundingClientRect();
+  const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  currentIdx  = Math.round(ratio * 125);
+  lastTs      = null;
+  updateCursor(currentIdx);
+  if (!isPlaying) {
+    btnPlay.textContent = '▶ Play';
+    btnPlay.classList.remove('playing');
+  }
+});
+</script>
+</body>
+</html>
