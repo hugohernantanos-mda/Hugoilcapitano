@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MSFT · Peores Velas Mensuales · MDA Investing</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg:      #07090f;
+    --bg1:     #0d1220;
+    --bg2:     #111828;
+    --bg3:     #161e30;
+    --border:  #192640;
+    --border2: #22304e;
+
+    --text:    #d8e4f2;
+    --muted:   #58708e;
+    --dim:     #2b3d55;
+
+    --blue:    #0078D4;
+    --blue-lt: #4db3ff;
+    --blue-dk: #004e8c;
+
+    --red:     #c83a3a;
+    --red-lt:  #f07878;
+
+    --green:   #38c87a;
+    --yellow:  #f0be28;
+  }
+
+  body {
+    font-family: 'IBM Plex Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 13px;
+  }
+
+  .mono { font-family: 'IBM Plex Mono', monospace; }
+
+  /* ─── HEADER ─────────────────────────────── */
+  header {
+    background: linear-gradient(155deg, #070c18 0%, #0c1626 55%, #080e1a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 30px 44px;
+    display: grid;
+    grid-template-columns: 220px 1fr 240px;
+    align-items: center;
+    gap: 28px;
+  }
+  .hdr-ticker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 52px;
+    font-weight: 700;
+    color: var(--blue);
+    letter-spacing: -3px;
+    line-height: 1;
+  }
+  .hdr-co {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+  .hdr-center { text-align: center; }
+  .hdr-eyebrow {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .hdr-title {
+    font-size: 22px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .hdr-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+  .hdr-right { text-align: right; }
+  .hdr-corr-label {
+    font-size: 9px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .hdr-corr-val {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 30px;
+    font-weight: 700;
+    color: var(--red-lt);
+    margin-top: 4px;
+  }
+  .hdr-meta {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+    line-height: 1.6;
+  }
+
+  /* ─── MAIN ───────────────────────────────── */
+  main { padding: 36px 44px 60px; max-width: 1240px; margin: 0 auto; }
+  section { margin-bottom: 48px; }
+
+  .sec-hdr {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+    margin-bottom: 22px;
+  }
+  .sec-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--blue-lt);
+    border: 1px solid var(--border2);
+    border-radius: 3px;
+    padding: 2px 7px;
+  }
+  .sec-title { font-size: 16px; font-weight: 600; }
+  .sec-meta { margin-left: auto; font-size: 12px; color: var(--blue-lt); font-weight: 500; }
+
+  /* ─── RANKING CARDS ──────────────────────── */
+  .rank-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 12px;
+  }
+  .rank-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 16px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .rank-card.live {
+    border-color: var(--yellow);
+    background: linear-gradient(160deg, #1a1605, var(--bg2) 60%);
+  }
+  .rank-pos {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 15px;
+    color: var(--blue-lt);
+    font-weight: 700;
+  }
+  .rank-period {
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 6px;
+    color: var(--text);
+  }
+  .rank-ret {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--red-lt);
+    margin-top: 8px;
+  }
+  .rank-card.live .rank-ret { color: var(--yellow); }
+  .rank-tag {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: 8.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--yellow);
+    border: 1px solid var(--yellow);
+    border-radius: 10px;
+    padding: 2px 7px;
+  }
+  .rank-bar {
+    position: absolute;
+    bottom: 0; left: 0;
+    height: 3px;
+    background: var(--red);
+  }
+  .rank-card.live .rank-bar { background: var(--yellow); }
+
+  /* ─── TABLE ──────────────────────────────── */
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    text-align: right;
+    font-size: 9.5px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+    padding: 0 10px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  thead th:first-child, thead th:nth-child(2) { text-align: left; }
+  tbody td {
+    text-align: right;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12.5px;
+    padding: 11px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+  tbody td:first-child {
+    text-align: left;
+    font-family: 'IBM Plex Sans', sans-serif;
+    font-weight: 600;
+    color: var(--text);
+  }
+  tbody td:nth-child(2) { text-align: right; }
+  tbody tr:hover { background: var(--bg2); }
+  tbody tr.live-row { background: rgba(240,190,40,0.05); }
+
+  .pos { color: var(--green); }
+  .neg { color: var(--red-lt); }
+  .nd  { color: var(--dim); font-style: italic; font-size: 10.5px; }
+
+  .badge-live {
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--yellow);
+    border: 1px solid var(--yellow);
+    border-radius: 8px;
+    padding: 1px 6px;
+    margin-left: 8px;
+  }
+
+  /* ─── SUMMARY STRIP ──────────────────────── */
+  .sum-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .sum-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 18px 18px 16px;
+  }
+  .sum-h {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+  .sum-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding: 4px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .sum-row:last-child { border-bottom: none; }
+  .sum-row span:first-child { font-size: 10.5px; color: var(--muted); }
+  .sum-row span:last-child {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  /* ─── NOTE BOX ───────────────────────────── */
+  .note {
+    margin-top: 22px;
+    background: var(--bg1);
+    border-left: 3px solid var(--blue);
+    border-radius: 0 4px 4px 0;
+    padding: 14px 18px;
+    font-size: 11.5px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .note b { color: var(--text); }
+
+  /* ─── FOOTER ─────────────────────────────── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 20px 44px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10px;
+    color: var(--dim);
+  }
+  footer .brand { color: var(--muted); font-weight: 600; letter-spacing: 1px; }
+
+  @media (max-width: 900px) {
+    header { grid-template-columns: 1fr; text-align: center; gap: 14px; }
+    .hdr-right, .hdr-center { text-align: center; }
+    .rank-grid { grid-template-columns: repeat(2, 1fr); }
+    .sum-grid { grid-template-columns: repeat(2, 1fr); }
+    table { font-size: 10px; }
+    main { padding: 24px 18px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="hdr-ticker">MSFT</div>
+    <div class="hdr-co">Microsoft Corporation</div>
+  </div>
+  <div class="hdr-center">
+    <div class="hdr-eyebrow">Análisis Histórico · Velas Mensuales</div>
+    <div class="hdr-title">Las 10 Peores Velas Mensuales en la Historia de MSFT</div>
+    <div class="hdr-sub">¿Qué pasó después? Retornos a 3 / 6 / 12 / 24 meses tras cada evento</div>
+  </div>
+  <div class="hdr-right">
+    <div class="hdr-corr-label">Peor mes histórico</div>
+    <div class="hdr-corr-val">−34,35%</div>
+    <div class="hdr-meta">
+      Abril 2000 · Período cubierto: Mar 1986 – Jun 2026<br>
+      484 meses de historia como empresa pública
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- 01 — RANKING -->
+  <section>
+    <div class="sec-hdr">
+      <span class="sec-num">01</span>
+      <span class="sec-title">Ranking · Top 10 Peores Velas Mensuales</span>
+      <span class="sec-meta">Ordenado por magnitud de caída</span>
+    </div>
+
+    <div class="rank-grid">
+      <div class="rank-card"><div class="rank-bar" style="width:100%"></div>
+        <div class="rank-pos">#01</div><div class="rank-period">Abril 2000</div><div class="rank-ret">−34,35%</div></div>
+      <div class="rank-card"><div class="rank-bar" style="width:72%"></div>
+        <div class="rank-pos">#02</div><div class="rank-period">Octubre 1987</div><div class="rank-ret">−24,91%</div></div>
+      <div class="rank-card"><div class="rank-bar" style="width:71%"></div>
+        <div class="rank-pos">#03</div><div class="rank-period">Diciembre 2000</div><div class="rank-ret">−24,40%</div></div>
+      <div class="rank-card live"><div class="rank-bar" style="width:52%"></div>
+        <div class="rank-pos">#04</div><div class="rank-period">Junio 2026</div><div class="rank-ret">−17,15%</div></div>
+      <div class="rank-card"><div class="rank-bar" style="width:48%"></div>
+        <div class="rank-pos">#05</div><div class="rank-period">Noviembre 2000</div><div class="rank-ret">−16,70%</div></div>
+      <div class="rank-card"><div class="rank-bar" style="width:48%"></div>
+        <div class="rank-pos">#06</div><div class="rank-period">Febrero 2008</div><div class="rank-ret">−16,56%</div></div>
+      <div class="rank-card"><div class="rank-bar" style="width:47%"></div>
+        <div class="rank-pos">#07</div><div class="rank-period">Octubre 2008</div><div class="rank-ret">−16,34%</div></div>
+      <div class="rank-card"><div class="rank-bar" style="width:47%"></div>
+        <div class="rank-pos">#08</div><div class="rank-period">Marzo 1989</div><div class="rank-ret">−16,18%</div></div>
+      <div class="rank-card"><div class="rank-bar" style="width:47%"></div>
+        <div class="rank-pos">#09</div><div class="rank-period">Enero 2000</div><div class="rank-ret">−16,17%</div></div>
+      <div class="rank-card"><div class="rank-bar" style="width:46%"></div>
+        <div class="rank-pos">#10</div><div class="rank-period">Agosto 1988</div><div class="rank-ret">−15,97%</div></div>
+    </div>
+  </section>
+
+  <!-- 02 — RETORNOS POSTERIORES -->
+  <section>
+    <div class="sec-hdr">
+      <span class="sec-num">02</span>
+      <span class="sec-title">¿Qué Pasó Después? · Retornos Posteriores al Evento</span>
+      <span class="sec-meta">Medidos desde el cierre del mes evaluado</span>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Período</th>
+          <th>Retorno mensual</th>
+          <th>+3 meses</th>
+          <th>+6 meses</th>
+          <th>+12 meses</th>
+          <th>+24 meses</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Abril 2000</td><td class="neg">−34,35%</td><td class="pos">+0,09%</td><td class="neg">−1,25%</td><td class="neg">−2,87%</td><td class="neg">−25,08%</td></tr>
+        <tr><td>Octubre 1987</td><td class="neg">−24,91%</td><td class="pos">+12,06%</td><td class="pos">+9,55%</td><td class="neg">−1,51%</td><td class="pos">+64,32%</td></tr>
+        <tr><td>Diciembre 2000</td><td class="neg">−24,40%</td><td class="pos">+26,08%</td><td class="pos">+68,30%</td><td class="pos">+52,74%</td><td class="pos">+19,19%</td></tr>
+        <tr class="live-row"><td>Junio 2026</td><td class="neg">−17,15%</td><td class="nd">N/D</td><td class="nd">N/D</td><td class="nd">N/D</td><td class="nd">N/D</td></tr>
+        <tr><td>Noviembre 2000</td><td class="neg">−16,70%</td><td class="pos">+2,83%</td><td class="pos">+20,58%</td><td class="pos">+11,91%</td><td class="pos">+0,53%</td></tr>
+        <tr><td>Febrero 2008</td><td class="neg">−16,56%</td><td class="pos">+4,52%</td><td class="pos">+1,09%</td><td class="neg">−39,53%</td><td class="pos">+9,87%</td></tr>
+        <tr><td>Octubre 2008</td><td class="neg">−16,34%</td><td class="neg">−22,90%</td><td class="neg">−8,03%</td><td class="pos">+27,39%</td><td class="pos">+24,86%</td></tr>
+        <tr><td>Marzo 1989</td><td class="neg">−16,18%</td><td class="pos">+6,27%</td><td class="pos">+37,34%</td><td class="pos">+122,06%</td><td class="pos">+325,56%</td></tr>
+        <tr><td>Enero 2000</td><td class="neg">−16,17%</td><td class="neg">−28,74%</td><td class="neg">−28,67%</td><td class="neg">−37,61%</td><td class="neg">−34,91%</td></tr>
+        <tr><td>Agosto 1988</td><td class="neg">−15,97%</td><td class="neg">−5,50%</td><td class="pos">+19,00%</td><td class="pos">+17,50%</td><td class="pos">+146,00%</td></tr>
+      </tbody>
+    </table>
+
+    <div class="sum-grid">
+      <div class="sum-card">
+        <div class="sum-h">+3 meses</div>
+        <div class="sum-row"><span>Promedio</span><span class="neg">−0,59%</span></div>
+        <div class="sum-row"><span>Mediana</span><span class="pos">+2,83%</span></div>
+        <div class="sum-row"><span>% Positivos</span><span>67%</span></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-h">+6 meses</div>
+        <div class="sum-row"><span>Promedio</span><span class="pos">+13,10%</span></div>
+        <div class="sum-row"><span>Mediana</span><span class="pos">+9,55%</span></div>
+        <div class="sum-row"><span>% Positivos</span><span>67%</span></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-h">+12 meses</div>
+        <div class="sum-row"><span>Promedio</span><span class="pos">+16,68%</span></div>
+        <div class="sum-row"><span>Mediana</span><span class="pos">+11,91%</span></div>
+        <div class="sum-row"><span>% Positivos</span><span>56%</span></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-h">+24 meses</div>
+        <div class="sum-row"><span>Promedio</span><span class="pos">+58,93%</span></div>
+        <div class="sum-row"><span>Mediana</span><span class="pos">+19,19%</span></div>
+        <div class="sum-row"><span>% Positivos</span><span>78%</span></div>
+      </div>
+    </div>
+
+    <div class="note">
+      <b>Nota metodológica:</b> el promedio a 24 meses (+58,93%) está fuertemente influenciado por el caso outlier de marzo 1989 (+325,56%), un período de crecimiento estructural de Microsoft no comparable al contexto actual. La <b>mediana</b> es una medida más representativa del caso típico. Base de cálculo: n=9 (se excluye junio 2026 por no tener historia futura completa).
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span>MDA Investing · Hugo Tanos — Investment Advisor</span>
+  <span>Fuente: datos históricos ajustados por dividendos y splits · Uso educativo, no constituye recomendación de inversión</span>
+</footer>
+
+</body>
+</html>
