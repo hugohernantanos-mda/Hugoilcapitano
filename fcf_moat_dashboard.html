@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>FCF y Ventaja Competitiva | MDA Investing</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root {
+    --bg: #0B0D10;
+    --bg-card: #14171C;
+    --border: #262B33;
+    --gold: #C8A84B;
+    --gold-dim: #8A7538;
+    --green: #4CAF7D;
+    --green-bg: rgba(76,175,125,0.08);
+    --amber: #D9A441;
+    --amber-bg: rgba(217,164,65,0.08);
+    --red: #C15A5A;
+    --red-bg: rgba(193,90,90,0.08);
+    --text: #E8E6E1;
+    --text-dim: #8A8F98;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.5;
+  }
+
+  .wrap { max-width: 980px; margin: 0 auto; padding: 48px 24px 32px; }
+
+  header { margin-bottom: 44px; }
+
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--gold);
+    font-size: 12px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin: 0 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .lede {
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 640px;
+    margin: 0;
+  }
+
+  .lede b { color: var(--text); font-weight: 600; }
+
+  /* Section 01 - the thesis / signature element */
+  .thesis {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    background: var(--bg-card);
+    padding: 22px 26px;
+    margin: 32px 0 48px;
+    border-radius: 4px;
+  }
+
+  .thesis-label {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .thesis p { margin: 0; font-size: 15px; color: var(--text); }
+  .thesis .formula {
+    font-family: 'IBM Plex Mono', monospace;
+    color: var(--gold);
+    font-size: 14px;
+    display: block;
+    margin-top: 10px;
+  }
+
+  section { margin-bottom: 40px; }
+
+  .section-head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+
+  .section-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .section-title {
+    font-size: 19px;
+    font-weight: 600;
+    margin: 0;
+  }
+
+  .section-sub {
+    color: var(--text-dim);
+    font-size: 13.5px;
+    margin: 10px 0 18px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  th {
+    text-align: left;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    font-weight: 500;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  tr:last-child td { border-bottom: none; }
+
+  .ticker {
+    font-family: 'IBM Plex Mono', monospace;
+    font-weight: 600;
+    color: var(--gold);
+  }
+
+  .fcf {
+    font-family: 'IBM Plex Mono', monospace;
+    text-align: right;
+  }
+
+  td.fcf-col { text-align: right; }
+
+  .tag {
+    display: inline-block;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    letter-spacing: 0.03em;
+  }
+
+  .tag-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(76,175,125,0.3); }
+  .tag-amber { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(217,164,65,0.3); }
+  .tag-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(193,90,90,0.3); }
+
+  .motivo { color: var(--text-dim); font-size: 12.5px; }
+
+  .note {
+    font-size: 12.5px;
+    color: var(--text-dim);
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+  }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-dim);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  footer .brand { color: var(--gold); }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 32px 16px 24px; }
+    h1 { font-size: 24px; }
+    table { font-size: 12.5px; }
+    th, td { padding: 7px 6px; }
+    .motivo { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Comunidad Platino · Análisis Fundamental</div>
+    <h1>FCF: el termómetro del moat</h1>
+    <p class="lede">El <b>Free Cash Flow (FCF = Flujo de Caja Libre)</b> es una de las métricas más citadas para detectar ventaja competitiva. Pero no en todos los sectores mide lo mismo — en bancos y aseguradoras, el mismo número puede estar mintiendo.</p>
+  </header>
+
+  <div class="thesis">
+    <div class="thesis-label">La idea central</div>
+    <p>El FCF solo es un indicador confiable de moat en negocios donde el estado de flujo de efectivo refleja la operación real de la empresa. En bancos, aseguradoras y originadores de crédito, los préstamos y las reservas técnicas distorsionan el número.</p>
+    <span class="formula">FCF = Flujo de Caja Operativo (CFO) − CapEx (Inversión en Bienes de Capital)</span>
+  </div>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">01</span>
+      <h2 class="section-title">Sector Financiero — el filtro necesario</h2>
+    </div>
+    <p class="section-sub">De 20 empresas del sector, solo 7 tienen un FCF directamente comparable. El resto necesita otras métricas: ROE, NIM, ratio de eficiencia o combined ratio.</p>
+
+    <table>
+      <thead>
+        <tr><th>Ticker</th><th>Empresa</th><th>Categoría</th><th>Motivo</th><th style="text-align:right">FCF ttm</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="ticker">V</td><td>Visa Inc</td><td><span class="tag tag-green">LIMPIO</span></td><td class="motivo">Procesador de pagos, cobra por transacción</td><td class="fcf">21,19B</td></tr>
+        <tr><td class="ticker">MA</td><td>Mastercard Inc</td><td><span class="tag tag-green">LIMPIO</span></td><td class="motivo">Procesador de pagos, cobra por transacción</td><td class="fcf">17,72B</td></tr>
+        <tr><td class="ticker">AXP</td><td>American Express Co</td><td><span class="tag tag-green">LIMPIO</span></td><td class="motivo">Más cercano a procesador que a banco</td><td class="fcf">14,32B</td></tr>
+        <tr><td class="ticker">SPGI</td><td>S&amp;P Global Inc</td><td><span class="tag tag-green">LIMPIO</span></td><td class="motivo">Negocio de licencias y calificaciones</td><td class="fcf">5,56B</td></tr>
+        <tr><td class="ticker">PYPL</td><td>PayPal Holdings Inc</td><td><span class="tag tag-green">LIMPIO</span></td><td class="motivo">Procesador de pagos</td><td class="fcf">5,51B</td></tr>
+        <tr><td class="ticker">MRSH</td><td>Marsh &amp; McLennan Cos Inc</td><td><span class="tag tag-green">LIMPIO</span></td><td class="motivo">Corretaje de seguros, cobra comisión, no asume riesgo</td><td class="fcf">4,93B</td></tr>
+        <tr><td class="ticker">BX</td><td>Blackstone Inc.</td><td><span class="tag tag-green">LIMPIO</span></td><td class="motivo">Gestión de activos, cobra fees</td><td class="fcf">3,35B</td></tr>
+        <tr><td class="ticker">SCHW</td><td>Charles Schwab Corp</td><td><span class="tag tag-amber">CUIDADO</span></td><td class="motivo">Broker con balance bancario asociado</td><td class="fcf">9,72B</td></tr>
+        <tr><td class="ticker">BK</td><td>Bank of New York Mellon Corp</td><td><span class="tag tag-amber">CUIDADO</span></td><td class="motivo">Custodia/asset servicing, pero con balance bancario</td><td class="fcf">1,46B</td></tr>
+        <tr><td class="ticker">JPM</td><td>JPMorgan Chase &amp; Co</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Banco comercial</td><td class="fcf">140,95B</td></tr>
+        <tr><td class="ticker">BAC</td><td>Bank of America Corp</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Banco comercial</td><td class="fcf">56,57B</td></tr>
+        <tr><td class="ticker">BRK-B</td><td>Berkshire Hathaway Cl B</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Conglomerado con float de seguros</td><td class="fcf">23,87B</td></tr>
+        <tr><td class="ticker">TRV</td><td>Travelers Companies Inc</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Aseguradora, reservas técnicas distorsionan</td><td class="fcf">11,44B</td></tr>
+        <tr><td class="ticker">USB</td><td>US Bancorp</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Banco comercial</td><td class="fcf">9,60B</td></tr>
+        <tr><td class="ticker">AIG</td><td>American International Group</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Aseguradora</td><td class="fcf">3,53B</td></tr>
+        <tr><td class="ticker">WFC</td><td>Wells Fargo &amp; Co</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Banco comercial</td><td class="fcf">85,51B</td></tr>
+        <tr><td class="ticker">UPST</td><td>Upstart Holdings Inc</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Originación de crédito</td><td class="fcf">-287,M</td></tr>
+        <tr><td class="ticker">C</td><td>Citigroup Inc</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Banco comercial</td><td class="fcf">-37,22B</td></tr>
+        <tr><td class="ticker">GS</td><td>Goldman Sachs Group Inc</td><td><span class="tag tag-red">DESCARTAR</span></td><td class="motivo">Banco de inversión</td><td class="fcf">-41,92B</td></tr>
+      </tbody>
+    </table>
+    <p class="note">Los préstamos otorgados y los depósitos recibidos se registran en el estado de flujos como actividad operativa/de inversión — en un banco esto es el negocio en sí, no CapEx ni gasto real.</p>
+  </section>
+
+  <section>
+    <div class="section-head">
+      <span class="section-num">02</span>
+      <h2 class="section-title">Top 20 general — ranking limpio por FCF ttm</h2>
+    </div>
+    <p class="section-sub">Sin bancos, aseguradoras ni financieras de crédito: las 20 comparan en igualdad de condiciones.</p>
+
+    <table>
+      <thead>
+        <tr><th style="width:24px">#</th><th>Ticker</th><th>Empresa</th><th>Sector</th><th style="text-align:right">FCF ttm</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td class="ticker">AAPL</td><td>Apple Inc</td><td class="motivo">Technology</td><td class="fcf">129,17B</td></tr>
+        <tr><td>2</td><td class="ticker">NVDA</td><td>NVIDIA Corp</td><td class="motivo">Technology</td><td class="fcf">119,08B</td></tr>
+        <tr><td>3</td><td class="ticker">MSFT</td><td>Microsoft Corp</td><td class="motivo">Technology</td><td class="fcf">72,92B</td></tr>
+        <tr><td>4</td><td class="ticker">GOOGL</td><td>Alphabet Inc Class A</td><td class="motivo">Communication Services</td><td class="fcf">64,43B</td></tr>
+        <tr><td>5</td><td class="ticker">META</td><td>Meta Platforms Inc</td><td class="motivo">Communication Services</td><td class="fcf">48,25B</td></tr>
+        <tr><td>6</td><td class="ticker">AVGO</td><td>Broadcom Inc</td><td class="motivo">Technology</td><td class="fcf">32,76B</td></tr>
+        <tr><td>7</td><td class="ticker">MU</td><td>Micron Technology Inc</td><td class="motivo">Technology</td><td class="fcf">26,17B</td></tr>
+        <tr><td>8</td><td class="ticker">V</td><td>Visa Inc</td><td class="motivo">Financial Services</td><td class="fcf">21,19B</td></tr>
+        <tr><td>9</td><td class="ticker">ABBV</td><td>AbbVie Inc</td><td class="motivo">Healthcare</td><td class="fcf">20,87B</td></tr>
+        <tr><td>10</td><td class="ticker">VZ</td><td>Verizon Communications Inc</td><td class="motivo">Communication Services</td><td class="fcf">20,05B</td></tr>
+        <tr><td>11</td><td class="ticker">XOM</td><td>Exxon Mobil Corp</td><td class="motivo">Energy</td><td class="fcf">18,79B</td></tr>
+        <tr><td>12</td><td class="ticker">JNJ</td><td>Johnson &amp; Johnson</td><td class="motivo">Healthcare</td><td class="fcf">17,80B</td></tr>
+        <tr><td>13</td><td class="ticker">MA</td><td>Mastercard Inc</td><td class="motivo">Financial Services</td><td class="fcf">17,72B</td></tr>
+        <tr><td>14</td><td class="ticker">T</td><td>AT&amp;T Inc</td><td class="motivo">Communication Services</td><td class="fcf">17,35B</td></tr>
+        <tr><td>15</td><td class="ticker">TMUS</td><td>T-Mobile US Inc</td><td class="motivo">Communication Services</td><td class="fcf">15,63B</td></tr>
+        <tr><td>16</td><td class="ticker">COP</td><td>ConocoPhillips</td><td class="motivo">Energy</td><td class="fcf">15,38B</td></tr>
+        <tr><td>17</td><td class="ticker">PG</td><td>Procter &amp; Gamble Co</td><td class="motivo">Consumer Defensive</td><td class="fcf">15,03B</td></tr>
+        <tr><td>18</td><td class="ticker">CRM</td><td>Salesforce Inc</td><td class="motivo">Technology</td><td class="fcf">14,66B</td></tr>
+        <tr><td>19</td><td class="ticker">AXP</td><td>American Express Co</td><td class="motivo">Financial Services</td><td class="fcf">14,32B</td></tr>
+        <tr><td>20</td><td class="ticker">HD</td><td>Home Depot Inc</td><td class="motivo">Consumer Cyclical</td><td class="fcf">14,32B</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <footer>
+    <span class="brand">MDA Investing · Comunidad Platino</span>
+    <span>Este contenido es educativo y no constituye recomendación de inversión. Datos ttm al 05/07/2026.</span>
+  </footer>
+
+</div>
+</body>
+</html>
