@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NVIDIA — Estado de Flujo de Efectivo Q1 FY2027</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --nv: #76b900;
+    --nv-dim: #4a7500;
+    --bg: #ffffff;
+    --bg2: #f7f7f5;
+    --bg3: #efefec;
+    --text: #1a1a18;
+    --text2: #5f5e5a;
+    --text3: #9c9a92;
+    --border: rgba(0,0,0,.1);
+    --border2: rgba(0,0,0,.06);
+    --nv-bg: rgba(118,185,0,.08);
+    --nv-bg2: rgba(118,185,0,.14);
+    --nv-border: rgba(118,185,0,.35);
+    --red-bg: rgba(226,75,74,.10);
+    --radius: 8px;
+    --shadow: 0 2px 16px rgba(0,0,0,.07), 0 1px 3px rgba(0,0,0,.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1c1a;
+      --bg2: #252523;
+      --bg3: #2e2e2b;
+      --text: #e8e6dc;
+      --text2: #9c9a92;
+      --text3: #6b6964;
+      --border: rgba(255,255,255,.10);
+      --border2: rgba(255,255,255,.05);
+      --nv-bg: rgba(118,185,0,.10);
+      --nv-bg2: rgba(118,185,0,.18);
+      --nv-border: rgba(118,185,0,.40);
+      --red-bg: rgba(226,75,74,.12);
+      --nv-dim: #8fd400;
+      --shadow: 0 2px 20px rgba(0,0,0,.3);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg3);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 24px 16px 48px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .page-header {
+    width: 100%;
+    max-width: 680px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .nv-logo {
+    width: 44px;
+    height: 44px;
+    background: var(--nv);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .nv-logo svg { width: 26px; height: 26px; }
+
+  .page-title h1 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.2;
+  }
+
+  .page-title p {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 2px;
+  }
+
+  .card {
+    width: 100%;
+    max-width: 680px;
+    background: var(--bg);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    border: 0.5px solid var(--border);
+  }
+
+  .card-header {
+    display: grid;
+    grid-template-columns: 1fr 116px 116px;
+    gap: 4px;
+    padding: 14px 18px 12px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+  }
+
+  .card-header span {
+    font-size: 11px;
+    color: var(--text2);
+    text-align: right;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .card-header span:first-child { text-align: left; }
+
+  .rows-wrap { padding: 6px 0 10px; }
+
+  .row {
+    display: grid;
+    grid-template-columns: 1fr 116px 116px;
+    gap: 4px;
+    padding: 6px 18px;
+    border-radius: 6px;
+    margin: 0 6px;
+    transition: background .15s;
+    position: relative;
+  }
+
+  .row.indent { padding-left: 32px; }
+
+  .row .label {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: var(--text);
+  }
+
+  .row .val {
+    text-align: right;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+
+  .row .val.neg { color: var(--text2); }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--nv);
+    opacity: 0;
+    flex-shrink: 0;
+    transition: opacity .2s;
+  }
+
+  .row.subtotal {
+    border-top: 0.5px solid var(--border);
+    margin-top: 4px;
+    padding-top: 8px;
+  }
+
+  .row.total {
+    font-weight: 500;
+  }
+
+  .row.grand-total {
+    border-top: 1.5px solid var(--border);
+    margin-top: 6px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  .row.grand-total .val { color: var(--nv); font-weight: 600; }
+
+  .row.clickable { cursor: pointer; }
+  .row.clickable:hover { background: var(--bg2); }
+
+  .row.active {
+    background: var(--nv-bg2) !important;
+  }
+
+  .row.active .dot { opacity: 1; }
+
+  .row.highlighted {
+    background: var(--nv-bg);
+  }
+
+  .row.highlighted .label,
+  .row.highlighted .val { color: var(--nv-dim) !important; }
+
+  .section-label {
+    padding: 10px 18px 3px;
+    font-size: 10px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    font-weight: 600;
+  }
+
+  .separator { height: 1px; background: var(--border2); margin: 4px 12px 4px; }
+
+  .formula-box {
+    margin: 2px 8px 8px;
+    border: 1px solid var(--nv-border);
+    border-radius: var(--radius);
+    background: var(--nv-bg);
+    padding: 12px 16px;
+    display: none;
+    animation: fadeIn .2s ease;
+  }
+
+  @keyframes fadeIn { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+  .formula-box.show { display: block; }
+
+  .formula-title {
+    font-size: 11px;
+    color: var(--text2);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .formula-eq {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .term {
+    background: rgba(118,185,0,.15);
+    color: var(--text);
+    border-radius: 5px;
+    padding: 4px 9px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .term.neg {
+    background: var(--red-bg);
+    color: var(--text);
+  }
+
+  .op {
+    color: var(--text2);
+    font-size: 15px;
+    font-weight: 400;
+  }
+
+  .result {
+    background: var(--nv);
+    color: #fff;
+    border-radius: 5px;
+    padding: 4px 10px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .hint-bar {
+    width: 100%;
+    max-width: 680px;
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .hint-bar svg { width: 14px; height: 14px; }
+
+  .footer {
+    width: 100%;
+    max-width: 680px;
+    margin-top: 24px;
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .footer strong { color: var(--nv); }
+
+  @media (max-width: 480px) {
+    body { padding: 12px 8px 32px; }
+    .card-header, .row {
+      grid-template-columns: 1fr 90px 90px;
+    }
+    .row.indent { padding-left: 22px; }
+    .row .label, .row .val, .card-header span { font-size: 12px; }
+    .page-title h1 { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="nv-logo">
+    <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M13.5 9v18L27 18 13.5 9Z" fill="white"/>
+      <path d="M9 12v12l4.5-3V15L9 12Z" fill="white" opacity=".6"/>
+    </svg>
+  </div>
+  <div class="page-title">
+    <h1>NVIDIA Corporation</h1>
+    <p>Estados Consolidados de Flujo de Efectivo · Tres meses finalizados · En millones USD (no auditado)</p>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <span>Concepto</span>
+    <span>Q1 FY2027<br>26 abr 2026</span>
+    <span>Q1 FY2026<br>27 abr 2025</span>
+  </div>
+
+  <div class="rows-wrap">
+
+    <div class="section-label">Actividades operativas</div>
+
+    <div class="row" data-id="ni">
+      <div class="label"><div class="dot"></div>Utilidad neta</div>
+      <div class="val">$ 58,321</div>
+      <div class="val">$ 18,775</div>
+    </div>
+
+    <div class="separator"></div>
+    <div class="section-label">Ajustes para conciliar la utilidad neta con el efectivo</div>
+
+    <div class="row indent" data-id="sbc">
+      <div class="label"><div class="dot"></div>Gastos por compensación basada en acciones</div>
+      <div class="val">1,928</div>
+      <div class="val">1,474</div>
+    </div>
+
+    <div class="row indent" data-id="dtax">
+      <div class="label"><div class="dot"></div>Impuestos diferidos</div>
+      <div class="val">1,584</div>
+      <div class="val neg">(2,177)</div>
+    </div>
+
+    <div class="row indent" data-id="da">
+      <div class="label"><div class="dot"></div>Depreciación y amortización</div>
+      <div class="val">997</div>
+      <div class="val">611</div>
+    </div>
+
+    <div class="row indent" data-id="gainsec">
+      <div class="label"><div class="dot"></div>(Ganancias) pérdidas de valores de capital, neto</div>
+      <div class="val neg">(15,936)</div>
+      <div class="val">175</div>
+    </div>
+
+    <div class="row indent" data-id="other1">
+      <div class="label"><div class="dot"></div>Otros</div>
+      <div class="val neg">(94)</div>
+      <div class="val neg">(98)</div>
+    </div>
+
+    <div class="row subtotal total clickable" data-id="adj" data-formula="adj">
+      <div class="label"><div class="dot"></div><strong>Total ajustes no monetarios</strong></div>
+      <div class="val neg"><strong>(11,521)</strong></div>
+      <div class="val neg"><strong>(15)</strong></div>
+    </div>
+    <div id="formula-adj" class="formula-box">
+      <div class="formula-title">¿Cómo se calculan los ajustes no monetarios? (Q1 FY2027)</div>
+      <div class="formula-eq">
+        <span class="term">SBC $1,928</span>
+        <span class="op">+</span>
+        <span class="term">Imp. diferidos $1,584</span>
+        <span class="op">+</span>
+        <span class="term">D&A $997</span>
+        <span class="op">−</span>
+        <span class="term neg">Ganancias equity $15,936</span>
+        <span class="op">−</span>
+        <span class="term neg">Otros $94</span>
+        <span class="op">=</span>
+        <span class="result">Total ajustes ($11,521)</span>
+      </div>
+    </div>
+
+    <div class="separator"></div>
+    <div class="section-label">Cambios en activos y pasivos operativos, netos de adquisiciones</div>
+
+    <div class="row indent" data-id="ar">
+      <div class="label"><div class="dot"></div>Cuentas por cobrar</div>
+      <div class="val neg">(2,243)</div>
+      <div class="val">933</div>
+    </div>
+
+    <div class="row indent" data-id="inv">
+      <div class="label"><div class="dot"></div>Inventarios</div>
+      <div class="val neg">(4,420)</div>
+      <div class="val neg">(1,258)</div>
+    </div>
+
+    <div class="row indent" data-id="prepaid">
+      <div class="label"><div class="dot"></div>Gastos prepagos y otros activos</div>
+      <div class="val neg">(983)</div>
+      <div class="val">560</div>
+    </div>
+
+    <div class="row indent" data-id="ap">
+      <div class="label"><div class="dot"></div>Cuentas por pagar</div>
+      <div class="val">2,210</div>
+      <div class="val">941</div>
+    </div>
+
+    <div class="row indent" data-id="accrued">
+      <div class="label"><div class="dot"></div>Pasivos acumulados y otros pasivos corrientes</div>
+      <div class="val">7,763</div>
+      <div class="val">7,128</div>
+    </div>
+
+    <div class="row indent" data-id="oltl">
+      <div class="label"><div class="dot"></div>Otros pasivos de largo plazo</div>
+      <div class="val">1,217</div>
+      <div class="val">350</div>
+    </div>
+
+    <div class="row subtotal total clickable" data-id="wc" data-formula="wc">
+      <div class="label"><div class="dot"></div><strong>Total cambios en capital de trabajo</strong></div>
+      <div class="val"><strong>3,544</strong></div>
+      <div class="val"><strong>8,654</strong></div>
+    </div>
+    <div id="formula-wc" class="formula-box">
+      <div class="formula-title">¿Cómo se calculan los cambios en capital de trabajo? (Q1 FY2027)</div>
+      <div class="formula-eq">
+        <span class="term neg">Ctas. x cobrar ($2,243)</span>
+        <span class="op">−</span>
+        <span class="term neg">Inventarios $4,420</span>
+        <span class="op">−</span>
+        <span class="term neg">Prepagos $983</span>
+        <span class="op">+</span>
+        <span class="term">Ctas. x pagar $2,210</span>
+        <span class="op">+</span>
+        <span class="term">Pasivos acum. $7,763</span>
+        <span class="op">+</span>
+        <span class="term">Otros LP $1,217</span>
+        <span class="op">=</span>
+        <span class="result">Total $3,544</span>
+      </div>
+    </div>
+
+    <div class="row grand-total clickable" data-id="cfo" data-formula="cfo" style="margin-top:4px;">
+      <div class="label"><div class="dot"></div><strong>EFECTIVO NETO PROVISTO POR ACTIVIDADES OPERATIVAS</strong></div>
+      <div class="val"><strong>50,344</strong></div>
+      <div class="val"><strong>27,414</strong></div>
+    </div>
+    <div id="formula-cfo" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula el efectivo operativo? (Q1 FY2027)</div>
+      <div class="formula-eq">
+        <span class="term">Util. neta $58,321</span>
+        <span class="op">−</span>
+        <span class="term neg">Ajustes no monetarios $11,521</span>
+        <span class="op">+</span>
+        <span class="term">Camb. cap. trabajo $3,544</span>
+        <span class="op">=</span>
+        <span class="result">Efectivo operativo $50,344</span>
+      </div>
+    </div>
+
+    <div class="separator" style="margin-top:10px;"></div>
+    <div class="section-label">Actividades de inversión</div>
+
+    <div class="row indent" data-id="p_mat">
+      <div class="label"><div class="dot"></div>Cobros por vencimiento de valores de deuda negociables</div>
+      <div class="val">1,946</div>
+      <div class="val">3,122</div>
+    </div>
+
+    <div class="row indent" data-id="p_nomkt">
+      <div class="label"><div class="dot"></div>Cobros por venta de valores no negociables</div>
+      <div class="val">26</div>
+      <div class="val">—</div>
+    </div>
+
+    <div class="row indent" data-id="p_mkt">
+      <div class="label"><div class="dot"></div>Cobros por venta de valores de deuda negociables</div>
+      <div class="val">25</div>
+      <div class="val">467</div>
+    </div>
+
+    <div class="row indent" data-id="pur_nomkt">
+      <div class="label"><div class="dot"></div>Compras de valores no negociables</div>
+      <div class="val neg">(18,582)</div>
+      <div class="val neg">(649)</div>
+    </div>
+
+    <div class="row indent" data-id="pur_mkt">
+      <div class="label"><div class="dot"></div>Compras de valores de deuda y capital negociables</div>
+      <div class="val neg">(8,000)</div>
+      <div class="val neg">(6,546)</div>
+    </div>
+
+    <div class="row indent" data-id="capex">
+      <div class="label"><div class="dot"></div>Compras de propiedades, equipos e intangibles</div>
+      <div class="val neg">(1,757)</div>
+      <div class="val neg">(1,227)</div>
+    </div>
+
+    <div class="row indent" data-id="acq">
+      <div class="label"><div class="dot"></div>Adquisiciones, netas de efectivo adquirido</div>
+      <div class="val neg">(87)</div>
+      <div class="val neg">(383)</div>
+    </div>
+
+    <div class="row grand-total clickable" data-id="cfi" data-formula="cfi">
+      <div class="label"><div class="dot"></div><strong>EFECTIVO NETO USADO EN ACTIVIDADES DE INVERSIÓN</strong></div>
+      <div class="val neg"><strong>(26,429)</strong></div>
+      <div class="val neg"><strong>(5,216)</strong></div>
+    </div>
+    <div id="formula-cfi" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula el efectivo usado en inversión? (Q1 FY2027)</div>
+      <div class="formula-eq">
+        <span class="term">Venc. deuda $1,946</span>
+        <span class="op">+</span>
+        <span class="term">Venta no negoc. $26</span>
+        <span class="op">+</span>
+        <span class="term">Venta deuda $25</span>
+        <span class="op">−</span>
+        <span class="term neg">Compras no negoc. $18,582</span>
+        <span class="op">−</span>
+        <span class="term neg">Compras deuda/cap. $8,000</span>
+        <span class="op">−</span>
+        <span class="term neg">CapEx $1,757</span>
+        <span class="op">−</span>
+        <span class="term neg">Adquisiciones $87</span>
+        <span class="op">=</span>
+        <span class="result">($26,429)</span>
+      </div>
+    </div>
+
+    <div class="separator" style="margin-top:10px;"></div>
+    <div class="section-label">Actividades de financiamiento</div>
+
+    <div class="row indent" data-id="esp">
+      <div class="label"><div class="dot"></div>Cobros por planes de acciones para empleados</div>
+      <div class="val">515</div>
+      <div class="val">370</div>
+    </div>
+
+    <div class="row indent" data-id="buyback">
+      <div class="label"><div class="dot"></div>Pagos por recompra de acciones comunes</div>
+      <div class="val neg">(19,312)</div>
+      <div class="val neg">(14,095)</div>
+    </div>
+
+    <div class="row indent" data-id="esptax">
+      <div class="label"><div class="dot"></div>Pagos por impuestos de planes de acciones</div>
+      <div class="val neg">(2,129)</div>
+      <div class="val neg">(1,532)</div>
+    </div>
+
+    <div class="row indent" data-id="div">
+      <div class="label"><div class="dot"></div>Dividendos pagados</div>
+      <div class="val neg">(243)</div>
+      <div class="val neg">(244)</div>
+    </div>
+
+    <div class="row indent" data-id="ppecap">
+      <div class="label"><div class="dot"></div>Pagos de capital de propiedades, equipos e intangibles</div>
+      <div class="val neg">(33)</div>
+      <div class="val neg">(52)</div>
+    </div>
+
+    <div class="row indent" data-id="other2">
+      <div class="label"><div class="dot"></div>Otros</div>
+      <div class="val neg">(81)</div>
+      <div class="val">—</div>
+    </div>
+
+    <div class="row grand-total clickable" data-id="cff" data-formula="cff">
+      <div class="label"><div class="dot"></div><strong>EFECTIVO NETO USADO EN ACTIVIDADES DE FINANCIAMIENTO</strong></div>
+      <div class="val neg"><strong>(21,283)</strong></div>
+      <div class="val neg"><strong>(15,553)</strong></div>
+    </div>
+    <div id="formula-cff" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula el efectivo usado en financiamiento? (Q1 FY2027)</div>
+      <div class="formula-eq">
+        <span class="term">Planes acciones $515</span>
+        <span class="op">−</span>
+        <span class="term neg">Recompras $19,312</span>
+        <span class="op">−</span>
+        <span class="term neg">Imp. planes $2,129</span>
+        <span class="op">−</span>
+        <span class="term neg">Dividendos $243</span>
+        <span class="op">−</span>
+        <span class="term neg">Pagos capital $33</span>
+        <span class="op">−</span>
+        <span class="term neg">Otros $81</span>
+        <span class="op">=</span>
+        <span class="result">($21,283)</span>
+      </div>
+    </div>
+
+    <div class="separator" style="margin-top:10px;"></div>
+    <div class="section-label">Conciliación de efectivo</div>
+
+    <div class="row total clickable" data-id="chg" data-formula="chg" style="margin-top:4px;">
+      <div class="label"><div class="dot"></div><strong>Cambio en efectivo y equivalentes</strong></div>
+      <div class="val"><strong>2,632</strong></div>
+      <div class="val"><strong>6,645</strong></div>
+    </div>
+    <div id="formula-chg" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula el cambio en efectivo? (Q1 FY2027)</div>
+      <div class="formula-eq">
+        <span class="term">Operativas $50,344</span>
+        <span class="op">−</span>
+        <span class="term neg">Inversión $26,429</span>
+        <span class="op">−</span>
+        <span class="term neg">Financiamiento $21,283</span>
+        <span class="op">=</span>
+        <span class="result">Cambio en efectivo $2,632</span>
+      </div>
+    </div>
+
+    <div class="row indent" data-id="begin">
+      <div class="label"><div class="dot"></div>Efectivo y equivalentes al inicio del período</div>
+      <div class="val">10,605</div>
+      <div class="val">8,589</div>
+    </div>
+
+    <div class="row grand-total clickable" data-id="endcash" data-formula="endcash">
+      <div class="label"><div class="dot"></div><strong>EFECTIVO Y EQUIVALENTES AL FINAL DEL PERÍODO</strong></div>
+      <div class="val"><strong>$ 13,237</strong></div>
+      <div class="val"><strong>$ 15,234</strong></div>
+    </div>
+    <div id="formula-endcash" class="formula-box">
+      <div class="formula-title">¿Cómo se calcula el efectivo final? (Q1 FY2027)</div>
+      <div class="formula-eq">
+        <span class="term">Cambio en efectivo $2,632</span>
+        <span class="op">+</span>
+        <span class="term">Efectivo inicial $10,605</span>
+        <span class="op">=</span>
+        <span class="result">Efectivo final $13,237</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="hint-bar">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+  </svg>
+  Tocá las filas en negrita para ver cómo se calcula cada total
+</div>
+
+<div class="footer">
+  Fuente: Reporte trimestral NVIDIA Corporation, Q1 FY2027 (26 de abril de 2026). No auditado.<br>
+  Elaborado por <strong>MDA Investing</strong> · Hugo Tanos Investment Advisor · Con fines educativos.
+</div>
+
+<script>
+const formulas = {
+  adj:     { rows: ['sbc','dtax','da','gainsec','other1'] },
+  wc:      { rows: ['ar','inv','prepaid','ap','accrued','oltl'] },
+  cfo:     { rows: ['ni','adj','wc'] },
+  cfi:     { rows: ['p_mat','p_nomkt','p_mkt','pur_nomkt','pur_mkt','capex','acq'] },
+  cff:     { rows: ['esp','buyback','esptax','div','ppecap','other2'] },
+  chg:     { rows: ['cfo','cfi','cff'] },
+  endcash: { rows: ['chg','begin'] }
+};
+
+let active = null;
+
+function clearAll() {
+  document.querySelectorAll('.row').forEach(r => r.classList.remove('active', 'highlighted'));
+  document.querySelectorAll('.formula-box').forEach(b => b.classList.remove('show'));
+}
+
+document.querySelectorAll('.row.clickable').forEach(row => {
+  row.addEventListener('click', function() {
+    const fid = this.dataset.formula;
+    if (!fid) return;
+    if (active === fid) { clearAll(); active = null; return; }
+    clearAll();
+    active = fid;
+    this.classList.add('active');
+    formulas[fid].rows.forEach(rid => {
+      const r = document.querySelector(`[data-id="${rid}"]`);
+      if (r) r.classList.add('highlighted');
+    });
+    const box = document.getElementById('formula-' + fid);
+    if (box) { box.classList.add('show'); box.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+  });
+});
+</script>
+
+</body>
+</html>
