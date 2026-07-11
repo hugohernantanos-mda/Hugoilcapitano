@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PEP · Ventanas Móviles de Retorno — MDA Investing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0D10;
+    --bg-raised:#14171C;
+    --card:#1A1D22;
+    --card-border:#262A31;
+    --gold:#C8A84B;
+    --gold-dim:#8A7434;
+    --white:#F2F2F2;
+    --muted:#9AA0A6;
+    --muted-dim:#5C6167;
+    --red:#D9584F;
+    --amber:#E3A857;
+    --green:#3FA872;
+    --c-5y: var(--red);
+    --c-10y: var(--amber);
+    --c-15y: var(--gold);
+    --c-20y: var(--green);
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--white);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  a{color:var(--gold);}
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  .wrap{max-width:1180px; margin:0 auto; padding:0 32px;}
+  @media (max-width:640px){ .wrap{padding:0 20px;} }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    padding:110px 0 70px;
+    position:relative;
+    overflow:hidden;
+    border-bottom:1px solid var(--card-border);
+  }
+  .hero::before{
+    content:"";
+    position:absolute; inset:0;
+    background:
+      radial-gradient(ellipse 700px 420px at 12% 100%, rgba(200,168,75,0.14), transparent 70%),
+      radial-gradient(ellipse 600px 400px at 92% 0%, rgba(63,168,114,0.08), transparent 70%);
+    pointer-events:none;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.14em;
+    color:var(--gold);
+    font-weight:600;
+    text-transform:uppercase;
+    margin:0 0 22px;
+  }
+  h1{
+    font-size:clamp(34px, 5vw, 58px);
+    line-height:1.08;
+    margin:0 0 24px;
+    font-weight:600;
+    max-width:16ch;
+    letter-spacing:-0.01em;
+  }
+  h1 em{ color:var(--gold); font-style:normal; }
+  .hero p.lede{
+    font-size:19px;
+    color:var(--muted);
+    max-width:640px;
+    margin:0 0 48px;
+  }
+  .hero p.lede strong{ color:var(--white); font-weight:600; }
+
+  .scoreboard{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--card-border);
+    border:1px solid var(--card-border);
+    border-radius:14px;
+    overflow:hidden;
+    position:relative;
+  }
+  .score-cell{
+    background:var(--bg-raised);
+    padding:26px 22px;
+  }
+  .score-cell .h{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+    margin-bottom:10px;
+  }
+  .score-cell .v{
+    font-size:clamp(26px, 3vw, 34px);
+    font-weight:600;
+    font-family:'IBM Plex Mono', monospace;
+  }
+  .score-cell .v.neg{ color:var(--red); }
+  .score-cell .v.pos{ color:var(--green); }
+  .score-cell .s{ font-size:13px; color:var(--muted-dim); margin-top:6px; }
+  @media (max-width:760px){
+    .scoreboard{ grid-template-columns:repeat(2,1fr); }
+  }
+
+  /* ---------- SECTION SHELL ---------- */
+  section{ padding:88px 0; border-bottom:1px solid var(--card-border); }
+  section:last-of-type{ border-bottom:none; }
+  .section-head{ margin-bottom:44px; max-width:720px; }
+  .section-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--gold-dim);
+    letter-spacing:0.1em;
+    margin-bottom:14px;
+  }
+  h2{
+    font-size:clamp(26px,3.2vw,36px);
+    font-weight:600;
+    margin:0 0 16px;
+    letter-spacing:-0.01em;
+  }
+  .section-head p{ color:var(--muted); font-size:16.5px; max-width:640px; }
+
+  /* ---------- CONVERGENCE CHART ---------- */
+  .chart-card{
+    background:var(--bg-raised);
+    border:1px solid var(--card-border);
+    border-radius:16px;
+    padding:36px 36px 24px;
+  }
+  @media (max-width:640px){ .chart-card{ padding:22px 16px 18px; } }
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap:10px;
+    margin-bottom:8px;
+  }
+  .legend button{
+    display:flex; align-items:center; gap:9px;
+    background:transparent;
+    border:1px solid var(--card-border);
+    color:var(--white);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    padding:8px 14px;
+    border-radius:100px;
+    cursor:pointer;
+    transition:opacity .15s ease, border-color .15s ease;
+  }
+  .legend button:hover{ border-color:var(--muted); }
+  .legend button:focus-visible{ outline:2px solid var(--gold); outline-offset:2px; }
+  .legend button.off{ opacity:0.32; }
+  .legend .dot{ width:10px; height:10px; border-radius:50%; flex:none; }
+  .legend .n{ color:var(--muted-dim); }
+
+  .chart-svg-wrap{ width:100%; margin-top:18px; }
+  #convergence-chart{ width:100%; height:auto; display:block; overflow:visible; }
+  .axis-label{ font-family:'IBM Plex Mono', monospace; font-size:11px; fill:var(--muted-dim); }
+  .grid-line{ stroke:var(--card-border); stroke-width:1; }
+  .zero-line{ stroke:var(--muted-dim); stroke-width:1.25; stroke-dasharray:3 4; }
+  .series-path{ fill:none; stroke-width:2.25; transition:opacity .2s ease; }
+  .series-path.hidden-series{ opacity:0; }
+  .end-dot{ transition:opacity .2s ease; }
+  .end-dot.hidden-series{ opacity:0 !important; }
+  .chart-foot{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:10px;
+    font-size:12.5px; color:var(--muted-dim); margin-top:18px;
+    font-family:'IBM Plex Mono', monospace;
+  }
+
+  /* ---------- BREAKDOWN CARDS ---------- */
+  .grid-4{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:18px;
+  }
+  @media (max-width:980px){ .grid-4{ grid-template-columns:repeat(2,1fr);} }
+  @media (max-width:560px){ .grid-4{ grid-template-columns:1fr; } }
+
+  .horizon-card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:14px;
+    padding:26px 24px 22px;
+    border-top:3px solid var(--accent, var(--gold));
+  }
+  .horizon-card h3{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:15px;
+    letter-spacing:0.05em;
+    color:var(--accent, var(--gold));
+    margin:0 0 4px;
+  }
+  .horizon-card .n-windows{ font-size:12.5px; color:var(--muted-dim); margin-bottom:20px; }
+  .stat-row{
+    display:flex; justify-content:space-between; align-items:baseline;
+    padding:11px 0; border-top:1px solid var(--card-border);
+  }
+  .stat-row:first-of-type{ border-top:none; }
+  .stat-row .label{ font-size:13px; color:var(--muted); }
+  .stat-row .val{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:15px; text-align:right; }
+  .stat-row .val small{ display:block; font-weight:400; color:var(--muted-dim); font-size:11px; margin-top:2px; }
+  .val.pos{ color:var(--green); }
+  .val.neg{ color:var(--red); }
+  .val.zero{ color:var(--green); }
+
+  /* ---------- METHOD ---------- */
+  .method-grid{ display:grid; grid-template-columns:1fr 1fr; gap:48px; }
+  @media (max-width:760px){ .method-grid{ grid-template-columns:1fr; gap:28px; } }
+  .method-grid h4{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:14px; color:var(--gold); letter-spacing:0.05em;
+    margin:0 0 12px;
+  }
+  .method-grid p, .method-grid li{ color:var(--muted); font-size:15px; }
+  .method-grid ul{ padding-left:20px; margin:0; }
+  .method-grid li{ margin-bottom:8px; }
+  code{
+    font-family:'IBM Plex Mono', monospace;
+    background:var(--bg-raised);
+    padding:2px 6px;
+    border-radius:4px;
+    font-size:0.92em;
+    color:var(--white);
+  }
+
+  /* ---------- FOOTER ---------- */
+  footer{ padding:52px 0 60px; }
+  .footer-row{
+    display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:24px;
+  }
+  .brand{ font-family:'IBM Plex Mono', monospace; font-weight:600; letter-spacing:0.06em; color:var(--gold); font-size:15px; }
+  .footer-note{ color:var(--muted-dim); font-size:13px; max-width:560px; }
+  .footer-links{ display:flex; gap:22px; font-family:'IBM Plex Mono', monospace; font-size:13px; }
+  .footer-links a{ color:var(--muted); text-decoration:none; }
+  .footer-links a:hover{ color:var(--gold); }
+  .disclaimer{
+    margin-top:36px; padding-top:24px; border-top:1px solid var(--card-border);
+    color:var(--muted-dim); font-size:12.5px; max-width:900px;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">MDA Investing · Análisis estadístico</p>
+    <h1>PEP: cuanto más largo el plazo,<br><em>menos margen de error.</em></h1>
+    <p class="lede">
+      PepsiCo (<strong>PEP</strong>) cotiza hoy a valores de marzo de 2021. Para entender si eso es motivo de
+      alarma, tomamos <strong>54 años de retornos de precio</strong> (1972-2025, sin dividendos) y calculamos
+      el CAGR de <strong>todas</strong> las ventanas móviles posibles de 5, 10, 15 y 20 años.
+    </p>
+
+    <div class="scoreboard">
+      <div class="score-cell">
+        <div class="h">5 años</div>
+        <div class="v neg">4 / 50</div>
+        <div class="s">ventanas negativas</div>
+      </div>
+      <div class="score-cell">
+        <div class="h">10 años</div>
+        <div class="v pos">0 / 45</div>
+        <div class="s">ventanas negativas</div>
+      </div>
+      <div class="score-cell">
+        <div class="h">15 años</div>
+        <div class="v pos">0 / 40</div>
+        <div class="s">ventanas negativas</div>
+      </div>
+      <div class="score-cell">
+        <div class="h">20 años</div>
+        <div class="v pos">0 / 35</div>
+        <div class="s">ventanas negativas</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="convergence">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num">01</div>
+      <h2>El cono de convergencia</h2>
+      <p>
+        Cada línea es el CAGR de <em>todas</em> las ventanas posibles de esa duración, ubicada en el año en que
+        arranca. A medida que el plazo se estira, la dispersión se comprime hacia arriba del cero — la línea roja
+        (5 años) es la única que cruza a territorio negativo.
+      </p>
+    </div>
+
+    <div class="chart-card">
+      <div class="legend" id="legend"></div>
+      <div class="chart-svg-wrap">
+        <svg id="convergence-chart" viewBox="0 0 1000 460" xmlns="http://www.w3.org/2000/svg" role="img"
+             aria-label="CAGR de ventanas móviles de PEP por año de inicio, para horizontes de 5, 10, 15 y 20 años"></svg>
+      </div>
+      <div class="chart-foot">
+        <span>Eje X: año de inicio de la ventana</span>
+        <span>Eje Y: CAGR de precio (%)</span>
+        <span>Fuente: Slickcharts / 1stock1.com</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="breakdown">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num">02</div>
+      <h2>Los cuatro horizontes, en detalle</h2>
+      <p>CAGR (tasa anual compuesta) promedio, mejor y peor caso histórico para cada duración de ventana — solo retorno de precio, sin dividendos.</p>
+    </div>
+
+    <div class="grid-4" id="horizon-cards"></div>
+  </div>
+</section>
+
+<section id="method">
+  <div class="wrap">
+    <div class="section-head">
+      <div class="section-num">03</div>
+      <h2>Metodología</h2>
+    </div>
+    <div class="method-grid">
+      <div>
+        <h4>¿Qué es una ventana móvil?</h4>
+        <p>
+          Tomamos cada año posible como punto de partida (1972, 1973, 1974…) y medimos el CAGR
+          (<code>Compound Annual Growth Rate</code>) desde ahí hasta N años después. Repetimos el cálculo para
+          cada año de inicio disponible, generando el universo completo de resultados posibles para esa duración
+          de inversión.
+        </p>
+        <p>
+          El CAGR de cada ventana se calcula como la media geométrica de los retornos anuales del período,
+          menos uno — no el retorno acumulado simple, que no es comparable entre ventanas de distinta duración.
+        </p>
+      </div>
+      <div>
+        <h4>Alcance de este análisis</h4>
+        <ul>
+          <li><strong style="color:var(--white)">Solo precio:</strong> estos datos NO incluyen dividendos. El retorno total (con y sin reinversión) es sistemáticamente mayor.</li>
+          <li><strong style="color:var(--white)">Universo:</strong> 1972-2025, 54 años completos de retorno anual de precio.</li>
+          <li><strong style="color:var(--white)">Ventanas:</strong> 50 (5A), 45 (10A), 40 (15A) y 35 (20A) intervalos posibles.</li>
+          <li><strong style="color:var(--white)">Fuentes:</strong> Slickcharts.com y 1stock1.com para retornos anuales de precio.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footer-row">
+      <div>
+        <div class="brand">MDA INVESTING</div>
+        <p class="footer-note">Hugo Tanos · Análisis Fundamental &amp; Estadística de Mercados · Comunidad Platino</p>
+      </div>
+      <div class="footer-links">
+        <a href="https://x.com/Hugoilcapitano" target="_blank" rel="noopener">X / Twitter</a>
+        <a href="https://www.youtube.com/@hugohernantanos1951" target="_blank" rel="noopener">YouTube</a>
+      </div>
+    </div>
+    <p class="disclaimer">
+      Este análisis es de carácter educativo e informativo. No constituye recomendación de compra ni venta de
+      ningún instrumento financiero. Los datos históricos no garantizan resultados futuros. Antes de invertir,
+      evaluá tu propia situación financiera o consultá con un asesor matriculado.
+    </p>
+  </div>
+</footer>
+
+<script>
+const DATA = {"5":{"series":[{"start":1972,"end":1976,"cagr":-1.7},{"start":1973,"end":1977,"cagr":-0.73},{"start":1974,"end":1978,"cagr":2.08},{"start":1975,"end":1979,"cagr":13.0},{"start":1976,"end":1980,"cagr":3.01},{"start":1977,"end":1981,"cagr":6.57},{"start":1978,"end":1982,"cagr":5.01},{"start":1979,"end":1983,"cagr":8.34},{"start":1980,"end":1984,"cagr":11.5},{"start":1981,"end":1985,"cagr":21.7},{"start":1982,"end":1986,"cagr":16.48},{"start":1983,"end":1987,"cagr":22.87},{"start":1984,"end":1988,"cagr":25.38},{"start":1985,"end":1989,"cagr":34.97},{"start":1986,"end":1990,"cagr":26.32},{"start":1987,"end":1991,"cagr":31.34},{"start":1988,"end":1992,"cagr":30.12},{"start":1989,"end":1993,"cagr":25.43},{"start":1990,"end":1994,"cagr":11.19},{"start":1991,"end":1995,"cagr":16.53},{"start":1992,"end":1996,"cagr":11.55},{"start":1993,"end":1997,"cagr":11.8},{"start":1994,"end":1998,"cagr":14.87},{"start":1995,"end":1999,"cagr":14.23},{"start":1996,"end":2000,"cagr":12.15},{"start":1997,"end":2001,"cagr":10.73},{"start":1998,"end":2002,"cagr":3.1},{"start":1999,"end":2003,"cagr":2.66},{"start":2000,"end":2004,"cagr":8.17},{"start":2001,"end":2005,"cagr":3.58},{"start":2002,"end":2006,"cagr":5.14},{"start":2003,"end":2007,"cagr":12.44},{"start":2004,"end":2008,"cagr":3.27},{"start":2005,"end":2009,"cagr":3.1},{"start":2006,"end":2010,"cagr":2.03},{"start":2007,"end":2011,"cagr":1.19},{"start":2008,"end":2012,"cagr":-2.05},{"start":2009,"end":2013,"cagr":8.65},{"start":2010,"end":2014,"cagr":9.23},{"start":2011,"end":2015,"cagr":8.87},{"start":2012,"end":2016,"cagr":9.54},{"start":2013,"end":2017,"cagr":11.87},{"start":2014,"end":2018,"cagr":5.9},{"start":2015,"end":2019,"cagr":7.64},{"start":2016,"end":2020,"cagr":8.22},{"start":2017,"end":2021,"cagr":10.67},{"start":2018,"end":2022,"cagr":8.54},{"start":2019,"end":2023,"cagr":8.98},{"start":2020,"end":2024,"cagr":2.16},{"start":2021,"end":2025,"cagr":-0.66}],"avg":10.54,"neg":4,"total":50,"best":{"start":1985,"end":1989,"cagr":34.97},"worst":{"start":2008,"end":2012,"cagr":-2.05}},"10":{"series":[{"start":1972,"end":1981,"cagr":2.35},{"start":1973,"end":1982,"cagr":2.1},{"start":1974,"end":1983,"cagr":5.16},{"start":1975,"end":1984,"cagr":12.25},{"start":1976,"end":1985,"cagr":11.96},{"start":1977,"end":1986,"cagr":11.42},{"start":1978,"end":1987,"cagr":13.59},{"start":1979,"end":1988,"cagr":16.55},{"start":1980,"end":1989,"cagr":22.68},{"start":1981,"end":1990,"cagr":23.99},{"start":1982,"end":1991,"cagr":23.69},{"start":1983,"end":1992,"cagr":26.45},{"start":1984,"end":1993,"cagr":25.4},{"start":1985,"end":1994,"cagr":22.5},{"start":1986,"end":1995,"cagr":21.33},{"start":1987,"end":1996,"cagr":21.04},{"start":1988,"end":1997,"cagr":20.62},{"start":1989,"end":1998,"cagr":20.03},{"start":1990,"end":1999,"cagr":12.7},{"start":1991,"end":2000,"cagr":14.32},{"start":1992,"end":2001,"cagr":11.14},{"start":1993,"end":2002,"cagr":7.36},{"start":1994,"end":2003,"cagr":8.6},{"start":1995,"end":2004,"cagr":11.16},{"start":1996,"end":2005,"cagr":7.78},{"start":1997,"end":2006,"cagr":7.9},{"start":1998,"end":2007,"cagr":7.67},{"start":1999,"end":2008,"cagr":2.97},{"start":2000,"end":2009,"cagr":5.6},{"start":2001,"end":2010,"cagr":2.8},{"start":2002,"end":2011,"cagr":3.14},{"start":2003,"end":2012,"cagr":4.95},{"start":2004,"end":2013,"cagr":5.93},{"start":2005,"end":2014,"cagr":6.12},{"start":2006,"end":2015,"cagr":5.39},{"start":2007,"end":2016,"cagr":5.28},{"start":2008,"end":2017,"cagr":4.68},{"start":2009,"end":2018,"cagr":7.27},{"start":2010,"end":2019,"cagr":8.44},{"start":2011,"end":2020,"cagr":8.54},{"start":2012,"end":2021,"cagr":10.1},{"start":2013,"end":2022,"cagr":10.19},{"start":2014,"end":2023,"cagr":7.43},{"start":2015,"end":2024,"cagr":4.86},{"start":2016,"end":2025,"cagr":3.69}],"avg":11.09,"neg":0,"total":45,"best":{"start":1983,"end":1992,"cagr":26.45},"worst":{"start":1973,"end":1982,"cagr":2.1}},"15":{"series":[{"start":1972,"end":1986,"cagr":6.86},{"start":1973,"end":1987,"cagr":8.6},{"start":1974,"end":1988,"cagr":11.51},{"start":1975,"end":1989,"cagr":19.36},{"start":1976,"end":1990,"cagr":16.56},{"start":1977,"end":1991,"cagr":17.7},{"start":1978,"end":1992,"cagr":18.85},{"start":1979,"end":1993,"cagr":19.44},{"start":1980,"end":1994,"cagr":18.72},{"start":1981,"end":1995,"cagr":21.45},{"start":1982,"end":1996,"cagr":19.5},{"start":1983,"end":1997,"cagr":21.36},{"start":1984,"end":1998,"cagr":21.79},{"start":1985,"end":1999,"cagr":19.68},{"start":1986,"end":2000,"cagr":18.19},{"start":1987,"end":2001,"cagr":17.5},{"start":1988,"end":2002,"cagr":14.47},{"start":1989,"end":2003,"cagr":13.94},{"start":1990,"end":2004,"cagr":11.17},{"start":1991,"end":2005,"cagr":10.62},{"start":1992,"end":2006,"cagr":9.1},{"start":1993,"end":2007,"cagr":9.03},{"start":1994,"end":2008,"cagr":6.79},{"start":1995,"end":2009,"cagr":8.4},{"start":1996,"end":2010,"cagr":5.83},{"start":1997,"end":2011,"cagr":5.61},{"start":1998,"end":2012,"cagr":4.33},{"start":1999,"end":2013,"cagr":4.83},{"start":2000,"end":2014,"cagr":6.8},{"start":2001,"end":2015,"cagr":4.78},{"start":2002,"end":2016,"cagr":5.23},{"start":2003,"end":2017,"cagr":7.21},{"start":2004,"end":2018,"cagr":5.92},{"start":2005,"end":2019,"cagr":6.63},{"start":2006,"end":2020,"cagr":6.33},{"start":2007,"end":2021,"cagr":7.05},{"start":2008,"end":2022,"cagr":5.95},{"start":2009,"end":2023,"cagr":7.84},{"start":2010,"end":2024,"cagr":6.3},{"start":2011,"end":2025,"cagr":5.39}],"avg":11.42,"neg":0,"total":40,"best":{"start":1984,"end":1998,"cagr":21.79},"worst":{"start":1998,"end":2012,"cagr":4.33}},"20":{"series":[{"start":1972,"end":1991,"cagr":12.52},{"start":1973,"end":1992,"cagr":13.62},{"start":1974,"end":1993,"cagr":14.84},{"start":1975,"end":1994,"cagr":17.26},{"start":1976,"end":1995,"cagr":16.55},{"start":1977,"end":1996,"cagr":16.13},{"start":1978,"end":1997,"cagr":17.05},{"start":1979,"end":1998,"cagr":18.28},{"start":1980,"end":1999,"cagr":17.58},{"start":1981,"end":2000,"cagr":19.06},{"start":1982,"end":2001,"cagr":17.25},{"start":1983,"end":2002,"cagr":16.51},{"start":1984,"end":2003,"cagr":16.7},{"start":1985,"end":2004,"cagr":16.69},{"start":1986,"end":2005,"cagr":14.35},{"start":1987,"end":2006,"cagr":14.28},{"start":1988,"end":2007,"cagr":13.96},{"start":1989,"end":2008,"cagr":11.17},{"start":1990,"end":2009,"cagr":9.09},{"start":1991,"end":2010,"cagr":8.41},{"start":1992,"end":2011,"cagr":7.07},{"start":1993,"end":2012,"cagr":6.15},{"start":1994,"end":2013,"cagr":7.25},{"start":1995,"end":2014,"cagr":8.61},{"start":1996,"end":2015,"cagr":6.58},{"start":1997,"end":2016,"cagr":6.58},{"start":1998,"end":2017,"cagr":6.16},{"start":1999,"end":2018,"cagr":5.1},{"start":2000,"end":2019,"cagr":7.01},{"start":2001,"end":2020,"cagr":5.63},{"start":2002,"end":2021,"cagr":6.56},{"start":2003,"end":2022,"cagr":7.54},{"start":2004,"end":2023,"cagr":6.68},{"start":2005,"end":2024,"cagr":5.49},{"start":2006,"end":2025,"cagr":4.54}],"avg":11.38,"neg":0,"total":35,"best":{"start":1981,"end":2000,"cagr":19.06},"worst":{"start":2006,"end":2025,"cagr":4.54}}};
+
+const HORIZONS = [
+  {key:"5",  label:"5 AÑOS",  colorHex:"#D9584F"},
+  {key:"10", label:"10 AÑOS", colorHex:"#E3A857"},
+  {key:"15", label:"15 AÑOS", colorHex:"#C8A84B"},
+  {key:"20", label:"20 AÑOS", colorHex:"#3FA872"},
+];
+
+// ---------- Chart ----------
+(function(){
+  const svg = document.getElementById('convergence-chart');
+  const W = 1000, H = 460;
+  const M = {top:20, right:24, bottom:36, left:44};
+  const plotW = W - M.left - M.right;
+  const plotH = H - M.top - M.bottom;
+
+  let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
+  HORIZONS.forEach(h=>{
+    DATA[h.key].series.forEach(p=>{
+      xMin = Math.min(xMin, p.start); xMax = Math.max(xMax, p.start);
+      yMin = Math.min(yMin, p.cagr); yMax = Math.max(yMax, p.cagr);
+    });
+  });
+  yMin = Math.floor((yMin-4)/5)*5;
+  yMax = Math.ceil((yMax+4)/5)*5;
+
+  const xScale = x => M.left + ( (x - xMin) / (xMax - xMin) ) * plotW;
+  const yScale = y => M.top + plotH - ( (y - yMin) / (yMax - yMin) ) * plotH;
+
+  const ns = "http://www.w3.org/2000/svg";
+  function el(tag, attrs){
+    const e = document.createElementNS(ns, tag);
+    for(const k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+
+  // gridlines (y, every 10%)
+  const yStep = 10;
+  for(let gy = Math.ceil(yMin/yStep)*yStep; gy <= yMax; gy += yStep){
+    const isZero = gy === 0;
+    const line = el('line', {
+      x1:M.left, x2:W-M.right, y1:yScale(gy), y2:yScale(gy),
+      class: isZero ? 'zero-line' : 'grid-line'
+    });
+    svg.appendChild(line);
+    const label = el('text', {x:M.left-8, y:yScale(gy)+4, 'text-anchor':'end', class:'axis-label'});
+    label.textContent = gy + '%';
+    svg.appendChild(label);
+  }
+
+  // x-axis labels (every 5 years)
+  for(let gx = Math.ceil(xMin/5)*5; gx <= xMax; gx += 5){
+    const label = el('text', {x:xScale(gx), y:H-10, 'text-anchor':'middle', class:'axis-label'});
+    label.textContent = gx;
+    svg.appendChild(label);
+  }
+
+  const seriesGroups = {};
+  HORIZONS.forEach(h=>{
+    const g = el('g', {'data-key':h.key});
+    const pts = DATA[h.key].series;
+    let d = '';
+    pts.forEach((p,i)=>{
+      d += (i===0?'M':'L') + xScale(p.start).toFixed(2) + ',' + yScale(p.cagr).toFixed(2) + ' ';
+    });
+    const path = el('path', {d:d.trim(), class:'series-path', stroke:h.colorHex});
+    g.appendChild(path);
+
+    const last = pts[pts.length-1];
+    const dot = el('circle', {cx:xScale(last.start), cy:yScale(last.cagr), r:4, fill:h.colorHex, class:'end-dot'});
+    g.appendChild(dot);
+
+    svg.appendChild(g);
+    seriesGroups[h.key] = g;
+  });
+
+  const legend = document.getElementById('legend');
+  HORIZONS.forEach(h=>{
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.innerHTML = '<span class="dot" style="background:'+h.colorHex+'"></span>' +
+                    h.label + ' <span class="n">· n='+DATA[h.key].total+'</span>';
+    btn.setAttribute('aria-pressed','true');
+    btn.addEventListener('click', ()=>{
+      const g = seriesGroups[h.key];
+      const isHidden = g.classList.toggle('hidden-series');
+      g.querySelectorAll('.series-path, .end-dot').forEach(n=>n.classList.toggle('hidden-series', isHidden));
+      btn.classList.toggle('off', isHidden);
+      btn.setAttribute('aria-pressed', String(!isHidden));
+    });
+    legend.appendChild(btn);
+  });
+})();
+
+// ---------- Horizon cards ----------
+(function(){
+  const wrap = document.getElementById('horizon-cards');
+  HORIZONS.forEach(h=>{
+    const d = DATA[h.key];
+    const negClass = d.neg === 0 ? 'zero' : 'neg';
+    const card = document.createElement('div');
+    card.className = 'horizon-card';
+    card.style.setProperty('--accent', h.colorHex);
+    card.innerHTML = `
+      <h3>${h.label}</h3>
+      <div class="n-windows">${d.total} ventanas posibles · 1972-2025</div>
+      <div class="stat-row"><span class="label">CAGR promedio</span><span class="val">${d.avg.toFixed(2)}%</span></div>
+      <div class="stat-row"><span class="label">Mejor CAGR</span><span class="val pos">+${d.best.cagr.toFixed(2)}%<small>${d.best.start}-${d.best.end}</small></span></div>
+      <div class="stat-row"><span class="label">Peor CAGR</span><span class="val ${d.worst.cagr<0?'neg':'pos'}">${d.worst.cagr>0?'+':''}${d.worst.cagr.toFixed(2)}%<small>${d.worst.start}-${d.worst.end}</small></span></div>
+      <div class="stat-row"><span class="label">Negativas</span><span class="val ${negClass}">${d.neg} de ${d.total}</span></div>
+    `;
+    wrap.appendChild(card);
+  });
+})();
+</script>
+
+</body>
+</html>
