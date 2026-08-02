@@ -1,0 +1,169 @@
+//@version=6
+indicator("Gaps MTF (Daily gaps, visible on any timeframe)", overlay = true, max_boxes_count = 500)
+
+// ---------------------------------------------------------------------------
+// Inputs
+// ---------------------------------------------------------------------------
+closeGapsPartially   = input.bool(false, "Close Gaps Partially", display = display.none)
+boxLimitInput        = input.int(30, "Max Number of Gaps", minval = 1, maxval = 500, display = display.none)
+minimalDeviationPct  = input.float(30.0, "Minimal Deviation (%)",
+  tooltip = "Percentage of the average daily high-low range (last 14 daily bars) required for a gap to be registered.",
+  minval = 1, maxval = 100, display = display.none)
+limitBoxLengthBool   = input.bool(false, "Limit Max Gap Trail Length (days)", inline = "Length Limit", display = display.none)
+limitBoxLengthDays   = input.int(300, "", inline = "Length Limit", minval = 1, display = display.none, active = limitBoxLengthBool)
+
+groupName = "Border and fill colors"
+colorUpBorderInput       = input.color(color.green, "Up Gaps", inline = "Gap Up", group = groupName, display = display.none)
+colorUpBackgroundInput   = input.color(color.new(color.green, 85), "", inline = "Gap Up", group = groupName, display = display.none)
+colorDownBorderInput     = input.color(color.red, "Down Gaps", inline = "Gap Down", group = groupName, display = display.none)
+colorDownBackgroundInput = input.color(color.new(color.red, 85), "", inline = "Gap Down", group = groupName, display = display.none)
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+type AlertInfo
+    bool openedThisBar
+    bool closedThisBar
+
+type Gap
+    bool       isActive
+    bool       isBull
+    array<box> boxes
+
+method delete(Gap this) =>
+    for b in this.boxes
+        b.delete()
+
+// Closes the gap partially: stop extending the current box and open a smaller
+// one that keeps tracking the still-uncovered portion of the gap.
+method partialClose(Gap this, int dt, float dh, float dl) =>
+    activeBox = this.boxes.last()
+    activeBox.set_extend(extend.none)
+
+    top    = this.isBull ? activeBox.get_top() : dl
+    bottom = this.isBull ? dh : activeBox.get_bottom()
+
+    this.boxes.push(box.new(
+      left = dt, top = top, right = dt, bottom = bottom,
+      border_color = this.isBull ? colorUpBorderInput : colorDownBorderInput,
+      bgcolor      = this.isBull ? colorUpBackgroundInput : colorDownBackgroundInput,
+      extend = extend.right, xloc = xloc.bar_time))
+
+method fullClose(Gap this) =>
+    activeBox = this.boxes.last()
+    activeBox.set_extend(extend.none)
+    this.isActive := false
+    if closeGapsPartially
+        activeBox.delete()
+
+// Checks one gap against ONE daily high/low (dh, dl at time dt).
+method checkForClose(Gap this, int dt, float dh, float dl) =>
+    if this.isActive
+        activeBox = this.boxes.last()
+        top    = activeBox.get_top()
+        bot    = activeBox.get_bottom()
+        isBull = this.isBull
+        activeBox.set_right(dt)
+
+        if (dh > bot and isBull) or (dl < top and not isBull)
+            if closeGapsPartially
+                this.partialClose(dt, dh, dl)
+            else
+                this.fullClose()
+
+        daysOpen  = (dt - activeBox.get_left()) / (24 * 60 * 60 * 1000)
+        forceStop = limitBoxLengthBool and daysOpen >= limitBoxLengthDays
+        if ((dh > top and isBull) or (dl < bot and not isBull)) or forceStop
+            this.fullClose()
+
+// ---------------------------------------------------------------------------
+// Persistent state
+// ---------------------------------------------------------------------------
+var array<Gap>   allGaps    = array.new<Gap>()
+var array<float> rangeQueue = array.new<float>()   // rolling last 14 daily ranges
+var float prevDayHigh = na
+var float prevDayLow  = na
+var int   prevDayTime = na
+var AlertInfo alertInfo = AlertInfo.new(false, false)
+
+alertInfo.openedThisBar := false
+alertInfo.closedThisBar := false
+
+registerNewGap(bool isGapDown, float top, float bottom, int leftTime, int rightTime) =>
+    borderColor = isGapDown ? colorDownBorderInput : colorUpBorderInput
+    bgColor     = isGapDown ? colorDownBackgroundInput : colorUpBackgroundInput
+    newBox = box.new(
+      left = leftTime, top = top, right = rightTime, bottom = bottom,
+      border_color = borderColor, bgcolor = bgColor,
+      extend = extend.right, xloc = xloc.bar_time)
+    allGaps.push(Gap.new(true, isGapDown, array.from(newBox)))
+    alertInfo.openedThisBar := true
+    if allGaps.size() > boxLimitInput
+        allGaps.shift().delete()
+
+// ---------------------------------------------------------------------------
+// Pull DAILY data regardless of the chart's timeframe.
+// - If chart TF <= Daily: the "daily series" is just the current bar (arrays of size 1).
+// - If chart TF > Daily (Weekly/Monthly/...): request.security_lower_tf brings every
+//   individual daily bar contained inside the current higher-TF bar.
+// ---------------------------------------------------------------------------
+isHigherTF = timeframe.in_seconds() > timeframe.in_seconds("D")
+
+var float[] dHighArr = na
+var float[] dLowArr  = na
+var int[]   dTimeArr = na
+
+if isHigherTF
+    [h, l, t] = request.security_lower_tf(syminfo.tickerid, "D", [high, low, time])
+    dHighArr := h
+    dLowArr  := l
+    dTimeArr := t
+else
+    dHighArr := array.from(high)
+    dLowArr  := array.from(low)
+    dTimeArr := array.from(time)
+
+// ---------------------------------------------------------------------------
+// Walk through every daily bar chronologically (usually just 1, unless the
+// chart is on Weekly/Monthly and several daily bars fell inside this bar).
+// ---------------------------------------------------------------------------
+if dHighArr.size() > 0
+    for i = 0 to dHighArr.size() - 1
+        dh = dHighArr.get(i)
+        dl = dLowArr.get(i)
+        dt = dTimeArr.get(i)
+
+        // 1) Check today's range against every still-open gap.
+        for gap in allGaps
+            gap.checkForClose(dt, dh, dl)
+            if not gap.isActive
+                alertInfo.closedThisBar := true
+
+        // 2) Detect a new gap between yesterday and today.
+        if not na(prevDayHigh)
+            dayRange = dh - dl
+            rangeQueue.push(dayRange)
+            if rangeQueue.size() > 14
+                rangeQueue.shift()
+            avgRange  = rangeQueue.size() < 14 ? 0.0 : rangeQueue.avg()
+            threshold = avgRange * (minimalDeviationPct / 100)
+
+            isGapDown = dh < prevDayLow  and (prevDayLow - dh) >= threshold
+            isGapUp   = dl > prevDayHigh and (dl - prevDayHigh) >= threshold
+
+            if isGapDown
+                registerNewGap(true,  prevDayLow, dh, prevDayTime, dt)
+            else if isGapUp
+                registerNewGap(false, dl, prevDayHigh, prevDayTime, dt)
+
+        prevDayHigh := dh
+        prevDayLow  := dl
+        prevDayTime := dt
+
+if barstate.islastconfirmedhistory and allGaps.size() == 0
+    noGapText = "No gaps found on the current chart.\nThe cause could be that some exchanges align the open of new bars on the close of the previous one, resulting in charts with no gaps. Alternatively, your Minimal Deviation might be too high."
+    var infoTable = table.new(position.bottom_right, 1, 1)
+    table.cell(infoTable, 0, 0, text = noGapText, text_color = chart.bg_color, bgcolor = chart.fg_color)
+
+alertcondition(alertInfo.openedThisBar, "New Gap Appeared", "A new gap has appeared.")
+alertcondition(alertInfo.closedThisBar, "Gap Closed", "A gap was closed.")

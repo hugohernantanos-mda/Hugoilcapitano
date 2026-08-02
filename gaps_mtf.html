@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaps MTF — Teoría, configuración y descargas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0D10;
+    --panel:#12151A;
+    --panel-line:#22262E;
+    --gold:#C8A84B;
+    --gold-soft:rgba(200,168,75,0.12);
+    --text:#EDEEF0;
+    --muted:#8A8F98;
+    --up:#3F9E6B;
+    --down:#C1554B;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    padding:64px 24px 80px;
+  }
+  .wrap{max-width:960px; margin:0 auto;}
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:2px;
+    color:var(--gold);
+    text-transform:uppercase;
+    margin-bottom:18px;
+  }
+  h1{font-size:42px; font-weight:700; letter-spacing:-0.5px; margin-bottom:10px;}
+  .sub{color:var(--muted); font-size:16px; max-width:620px; margin-bottom:4px;}
+  .sub.small{font-size:13px; color:#666B74;}
+
+  section{margin-top:56px;}
+  .section-head{
+    display:flex; align-items:baseline; gap:14px;
+    border-top:1px solid var(--panel-line);
+    padding-top:22px; margin-bottom:26px;
+  }
+  .section-num{font-family:'IBM Plex Mono', monospace; color:var(--gold); font-size:14px;}
+  .section-title{font-size:22px; font-weight:700;}
+  .section-note{margin-left:auto; font-size:12px; color:var(--muted); font-family:'IBM Plex Mono', monospace;}
+
+  /* ---------- 01 teoria ---------- */
+  .theory-grid{display:grid; grid-template-columns:repeat(3, 1fr); gap:16px;}
+  .theory-card{
+    background:var(--panel); border:1px solid var(--panel-line); border-radius:10px;
+    padding:22px;
+  }
+  .theory-card .tag{font-family:'IBM Plex Mono', monospace; font-size:11px; color:var(--gold); margin-bottom:10px; display:block;}
+  .theory-card h3{font-size:16px; margin-bottom:10px;}
+  .theory-card p{font-size:13px; color:#C7CAD1;}
+  .island-note{
+    margin-top:16px; background:var(--panel); border:1px solid var(--panel-line);
+    border-radius:10px; padding:20px 22px; font-size:13.5px; color:#C7CAD1;
+  }
+  .island-note b{color:var(--text);}
+  .citation{
+    margin-top:16px; font-size:12px; color:var(--muted); font-style:italic;
+    padding-left:14px; border-left:2px solid var(--gold);
+  }
+
+  /* ---------- 02 configuracion ---------- */
+  .grid{
+    display:grid; grid-template-columns:1fr; gap:1px;
+    background:var(--panel-line); border:1px solid var(--panel-line);
+    border-radius:10px; overflow:hidden;
+  }
+  .row{
+    background:var(--panel); display:grid;
+    grid-template-columns:56px 200px 1fr 140px; gap:20px;
+    padding:20px 22px; align-items:start;
+  }
+  .num{font-family:'IBM Plex Mono', monospace; color:var(--gold); font-size:13px; padding-top:3px;}
+  .setting-name{font-family:'IBM Plex Mono', monospace; font-size:13.5px; font-weight:500; line-height:1.4;}
+  .setting-name span{display:block; font-family:'IBM Plex Sans', sans-serif; font-size:11px; color:var(--muted); margin-top:4px; font-weight:400;}
+  .desc{font-size:13.5px; color:#C7CAD1;}
+  .rec{font-size:12px; text-align:right;}
+  .rec-label{font-family:'IBM Plex Mono', monospace; font-size:10px; letter-spacing:1px; color:var(--muted); text-transform:uppercase; display:block; margin-bottom:5px;}
+  .rec-value{display:inline-block; background:var(--gold-soft); color:var(--gold); font-family:'IBM Plex Mono', monospace; font-size:12px; font-weight:600; padding:4px 10px; border-radius:5px;}
+  .rec-value.off{background:rgba(138,143,152,0.12); color:var(--muted);}
+  .colors-row{background:var(--panel); padding:20px 22px; display:grid; grid-template-columns:56px 200px 1fr; gap:20px; align-items:center;}
+  .swatch-group{display:flex; gap:24px; margin-top:6px;}
+  .swatch{display:flex; align-items:center; gap:10px;}
+  .swatch .dot{width:15px; height:15px; border-radius:4px;}
+  .swatch .dot.up{background:var(--up);}
+  .swatch .dot.down{background:var(--down);}
+  .swatch .lbl{font-size:12.5px; color:#C7CAD1;}
+
+  /* ---------- 03 descargas ---------- */
+  .downloads{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  .dl-card{
+    background:var(--panel); border:1px solid var(--panel-line); border-radius:10px;
+    padding:26px; display:flex; flex-direction:column; gap:14px;
+  }
+  .dl-icon{
+    width:40px; height:40px; border-radius:8px; background:var(--gold-soft);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'IBM Plex Mono', monospace; color:var(--gold); font-size:13px; font-weight:600;
+  }
+  .dl-card h3{font-size:16px;}
+  .dl-card p{font-size:13px; color:var(--muted); flex:1;}
+  .dl-btn{
+    align-self:flex-start;
+    background:var(--gold); color:#0B0D10; text-decoration:none;
+    font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600;
+    padding:10px 18px; border-radius:6px; letter-spacing:0.3px;
+  }
+  .dl-meta{font-family:'IBM Plex Mono', monospace; font-size:11px; color:#666B74;}
+
+  footer{
+    margin-top:56px; padding-top:20px; border-top:1px solid var(--panel-line);
+    font-size:11.5px; color:var(--muted); line-height:1.6;
+  }
+  footer b{color:#B9BDC5;}
+
+  @media (max-width:760px){
+    .theory-grid, .downloads{grid-template-columns:1fr;}
+    .row, .colors-row{grid-template-columns:1fr; gap:8px;}
+    .section-note{display:none;}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="eyebrow">MDA Investing · Comunidad Platino</div>
+    <h1>Gaps MTF</h1>
+    <div class="sub">Teoría clásica de John Murphy, guía de configuración y descargas del indicador.</div>
+    <div class="sub small">Indicador Pine Script v6 para TradingView · huecos de precio visibles en cualquier temporalidad.</div>
+
+    <!-- ================= 01 TEORÍA ================= -->
+    <section>
+      <div class="section-head">
+        <span class="section-num">01</span>
+        <span class="section-title">Teoría — los tres tipos de huecos</span>
+        <span class="section-note">MURPHY, CAP. 4</span>
+      </div>
+
+      <div class="theory-grid">
+        <div class="theory-card">
+          <span class="tag">BREAKAWAY</span>
+          <h3>Hueco de separación</h3>
+          <p>Aparece al completarse un patrón de precios importante — una ruptura de base o de una tendencia principal. Suele darse con mucho volumen, por lo que rara vez se llena del todo.</p>
+        </div>
+        <div class="theory-card">
+          <span class="tag">RUNAWAY / MEASURING</span>
+          <h3>Hueco de escape (medida)</h3>
+          <p>Se da a mitad de camino del movimiento. Midiendo la distancia ya recorrida hasta ese punto, se puede proyectar de forma aproximada cuánto le queda a la tendencia.</p>
+        </div>
+        <div class="theory-card">
+          <span class="tag">EXHAUSTION</span>
+          <h3>Hueco de agotamiento</h3>
+          <p>Aparece cerca del final del movimiento: un último salto que pierde fuerza rápido. Un cierre a través de ese hueco confirma el agotamiento de la tendencia.</p>
+        </div>
+      </div>
+
+      <div class="island-note">
+        <b>Cambio de isla:</b> si tras el hueco de agotamiento el precio opera en rango estrecho unos días y luego aparece un hueco en sentido contrario, esas velas quedan aisladas como una "isla" — una combinación que suele anticipar un cambio de tendencia relevante.
+      </div>
+
+      <div class="citation">
+        Fuente: John J. Murphy, <em>Análisis Técnico de los Mercados Financieros</em>, Capítulo 4 ("Conceptos básicos de tendencia"), sección "Huecos de precios", págs. 121–125. Resumen elaborado a partir del texto original; no reproduce el contenido del libro.
+      </div>
+    </section>
+
+    <!-- ================= 02 CONFIGURACIÓN ================= -->
+    <section>
+      <div class="section-head">
+        <span class="section-num">02</span>
+        <span class="section-title">Configuración del indicador</span>
+        <span class="section-note">PESTAÑA INPUTS</span>
+      </div>
+
+      <div class="grid">
+        <div class="row">
+          <div class="num">01</div>
+          <div class="setting-name">Close Gaps<br>Partially</div>
+          <div class="desc">Si un gap se cierra solo en parte, decide si se dibuja únicamente la porción que sigue abierta, en vez de mantener la caja original completa.</div>
+          <div class="rec"><span class="rec-label">Recomendado</span><span class="rec-value off">Desactivado</span></div>
+        </div>
+        <div class="row">
+          <div class="num">02</div>
+          <div class="setting-name">Max Number<br>of Gaps</div>
+          <div class="desc">Cuántos gaps mantiene visibles el indicador a la vez. Al superar el límite, borra los más viejos para dibujar los nuevos.</div>
+          <div class="rec"><span class="rec-label">Recomendado</span><span class="rec-value">100</span></div>
+        </div>
+        <div class="row">
+          <div class="num">03</div>
+          <div class="setting-name">Minimal Deviation<br><span style="font-family:'IBM Plex Sans'; font-size:11px; color:var(--muted);">(%)</span></div>
+          <div class="desc">Filtro de sensibilidad: qué tan grande (en % del precio) tiene que ser un gap para que se marque. Bajalo para ver también gaps chicos; subilo para quedarte solo con los relevantes.</div>
+          <div class="rec"><span class="rec-label">Punto de partida</span><span class="rec-value">30%</span></div>
+        </div>
+        <div class="row">
+          <div class="num">04</div>
+          <div class="setting-name">Limit Max Gap<br>Trail Length (days)</div>
+          <div class="desc">Si se activa, la caja de un gap deja de extenderse hacia la derecha después de la cantidad de días indicada, aunque el gap siga sin cerrarse.</div>
+          <div class="rec"><span class="rec-label">Recomendado</span><span class="rec-value off">Desactivado</span></div>
+        </div>
+        <div class="colors-row">
+          <div class="num">05</div>
+          <div class="setting-name">Border and Fill<br>Colors</div>
+          <div>
+            <div class="desc" style="margin-bottom:4px;">Solo estética: color de borde y relleno de las cajas. No afecta la detección.</div>
+            <div class="swatch-group">
+              <div class="swatch"><span class="dot up"></span><span class="lbl">Up Gaps — gaps alcistas</span></div>
+              <div class="swatch"><span class="dot down"></span><span class="lbl">Down Gaps — gaps bajistas</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 03 DESCARGAS ================= -->
+    <section>
+      <div class="section-head">
+        <span class="section-num">03</span>
+        <span class="section-title">Descargas</span>
+        <span class="section-note">2 ARCHIVOS</span>
+      </div>
+
+      <div class="downloads">
+        <div class="dl-card">
+          <div class="dl-icon">.PINE</div>
+          <h3>Indicador Gaps MTF</h3>
+          <p>Código Pine Script v6 listo para pegar en el Pine Editor de TradingView. Incluye detección, dibujo de zonas y alertas de apertura/cierre.</p>
+          <div class="dl-meta">gaps_mtf_indicador.pine</div>
+          <a class="dl-btn" href="./descargas/gaps_mtf_indicador.pine" download>Descargar código</a>
+        </div>
+        <div class="dl-card">
+          <div class="dl-icon">.PPTX</div>
+          <h3>Presentación — Gaps de Precios</h3>
+          <p>La teoría de Murphy resumida en slides, con contexto moderno y la explicación del indicador, lista para reutilizar.</p>
+          <div class="dl-meta">Gaps_de_Precios_Murphy.pptx</div>
+          <a class="dl-btn" href="./descargas/Gaps_de_Precios_Murphy.pptx" download>Descargar presentación</a>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <b>Nota:</b> esta es una herramienta de análisis técnico y visualización de datos históricos. No constituye una recomendación de compra o venta. Toda decisión de inversión debe evaluarse según el perfil de riesgo de cada inversor.<br><br>
+      — Hugo Tanos · MDA Investing
+    </footer>
+  </div>
+</body>
+</html>
