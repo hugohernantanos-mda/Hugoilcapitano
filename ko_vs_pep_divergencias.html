@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KO vs PEP — Divergencias Históricas | MDA Investing</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0D10;
+    --bg-panel:#12151A;
+    --bg-panel-2:#161A20;
+    --line:#22262E;
+    --gold:#C8A84B;
+    --gold-dim:#8A7638;
+    --text:#EDEEF0;
+    --text-dim:#9BA1AB;
+    --text-faint:#5C6270;
+    --ko:#E6222B;
+    --ko-dim:#5A1215;
+    --pep:#2E6FE0;
+    --pep-dim:#152C57;
+    --pos:#3FA774;
+    --neg:#D4534B;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(200,168,75,0.06), transparent 60%),
+      radial-gradient(1000px 500px at 100% 10%, rgba(46,111,224,0.05), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', sans-serif;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+  }
+  .mono{font-family:'IBM Plex Mono', monospace;}
+
+  /* ---------- layout shell ---------- */
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+  header.top{
+    border-bottom:1px solid var(--line);
+    padding:22px 0;
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,13,16,0.88);
+    backdrop-filter:blur(10px);
+  }
+  header.top .wrap{display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;}
+  .brand{display:flex; align-items:center; gap:10px;}
+  .brand .mark{
+    width:30px;height:30px;border:1px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold); font-family:'IBM Plex Mono';font-weight:700;font-size:13px;
+  }
+  .brand .name{font-family:'IBM Plex Mono'; font-size:12px; letter-spacing:0.08em; color:var(--text-dim); text-transform:uppercase;}
+  .brand .name b{color:var(--text);}
+  nav.mini{display:flex; gap:18px; font-family:'IBM Plex Mono'; font-size:11.5px; letter-spacing:0.05em;}
+  nav.mini a{color:var(--text-faint); text-decoration:none; transition:color .2s;}
+  nav.mini a:hover{color:var(--gold);}
+
+  /* ---------- hero ---------- */
+  .hero{padding:64px 0 40px; border-bottom:1px solid var(--line);}
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-family:'IBM Plex Mono'; font-size:11px; letter-spacing:0.14em;
+    text-transform:uppercase; color:var(--gold);
+    border:1px solid var(--gold-dim); padding:5px 10px; margin-bottom:22px;
+  }
+  .eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--gold);}
+  h1{
+    font-family:'IBM Plex Sans'; font-weight:800;
+    font-size:clamp(30px, 4.4vw, 50px);
+    line-height:1.08; letter-spacing:-0.01em; max-width:900px;
+  }
+  h1 .ko{color:var(--ko);}
+  h1 .pep{color:var(--pep);}
+  .hero-sub{
+    margin-top:18px; max-width:680px; color:var(--text-dim); font-size:15.5px;
+  }
+  .ticker-row{display:flex; gap:10px; margin-top:26px; flex-wrap:wrap;}
+  .badge{
+    font-family:'IBM Plex Mono'; font-size:12px; padding:7px 12px;
+    border:1px solid var(--line); color:var(--text-dim); display:flex; align-items:center; gap:8px;
+  }
+  .badge .sw{width:8px;height:8px;border-radius:50%;}
+  .badge.ko .sw{background:var(--ko);}
+  .badge.pep .sw{background:var(--pep);}
+  .badge b{color:var(--text); font-weight:600;}
+
+  /* ---------- section shell ---------- */
+  section{padding:56px 0; border-bottom:1px solid var(--line);}
+  section:last-of-type{border-bottom:none;}
+  .sec-head{display:flex; align-items:baseline; gap:16px; margin-bottom:34px;}
+  .sec-num{
+    font-family:'IBM Plex Mono'; font-size:13px; color:var(--gold);
+    border:1px solid var(--gold-dim); padding:4px 9px; letter-spacing:0.05em;
+  }
+  .sec-title{font-size:24px; font-weight:700; letter-spacing:-0.01em;}
+  .sec-title span{color:var(--text-dim); font-weight:400; font-size:14px; display:block; margin-top:4px;}
+
+  /* ---------- 01 KPI grid ---------- */
+  .kpi-grid{display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .kpi{background:var(--bg-panel); padding:20px 18px;}
+  .kpi .lbl{font-family:'IBM Plex Mono'; font-size:10.5px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-faint); margin-bottom:10px;}
+  .kpi .vals{display:flex; align-items:baseline; gap:10px;}
+  .kpi .v{font-family:'IBM Plex Mono'; font-size:21px; font-weight:600;}
+  .kpi .v.ko{color:var(--ko);}
+  .kpi .v.pep{color:var(--pep);}
+  .kpi .tag{font-size:10px; color:var(--text-faint);}
+
+  .panorama-row{display:grid; grid-template-columns: 1.2fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line); margin-top:1px;}
+  .panel{background:var(--bg-panel); padding:26px;}
+  .panel h4{font-family:'IBM Plex Mono'; font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--text-faint); margin-bottom:20px;}
+
+  .donuts{display:flex; gap:36px; align-items:center; flex-wrap:wrap; justify-content:center;}
+  .donut-block{text-align:center;}
+  .donut{
+    width:132px; height:132px; border-radius:50%; position:relative;
+    display:flex; align-items:center; justify-content:center;
+    background:conic-gradient(var(--donut-color) 0deg, var(--donut-color) var(--donut-deg), #23272e var(--donut-deg));
+    animation: spin-in 1.1s cubic-bezier(.2,.9,.25,1) both;
+  }
+  .donut::before{content:''; position:absolute; inset:14px; background:var(--bg-panel); border-radius:50%;}
+  .donut .center{position:relative; z-index:2; font-family:'IBM Plex Mono'; font-size:20px; font-weight:700;}
+  .donut-block .cap{margin-top:12px; font-family:'IBM Plex Mono'; font-size:11px; color:var(--text-dim);}
+  @keyframes spin-in{from{ --donut-deg:0deg; } }
+
+  .mini-bars{margin-top:6px;}
+  .mbar-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+  .mbar-tick{width:56px; font-family:'IBM Plex Mono'; font-size:11px; color:var(--text-dim);}
+  .mbar-track{flex:1; height:8px; background:#1c2027; position:relative; overflow:hidden;}
+  .mbar-fill{height:100%; width:0; animation: grow 1.2s cubic-bezier(.2,.9,.25,1) forwards;}
+  .mbar-fill.ko{background:var(--ko);}
+  .mbar-fill.pep{background:var(--pep);}
+  .mbar-val{width:52px; text-align:right; font-family:'IBM Plex Mono'; font-size:11.5px; color:var(--text);}
+  @keyframes grow{from{width:0;}}
+
+  /* ---------- 02 rachas ---------- */
+  .streak-legend{display:flex; gap:22px; margin-bottom:26px; font-family:'IBM Plex Mono'; font-size:11px; color:var(--text-dim);}
+  .streak-legend .sw{display:inline-block; width:10px;height:10px;margin-right:6px; vertical-align:-1px;}
+
+  .streak-board{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line);}
+  .streak-col{background:var(--bg-panel); padding:24px;}
+  .streak-col h5{font-family:'IBM Plex Mono'; font-size:12px; letter-spacing:0.06em; margin-bottom:18px; display:flex; align-items:center; gap:8px;}
+  .streak-col h5 .sw{width:9px;height:9px;border-radius:50%;}
+  .streak-item{display:flex; align-items:center; gap:12px; padding:9px 0; border-bottom:1px dashed var(--line);}
+  .streak-item:last-child{border-bottom:none;}
+  .streak-item .period{font-family:'IBM Plex Mono'; font-size:12px; color:var(--text-dim); width:112px; flex-shrink:0;}
+  .streak-item .bar-wrap{flex:1; display:flex; gap:3px;}
+  .streak-item .yr-cell{
+    height:22px; flex:1; max-width:34px; background:#1c2027; position:relative;
+  }
+  .streak-item .yr-cell.neg{background:var(--neg);}
+  .streak-item .yr-cell.record{outline:2px solid var(--gold); outline-offset:2px;}
+  .streak-item .cum{font-family:'IBM Plex Mono'; font-size:12px; color:var(--neg); width:66px; text-align:right;}
+
+  .record-callout{
+    margin-top:22px; padding:18px 20px; border:1px solid var(--gold-dim);
+    background:rgba(200,168,75,0.06); font-size:13.5px; color:var(--text);
+  }
+  .record-callout b{color:var(--gold);}
+
+  /* ---------- 03 opposite years ---------- */
+  .opp-table{width:100%; border-collapse:collapse; font-family:'IBM Plex Mono'; font-size:12.5px;}
+  .opp-table th{
+    text-align:left; padding:10px 14px; border-bottom:1px solid var(--gold-dim);
+    color:var(--gold); font-weight:500; text-transform:uppercase; font-size:10.5px; letter-spacing:0.06em;
+  }
+  .opp-table td{padding:10px 14px; border-bottom:1px solid var(--line); color:var(--text-dim);}
+  .opp-table tr:hover td{background:var(--bg-panel-2); color:var(--text);}
+  .opp-table td.num{text-align:right;}
+  .opp-table td.num.pos{color:var(--pos);}
+  .opp-table td.num.neg{color:var(--neg);}
+  .opp-table tr.hi td{background:rgba(200,168,75,0.05);}
+  .case-tag{font-size:10.5px; padding:3px 8px; border:1px solid var(--line); display:inline-block;}
+  .case-tag.a{color:var(--pep); border-color:var(--pep-dim);}
+  .case-tag.b{color:var(--ko); border-color:var(--ko-dim);}
+
+  /* ---------- 04 gaps ---------- */
+  .gap-grid{display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--line); border:1px solid var(--line);}
+  .gap-col{background:var(--bg-panel); padding:24px;}
+  .gap-col h5{font-family:'IBM Plex Mono'; font-size:11.5px; letter-spacing:0.06em; color:var(--text-dim); margin-bottom:6px;}
+  .gap-col .sub{font-size:11px; color:var(--text-faint); margin-bottom:18px;}
+  .gap-row{display:flex; align-items:center; gap:10px; margin-bottom:9px;}
+  .gap-row .yr{width:78px; font-family:'IBM Plex Mono'; font-size:11.5px; color:var(--text-dim); flex-shrink:0;}
+  .gap-row .track{flex:1; height:16px; background:#1c2027; position:relative;}
+  .gap-row .fill{position:absolute; top:0; bottom:0; width:0; animation:grow 1.3s cubic-bezier(.2,.9,.25,1) forwards;}
+  .gap-row .fill.plus{left:50%; background:linear-gradient(90deg, var(--ko), #ff5b62);}
+  .gap-row .fill.minus{right:50%; background:linear-gradient(90deg, #6fa0ff, var(--pep));}
+  .gap-row .mid{position:absolute; left:50%; top:0; bottom:0; width:1px; background:var(--text-faint);}
+  .gap-row .val{width:64px; text-align:right; font-family:'IBM Plex Mono'; font-size:11.5px;}
+
+  .reading{
+    margin-top:1px; background:var(--bg-panel); border:1px solid var(--line); border-top:none;
+    padding:26px 28px; font-size:14px; color:var(--text-dim); line-height:1.7;
+  }
+  .reading b{color:var(--text);}
+  .reading .hi{color:var(--gold);}
+
+  /* ---------- footer ---------- */
+  footer{padding:40px 0 60px;}
+  footer .wrap{display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:24px;}
+  footer .fbrand{font-family:'IBM Plex Mono'; font-size:12px; color:var(--text-dim);}
+  footer .fbrand b{color:var(--gold);}
+  footer .disclaimer{max-width:560px; font-size:11.5px; color:var(--text-faint); line-height:1.6;}
+  footer .meta{font-family:'IBM Plex Mono'; font-size:10.5px; color:var(--text-faint); margin-top:6px;}
+
+  @media (max-width:860px){
+    .kpi-grid{grid-template-columns:repeat(2,1fr);}
+    .panorama-row, .streak-board, .gap-grid{grid-template-columns:1fr;}
+    nav.mini{display:none;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <div class="mark">MDA</div>
+      <div class="name"><b>Hugo Tanos</b> Investment Advisor — MDA Investing</div>
+    </div>
+    <nav class="mini">
+      <a href="#panorama">01 Panorama</a>
+      <a href="#rachas">02 Rachas</a>
+      <a href="#opuestos">03 Signo Opuesto</a>
+      <a href="#brechas">04 Brechas</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><span class="dot"></span>Análisis Cuantitativo · Comunidad Platino</div>
+    <h1><span class="ko">Coca-Cola</span> vs <span class="pep">PepsiCo</span> — Divergencias Históricas</h1>
+    <p class="hero-sub">Estudio de retornos anuales de precio (1970–2025 para KO, 1972–2025 para PEP) enfocado en identificar los momentos donde el comportamiento de ambas acciones se separó de forma más notoria, con foco en la racha negativa inédita de PEP en 2023-2025.</p>
+    <div class="ticker-row">
+      <div class="badge ko"><span class="sw"></span>NYSE: <b>KO</b> · 56 años de datos</div>
+      <div class="badge pep"><span class="sw"></span>NASDAQ: <b>PEP</b> · 54 años de datos</div>
+      <div class="badge">Retorno de <b>precio</b>, sin dividendos reinvertidos</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 01 PANORAMA ============ -->
+<section id="panorama">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">01</div>
+      <div class="sec-title">Panorama General<span>Métricas agregadas de todo el período disponible</span></div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="lbl">CAGR (Retorno Anualizado)</div>
+        <div class="vals"><span class="v ko">11.51%</span><span class="tag">KO</span><span class="v pep">11.55%</span><span class="tag">PEP</span></div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Promedio Retorno Anual</div>
+        <div class="vals"><span class="v ko">14.10%</span><span class="tag">KO</span><span class="v pep">13.54%</span><span class="tag">PEP</span></div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Volatilidad (Desvío Est.)</div>
+        <div class="vals"><span class="v ko">24.06%</span><span class="tag">KO</span><span class="v pep">21.74%</span><span class="tag">PEP</span></div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">Mediana Retorno Anual</div>
+        <div class="vals"><span class="v ko">10.41%</span><span class="tag">KO</span><span class="v pep">11.44%</span><span class="tag">PEP</span></div>
+      </div>
+    </div>
+
+    <div class="panorama-row">
+      <div class="panel">
+        <h4>Distribución de años positivos / negativos</h4>
+        <div class="donuts">
+          <div class="donut-block">
+            <div class="donut" style="--donut-color:var(--ko); --donut-deg:283deg;">
+              <div class="center mono">79%</div>
+            </div>
+            <div class="cap">KO · 44 pos / 12 neg <br>(56 años)</div>
+          </div>
+          <div class="donut-block">
+            <div class="donut" style="--donut-color:var(--pep); --donut-deg:280deg;">
+              <div class="center mono">78%</div>
+            </div>
+            <div class="cap">PEP · 42 pos / 12 neg <br>(54 años)</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel">
+        <h4>Mejor y peor año registrado</h4>
+        <div class="mini-bars">
+          <div class="mbar-row">
+            <div class="mbar-tick">KO mejor</div>
+            <div class="mbar-track"><div class="mbar-fill ko" style="--w:82%; width:82%;"></div></div>
+            <div class="mbar-val">+81.6%</div>
+          </div>
+          <div class="mbar-row">
+            <div class="mbar-tick">PEP mejor</div>
+            <div class="mbar-track"><div class="mbar-fill pep" style="width:79%;"></div></div>
+            <div class="mbar-val">+78.5%</div>
+          </div>
+          <div class="mbar-row">
+            <div class="mbar-tick">KO peor</div>
+            <div class="mbar-track"><div class="mbar-fill ko" style="width:56%;"></div></div>
+            <div class="mbar-val">-56.3%</div>
+          </div>
+          <div class="mbar-row">
+            <div class="mbar-tick">PEP peor</div>
+            <div class="mbar-track"><div class="mbar-fill pep" style="width:40%;"></div></div>
+            <div class="mbar-val">-40.0%</div>
+          </div>
+        </div>
+        <p style="margin-top:14px; font-size:11.5px; color:var(--text-faint);">KO: mejor 1989 · peor 1974 &nbsp;|&nbsp; PEP: mejor 1985 · peor 1974</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 02 RACHAS ============ -->
+<section id="rachas">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">02</div>
+      <div class="sec-title">Rachas de Retornos Negativos Consecutivos<span>Cada celda es un año en rojo dentro de la racha · el bloque con borde dorado es el récord</span></div>
+    </div>
+
+    <div class="streak-legend">
+      <span><span class="sw" style="background:var(--neg);"></span>Año negativo</span>
+      <span><span class="sw" style="border:2px solid var(--gold); background:transparent;"></span>Racha récord</span>
+    </div>
+
+    <div class="streak-board">
+      <div class="streak-col">
+        <h5><span class="sw" style="background:var(--pep);"></span>PEP</h5>
+
+        <div class="streak-item">
+          <div class="period">2023–2025</div>
+          <div class="bar-wrap">
+            <div class="yr-cell neg record"></div><div class="yr-cell neg record"></div><div class="yr-cell neg record"></div>
+          </div>
+          <div class="cum">-13.0%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">1973–1974</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div><div class="yr-cell neg"></div></div>
+          <div class="cum">-51.9%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">2001–2002</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div><div class="yr-cell neg"></div></div>
+          <div class="cum">-13.1%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">1978</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-4.0%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">1994</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-9.0%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">1999</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-12.1%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">2008</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-25.4%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">2018</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-3.3%</div>
+        </div>
+      </div>
+
+      <div class="streak-col">
+        <h5><span class="sw" style="background:var(--ko);"></span>KO</h5>
+
+        <div class="streak-item">
+          <div class="period">1973–1974</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div><div class="yr-cell neg"></div></div>
+          <div class="cum">-61.8%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">1976–1977</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div><div class="yr-cell neg"></div></div>
+          <div class="cum">-3.4%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">2001–2002</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div><div class="yr-cell neg"></div></div>
+          <div class="cum">-25.6%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">2004–2005</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div><div class="yr-cell neg"></div></div>
+          <div class="cum">-15.8%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">1979</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-16.5%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">1999</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-12.4%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">2008</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-23.8%</div>
+        </div>
+        <div class="streak-item">
+          <div class="period">2023</div>
+          <div class="bar-wrap"><div class="yr-cell neg"></div></div>
+          <div class="cum">-3.4%</div>
+        </div>
+        <div class="streak-item" style="border-bottom:none; opacity:0;"><div class="period"></div><div class="bar-wrap"></div><div class="cum"></div></div>
+      </div>
+    </div>
+
+    <div class="record-callout">
+      <b>Hallazgo central:</b> la racha 2023–2025 de PEP (3 años negativos consecutivos) es la <b>única racha de 3+ años</b> en los 54 años de historia disponible para PEP. La segunda más larga fue de solo 2 años (1973–74 y 2001–02). KO nunca encadenó más de 2 años negativos seguidos en el mismo período.
+    </div>
+  </div>
+</section>
+
+<!-- ============ 03 SIGNO OPUESTO ============ -->
+<section id="opuestos">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">03</div>
+      <div class="sec-title">Años con Signo Opuesto<span>Casos donde una ganó y la otra perdió en el mismo año calendario</span></div>
+    </div>
+
+    <table class="opp-table">
+      <thead>
+        <tr><th>Año</th><th>KO</th><th>PEP</th><th>Caso</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1976</td><td class="num neg">-2.29%</td><td class="num pos">+15.36%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td>1977</td><td class="num neg">-1.16%</td><td class="num pos">+8.45%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td>1978</td><td class="num pos">+25.76%</td><td class="num neg">-3.99%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr><td>1979</td><td class="num neg">-16.49%</td><td class="num pos">+1.00%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td>1994</td><td class="num pos">+17.77%</td><td class="num neg">-9.00%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr><td>2004</td><td class="num neg">-15.46%</td><td class="num pos">+14.20%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td>2005</td><td class="num neg">-0.42%</td><td class="num pos">+15.82%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td>2018</td><td class="num pos">+7.57%</td><td class="num neg">-3.31%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr class="hi"><td>2024</td><td class="num pos">+7.26%</td><td class="num neg">-9.24%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr class="hi"><td>2025</td><td class="num pos">+14.69%</td><td class="num neg">-1.60%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 04 BRECHAS ============ -->
+<section id="brechas">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">04</div>
+      <div class="sec-title">Magnitud de las Brechas<span>¿La divergencia actual es también la más grande en tamaño, o solo en consistencia?</span></div>
+    </div>
+
+    <div class="gap-grid">
+      <div class="gap-col">
+        <h5>Mayor brecha en UN solo año (|KO − PEP|)</h5>
+        <div class="sub">Top 10 históricos · barra roja = ventaja KO / barra azul = ventaja PEP</div>
+
+        <div class="gap-row"><div class="yr">1982</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:29%;"></div></div><div class="val" style="color:var(--ko);">58.5pp</div></div>
+        <div class="gap-row"><div class="yr">1991</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:23%;"></div></div><div class="val" style="color:var(--ko);">46.7pp</div></div>
+        <div class="gap-row"><div class="yr">1985</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:18%;"></div></div><div class="val" style="color:var(--pep);">36.1pp</div></div>
+        <div class="gap-row"><div class="yr">1996</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:18%;"></div></div><div class="val" style="color:var(--ko);">35.4pp</div></div>
+        <div class="gap-row"><div class="yr">1978</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:15%;"></div></div><div class="val" style="color:var(--ko);">29.8pp</div></div>
+        <div class="gap-row"><div class="yr">2004</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:15%;"></div></div><div class="val" style="color:var(--pep);">29.7pp</div></div>
+        <div class="gap-row"><div class="yr">1986</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:15%;"></div></div><div class="val" style="color:var(--ko);">29.3pp</div></div>
+        <div class="gap-row"><div class="yr">1981</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:14%;"></div></div><div class="val" style="color:var(--pep);">28.2pp</div></div>
+        <div class="gap-row"><div class="yr">1987</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:14%;"></div></div><div class="val" style="color:var(--pep);">27.0pp</div></div>
+        <div class="gap-row"><div class="yr">2000</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:13%;"></div></div><div class="val" style="color:var(--pep);">26.8pp</div></div>
+      </div>
+
+      <div class="gap-col">
+        <h5>Mayor brecha acumulada en ventanas de 3 años</h5>
+        <div class="sub">Retorno compuesto KO menos PEP en el trienio · contexto para 2023-2025</div>
+
+        <div class="gap-row"><div class="yr">1989–1991</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:31%;"></div></div><div class="val" style="color:var(--ko);">126.1pp</div></div>
+        <div class="gap-row"><div class="yr">1994–1996</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:22%;"></div></div><div class="val" style="color:var(--ko);">90.1pp</div></div>
+        <div class="gap-row"><div class="yr">1982–1984</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:19%;"></div></div><div class="val" style="color:var(--ko);">77.9pp</div></div>
+        <div class="gap-row"><div class="yr">1979–1981</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:16%;"></div></div><div class="val" style="color:var(--pep);">66.4pp</div></div>
+        <div class="gap-row"><div class="yr">1975–1977</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:15%;"></div></div><div class="val" style="color:var(--pep);">62.2pp</div></div>
+        <div class="gap-row"><div class="yr">1985–1987</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:13%;"></div></div><div class="val" style="color:var(--pep);">51.6pp</div></div>
+        <div class="gap-row"><div class="yr">1974–1976</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:12%;"></div></div><div class="val" style="color:var(--pep);">50.9pp</div></div>
+        <div class="gap-row"><div class="yr">2003–2005</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:12%;"></div></div><div class="val" style="color:var(--pep);">48.0pp</div></div>
+        <div class="gap-row"><div class="yr">2019–2021</div><div class="track"><div class="mid"></div><div class="fill minus" style="width:8%;"></div></div><div class="val" style="color:var(--pep);">34.0pp</div></div>
+        <div class="gap-row" style="outline:1px solid var(--gold); outline-offset:3px;"><div class="yr" style="color:var(--gold);">2023–2025</div><div class="track"><div class="mid"></div><div class="fill plus" style="width:8%; background:linear-gradient(90deg, var(--gold), #e6c976);"></div></div><div class="val" style="color:var(--gold);">31.8pp</div></div>
+      </div>
+    </div>
+
+    <div class="reading">
+      <b>Lectura:</b> en magnitud pura, la brecha trienal 2023-2025 (<span class="hi">~+32pp</span> a favor de KO) es notable pero está lejos de ser la más extrema de la historia — 1989-1991 y 1994-1996 fueron considerablemente mayores. Lo verdaderamente inédito no es el <i>tamaño</i> de la diferencia, sino la <b>consistencia</b>: es la primera vez que PEP encadena 3 años seguidos en terreno negativo mientras KO se mantiene, en neto, positiva en el mismo tramo.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div>
+      <div class="fbrand"><b>Hugo Tanos Investment Advisor</b> — MDA Investing</div>
+      <div class="meta">Fuente: companiesmarketcap.com · Retorno de precio ajustado por splits, sin dividendos reinvertidos · Actualizado agosto 2026</div>
+    </div>
+    <div class="disclaimer">
+      Este contenido tiene fines exclusivamente informativos y educativos, elaborado para la Comunidad Platino de MDA Investing. No constituye asesoramiento financiero personalizado ni una recomendación de compra o venta. El desempeño pasado no garantiza resultados futuros.
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
