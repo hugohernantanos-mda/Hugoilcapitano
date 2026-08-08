@@ -165,14 +165,19 @@
   .record-callout b{color:var(--gold);}
 
   /* ---------- 03 opposite years ---------- */
-  .opp-table{width:100%; border-collapse:collapse; font-family:'IBM Plex Mono'; font-size:12.5px;}
+  .opp-table{width:100%; border-collapse:collapse; font-family:'IBM Plex Mono'; font-size:12.5px; table-layout:fixed;}
+  .opp-table col.c-year{width:14%;}
+  .opp-table col.c-num{width:18%;}
+  .opp-table col.c-case{width:50%;}
   .opp-table th{
-    text-align:left; padding:10px 14px; border-bottom:1px solid var(--gold-dim);
+    text-align:center; padding:10px 14px; border-bottom:1px solid var(--gold-dim);
     color:var(--gold); font-weight:500; text-transform:uppercase; font-size:10.5px; letter-spacing:0.06em;
   }
-  .opp-table td{padding:10px 14px; border-bottom:1px solid var(--line); color:var(--text-dim);}
+  .opp-table th.left{text-align:left;}
+  .opp-table td{padding:10px 14px; border-bottom:1px solid var(--line); color:var(--text-dim); text-align:center;}
+  .opp-table td.left{text-align:left;}
   .opp-table tr:hover td{background:var(--bg-panel-2); color:var(--text);}
-  .opp-table td.num{text-align:right;}
+  .opp-table td.num{text-align:center;}
   .opp-table td.num.pos{color:var(--pos);}
   .opp-table td.num.neg{color:var(--neg);}
   .opp-table tr.hi td{background:rgba(200,168,75,0.05);}
@@ -444,20 +449,23 @@
     </div>
 
     <table class="opp-table">
+      <colgroup>
+        <col class="c-year"><col class="c-num"><col class="c-num"><col class="c-case">
+      </colgroup>
       <thead>
-        <tr><th>Año</th><th>KO</th><th>PEP</th><th>Caso</th></tr>
+        <tr><th class="left">Año</th><th>KO</th><th>PEP</th><th class="left">Caso</th></tr>
       </thead>
       <tbody>
-        <tr><td>1976</td><td class="num neg">-2.29%</td><td class="num pos">+15.36%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
-        <tr><td>1977</td><td class="num neg">-1.16%</td><td class="num pos">+8.45%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
-        <tr><td>1978</td><td class="num pos">+25.76%</td><td class="num neg">-3.99%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
-        <tr><td>1979</td><td class="num neg">-16.49%</td><td class="num pos">+1.00%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
-        <tr><td>1994</td><td class="num pos">+17.77%</td><td class="num neg">-9.00%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
-        <tr><td>2004</td><td class="num neg">-15.46%</td><td class="num pos">+14.20%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
-        <tr><td>2005</td><td class="num neg">-0.42%</td><td class="num pos">+15.82%</td><td><span class="case-tag a">KO neg · PEP pos</span></td></tr>
-        <tr><td>2018</td><td class="num pos">+7.57%</td><td class="num neg">-3.31%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
-        <tr class="hi"><td>2024</td><td class="num pos">+7.26%</td><td class="num neg">-9.24%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
-        <tr class="hi"><td>2025</td><td class="num pos">+14.69%</td><td class="num neg">-1.60%</td><td><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr><td class="left">1976</td><td class="num neg">-2.29%</td><td class="num pos">+15.36%</td><td class="left"><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td class="left">1977</td><td class="num neg">-1.16%</td><td class="num pos">+8.45%</td><td class="left"><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td class="left">1978</td><td class="num pos">+25.76%</td><td class="num neg">-3.99%</td><td class="left"><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr><td class="left">1979</td><td class="num neg">-16.49%</td><td class="num pos">+1.00%</td><td class="left"><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td class="left">1994</td><td class="num pos">+17.77%</td><td class="num neg">-9.00%</td><td class="left"><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr><td class="left">2004</td><td class="num neg">-15.46%</td><td class="num pos">+14.20%</td><td class="left"><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td class="left">2005</td><td class="num neg">-0.42%</td><td class="num pos">+15.82%</td><td class="left"><span class="case-tag a">KO neg · PEP pos</span></td></tr>
+        <tr><td class="left">2018</td><td class="num pos">+7.57%</td><td class="num neg">-3.31%</td><td class="left"><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr class="hi"><td class="left">2024</td><td class="num pos">+7.26%</td><td class="num neg">-9.24%</td><td class="left"><span class="case-tag b">PEP neg · KO pos</span></td></tr>
+        <tr class="hi"><td class="left">2025</td><td class="num pos">+14.69%</td><td class="num neg">-1.60%</td><td class="left"><span class="case-tag b">PEP neg · KO pos</span></td></tr>
       </tbody>
     </table>
   </div>
